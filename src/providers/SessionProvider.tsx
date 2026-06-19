@@ -5,27 +5,28 @@ import { useAuthStore } from '@/store/auth.store'
 
 const API_URL = import.meta.env.VITE_API_URL
 
+// Fired once at module load — survives React StrictMode double-invocation
+const sessionRefresh: Promise<{ accessToken: string } | null> = fetch(
+  `${API_URL}/auth/refresh`,
+  { method: 'POST', credentials: 'include' },
+)
+  .then((res) => (res.ok ? (res.json() as Promise<{ accessToken: string }>) : null))
+  .catch(() => null)
+
 export function SessionProvider() {
   const [ready, setReady] = useState(false)
   const setAuth = useAuthStore((s) => s.setAuth)
   const clearAuth = useAuthStore((s) => s.clearAuth)
 
   useEffect(() => {
-    fetch(`${API_URL}/auth/refresh`, {
-      method: 'POST',
-      credentials: 'include',
+    void sessionRefresh.then((data) => {
+      if (data) {
+        setAuth(data.accessToken, sessionStorage.getItem('username') ?? '')
+      } else {
+        clearAuth()
+      }
+      setReady(true)
     })
-      .then(async (res) => {
-        if (res.ok) {
-          const data = (await res.json()) as { accessToken: string }
-          const username = sessionStorage.getItem('username') ?? ''
-          setAuth(data.accessToken, username)
-        } else {
-          clearAuth()
-        }
-      })
-      .catch(() => clearAuth())
-      .finally(() => setReady(true))
   }, [setAuth, clearAuth])
 
   if (!ready) {
