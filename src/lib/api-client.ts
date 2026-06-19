@@ -67,6 +67,7 @@ async function fetchWithAuth(
 
   return fetch(`${API_URL}${path}`, {
     ...options,
+    credentials: 'include',
     headers: {
       ...headers,
       ...(options.headers as Record<string, string> | undefined),
