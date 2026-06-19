@@ -1,0 +1,122 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { HardHat, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { StatusBadge } from '@/components/common/StatusBadge'
+import { EmptyState } from '@/components/common/EmptyState'
+import { useProjects } from '@/hooks/use-projects'
+import { useAuthStore } from '@/store/auth.store'
+import { formatDate } from '@/lib/utils'
+import type { Project, ProjectStatus } from '@/types/api'
+
+const STATUS_FILTERS: { label: string; value: ProjectStatus | undefined }[] = [
+  { label: 'Tous', value: undefined },
+  { label: 'Brouillon', value: 'DRAFT' },
+  { label: 'Planifié', value: 'PLANNED' },
+  { label: 'En cours', value: 'IN_PROGRESS' },
+  { label: 'Signature', value: 'AWAITING_SIGNATURE' },
+  { label: 'Terminé', value: 'COMPLETED' },
+]
+
+function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex w-full flex-col gap-2 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted min-h-[88px]"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate font-semibold text-foreground">{project.title}</p>
+          <p className="text-xs text-muted-foreground">{project.reference}</p>
+        </div>
+        <StatusBadge status={project.status} />
+      </div>
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        {project.client && (
+          <span className="truncate">
+            {project.client.firstName} {project.client.lastName}
+          </span>
+        )}
+        {project.expectedEndDate && (
+          <span className="shrink-0">→ {formatDate(project.expectedEndDate)}</span>
+        )}
+      </div>
+      <p className="truncate text-xs text-muted-foreground">{project.address}</p>
+    </button>
+  )
+}
+
+export function ProjectsPage() {
+  const navigate = useNavigate()
+  const role = useAuthStore((s) => s.role)
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>()
+
+  const { data, isLoading } = useProjects({ status: statusFilter })
+
+  return (
+    <div className="space-y-4 pb-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold">Chantiers</h1>
+        {role === 'ADMIN' && (
+          <Button
+            size="sm"
+            className="min-h-[44px]"
+            onClick={() => void navigate('/chantiers/nouveau')}
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Nouveau
+          </Button>
+        )}
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {STATUS_FILTERS.map((f) => (
+          <button
+            key={f.label}
+            onClick={() => setStatusFilter(f.value)}
+            className={[
+              'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
+              statusFilter === f.value
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground',
+            ].join(' ')}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {isLoading && (
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-[88px] rounded-xl" />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && data?.data.length === 0 && (
+        <EmptyState
+          icon={HardHat}
+          title="Aucun chantier"
+          description={statusFilter ? 'Aucun chantier avec ce statut' : 'Aucun chantier pour le moment'}
+          action={
+            role === 'ADMIN'
+              ? { label: 'Créer un chantier', onClick: () => void navigate('/chantiers/nouveau') }
+              : undefined
+          }
+        />
+      )}
+
+      <div className="space-y-3">
+        {data?.data.map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onClick={() => void navigate(`/chantiers/${project.id}`)}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}

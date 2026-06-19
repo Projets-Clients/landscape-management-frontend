@@ -1,0 +1,127 @@
+/* ============================================================
+   LANDSCAPE — warm, premium, friendly design system
+   ============================================================ */
+
+:root {
+  /* Warm neutrals */
+  --bg:        oklch(0.985 0.006 75);
+  --surface:   oklch(1 0 0);
+  --surface-2: oklch(0.975 0.008 75);
+  --sand:      oklch(0.955 0.012 70);
+  --line:      oklch(0.905 0.012 70);
+  --line-soft: oklch(0.935 0.010 70);
+
+  --ink:       oklch(0.255 0.018 60);
+  --ink-2:     oklch(0.44 0.020 60);
+  --ink-3:     oklch(0.60 0.018 65);
+  --ink-faint: oklch(0.72 0.014 70);
+
+  /* Accents — shared L/C, varied hue (warm-led) */
+  --clay:      oklch(0.63 0.125 45);    /* primary — terracotta */
+  --clay-deep: oklch(0.53 0.115 42);
+  --clay-soft: oklch(0.93 0.045 55);
+  --moss:      oklch(0.60 0.075 145);   /* secondary — landscaping green */
+  --moss-soft: oklch(0.93 0.035 145);
+  --honey:     oklch(0.78 0.115 75);
+
+  /* Status */
+  --ok:        oklch(0.60 0.085 150);
+  --ok-soft:   oklch(0.93 0.04 150);
+  --warn:      oklch(0.74 0.12 70);
+  --warn-soft: oklch(0.94 0.05 75);
+  --info:      oklch(0.62 0.07 240);
+  --info-soft: oklch(0.93 0.03 240);
+
+  --accent:    var(--clay);
+  --accent-deep: var(--clay-deep);
+  --accent-soft: var(--clay-soft);
+
+  /* Type */
+  --sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Radii */
+  --r-xs: 8px;
+  --r-sm: 11px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* Shadow — warm-tinted, soft */
+  --sh-sm: 0 1px 2px oklch(0.4 0.03 60 / 0.06), 0 1px 1px oklch(0.4 0.03 60 / 0.04);
+  --sh-md: 0 4px 14px oklch(0.4 0.03 60 / 0.08), 0 2px 5px oklch(0.4 0.03 60 / 0.05);
+  --sh-lg: 0 18px 40px oklch(0.4 0.03 60 / 0.12), 0 6px 14px oklch(0.4 0.03 60 / 0.07);
+  --sh-pop: 0 24px 60px oklch(0.35 0.03 60 / 0.22);
+
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
+::selection { background: var(--accent-soft); }
+
+/* Scrollbars */
+.scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; border: 3px solid transparent; background-clip: content-box; }
+.scroll::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); background-clip: content-box; }
+
+/* ---------- App stage (outside the product) ---------- */
+.stage {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  background:
+    radial-gradient(120% 90% at 100% 0%, oklch(0.95 0.02 60) 0%, transparent 55%),
+    radial-gradient(120% 90% at 0% 100%, oklch(0.95 0.018 145) 0%, transparent 55%),
+    oklch(0.93 0.012 70);
+}
+.toolbar {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 16px;
+  border-bottom: 1px solid oklch(0.88 0.012 70);
+  background: oklch(0.97 0.01 70 / 0.8);
+  backdrop-filter: blur(12px);
+  z-index: 50;
+}
+.toolbar .brandmark { display: flex; align-items: baseline; gap: 9px; flex: 0 0 auto; white-space: nowrap; }
+.toolbar .brandmark b { font-family: var(--serif); font-size: 22px; letter-spacing: .01em; font-weight: 400; color: var(--ink); line-height: 1; }
+.toolbar .brandmark span { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; flex: 0 0 auto; }
+@media (max-width: 720px) { .toolbar .brandmark span, .toolbar .brandmark .leaf-i { display: none; } }
+.tb-spacer { flex: 1; }
+.tb-group { display: flex; align-items: center; gap: 6px; background: oklch(1 0 0 / 0.7); border: 1px solid var(--line); padding: 4px; border-radius: var(--r-pill); }
+.tb-label { font-size: 11px; color: var(--ink-3); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-right: 2px; }
+.tb-seg { border: none; background: transparent; color: var(--ink-2); font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: var(--r-pill); display: flex; align-items: center; gap: 6px; transition: .18s var(--ease); white-space: nowrap; }
+.tb-seg:hover { color: var(--ink); }
+.tb-seg[data-on="true"] { background: var(--ink); color: oklch(0.97 0.01 75); box-shadow: var(--sh-sm); }
+.tb-seg .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+.stage-body { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 22px; overflow: auto; }
+
+/* Device frame */
+.device {
+  position: relative;
+  background: var(--bg);
+  box-shadow: var(--sh-lg);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: width .4s var(--ease), height .4s var(--ease), border-radius .4s var(--ease);
+}
+.device[data-vp="mobile"] { width: 412px; height: 860px; max-height: calc(100vh - 96px); border-radius: 44px; border: 9px solid oklch(0.22 0.01 60); }
+.device[data-vp="tablet"] { width: 840px; height: 1040px; max-height: calc(100vh - 96px); border-radius: 30px; border: 11px solid oklch(0.22 0.01 60); }
+.device[data-vp="desktop"] { width: min(1280px, calc(100vw - 44px)); height: calc(100vh - 96px); border-radius: 16px; border: 1px solid var(--line); }
+.device .notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 132px; height: 26px; background: oklch(0.22 0.01 60); border-radius: 0 0 16px 16px; z-index: 60; }
+.device[data-vp="desktop"] .notch { display: none; }
+
+/* The actual app viewport */
+.app { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--bg); position: relative; overflow: hidden; }

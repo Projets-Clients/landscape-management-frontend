@@ -1,0 +1,54 @@
+import { createBrowserRouter } from 'react-router-dom'
+import { PrivateRoute } from './PrivateRoute'
+import { RoleRoute } from './RoleRoute'
+import { AppShell } from '@/components/layout/AppShell'
+import { LoginPage } from '@/pages/auth/LoginPage'
+import { DashboardPage } from '@/pages/dashboard/DashboardPage'
+import { ProjectsPage } from '@/pages/projects/ProjectsPage'
+import { ProjectDetailPage } from '@/pages/projects/ProjectDetailPage'
+import { PhotosPage } from '@/pages/projects/PhotosPage'
+import { ReportPage } from '@/pages/projects/ReportPage'
+import { CreateProjectPage } from '@/pages/projects/CreateProjectPage'
+import { ClientsPage } from '@/pages/clients/ClientsPage'
+import { ClientDetailPage } from '@/pages/clients/ClientDetailPage'
+import { CreateClientPage } from '@/pages/clients/CreateClientPage'
+import { UsersPage } from '@/pages/users/UsersPage'
+import { ProfilePage } from '@/pages/profile/ProfilePage'
+import { SignPage } from '@/pages/public/SignPage'
+
+export const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/sign/:token',
+    element: <SignPage />,
+  },
+  {
+    element: <PrivateRoute />,
+    children: [
+      {
+        element: <AppShell />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: 'chantiers', element: <ProjectsPage /> },
+          { path: 'chantiers/:id', element: <ProjectDetailPage /> },
+          { path: 'chantiers/:id/photos', element: <PhotosPage /> },
+          { path: 'chantiers/:id/rapport', element: <ReportPage /> },
+          { path: 'profil', element: <ProfilePage /> },
+          {
+            element: <RoleRoute allowed={['ADMIN']} />,
+            children: [
+              { path: 'chantiers/nouveau', element: <CreateProjectPage /> },
+              { path: 'clients', element: <ClientsPage /> },
+              { path: 'clients/nouveau', element: <CreateClientPage /> },
+              { path: 'clients/:id', element: <ClientDetailPage /> },
+              { path: 'utilisateurs', element: <UsersPage /> },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+])
