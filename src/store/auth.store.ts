@@ -14,8 +14,11 @@ function decodeJwtPayload(
   token: string,
 ): { sub: string; role: UserRole } | null {
   try {
-    const payload = token.split('.')[1]
-    return JSON.parse(atob(payload)) as { sub: string; role: UserRole }
+    const base64url = token.split('.')[1]
+    if (!base64url) return null
+    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
+    const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=')
+    return JSON.parse(atob(padded)) as { sub: string; role: UserRole }
   } catch {
     return null
   }

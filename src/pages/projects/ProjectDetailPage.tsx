@@ -16,14 +16,13 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { Stepper } from '@/components/common/Stepper'
 import { Avatar } from '@/components/common/Avatar'
 import { useProject, useUpdateProjectStatus, useAssignUsers, useUnassignUser } from '@/hooks/use-projects'
 import { usePhotos } from '@/hooks/use-photos'
-import { useReport } from '@/hooks/use-report'
+import { useReport, useReportPdfUrl } from '@/hooks/use-report'
 import { useCreateSignatureRequest } from '@/hooks/use-signature'
 import { useUsers } from '@/hooks/use-users'
 import { useAuthStore } from '@/store/auth.store'
@@ -57,6 +56,7 @@ export function ProjectDetailPage() {
   const { data: project, isLoading } = useProject(id ?? '')
   const { data: photos } = usePhotos(id ?? '')
   const { data: report } = useReport(id ?? '')
+  const { data: pdfData } = useReportPdfUrl(id ?? '', project?.status === 'COMPLETED')
   const { data: allUsers } = useUsers({ enabled: role === 'ADMIN' })
 
   const updateStatus = useUpdateProjectStatus(id ?? '')
@@ -198,9 +198,9 @@ export function ProjectDetailPage() {
       )}
 
       {/* PDF download */}
-      {project.status === 'COMPLETED' && report?.pdfKey && (
+      {project.status === 'COMPLETED' && pdfData?.pdfUrl && (
         <a
-          href={`${import.meta.env.VITE_API_URL}/projects/${project.id}/report`}
+          href={pdfData.pdfUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex w-full min-h-[48px] items-center justify-center gap-2 rounded-lg border bg-card px-4 text-sm font-medium transition-colors hover:bg-muted"

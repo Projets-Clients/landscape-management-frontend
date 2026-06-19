@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { HardHat, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -49,8 +48,11 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
 
 export function ProjectsPage() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const role = useAuthStore((s) => s.role)
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>()
+
+  const statusParam = searchParams.get('status') as ProjectStatus | null
+  const statusFilter = statusParam ?? undefined
 
   const { data, isLoading } = useProjects({ status: statusFilter })
 
@@ -74,7 +76,13 @@ export function ProjectsPage() {
         {STATUS_FILTERS.map((f) => (
           <button
             key={f.label}
-            onClick={() => setStatusFilter(f.value)}
+            onClick={() => {
+              if (f.value) {
+                setSearchParams({ status: f.value })
+              } else {
+                setSearchParams({})
+              }
+            }}
             className={[
               'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
               statusFilter === f.value

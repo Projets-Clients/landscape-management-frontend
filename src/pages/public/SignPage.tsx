@@ -14,7 +14,7 @@ function SignatureCanvas({
   canvasRef,
 }: {
   onHasStrokes: (v: boolean) => void
-  canvasRef: React.RefObject<HTMLCanvasElement | null>
+  canvasRef: React.RefObject<HTMLCanvasElement>
 }) {
   const [drawing, setDrawing] = useState(false)
   const [hasStrokes, setHasStrokes] = useState(false)
@@ -168,7 +168,7 @@ export function SignPage() {
             Merci. Le rapport signé vous sera envoyé par email.
           </p>
         </div>
-        {data?.pdfUrl && (
+        {data?.pdfUrl ? (
           <a
             href={data.pdfUrl}
             target="_blank"
@@ -177,6 +177,10 @@ export function SignPage() {
           >
             Télécharger le rapport PDF
           </a>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Le rapport PDF est en cours de génération, vous le recevrez par email.
+          </p>
         )}
       </div>
     )

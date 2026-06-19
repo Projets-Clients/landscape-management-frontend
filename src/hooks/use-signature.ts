@@ -49,5 +49,7 @@ export function useSign(token: string) {
       }
       return res.json()
     },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['public', token] }),
   })
 }

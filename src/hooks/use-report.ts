@@ -11,6 +11,14 @@ export function useReport(projectId: string) {
   })
 }
 
+export function useReportPdfUrl(projectId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ['report-pdf', projectId],
+    queryFn: () => apiRequest<{ pdfUrl: string | null }>(`/projects/${projectId}/report/pdf-url`),
+    enabled: Boolean(projectId) && enabled,
+  })
+}
+
 export function useUpdateReport(projectId: string) {
   return useMutation({
     mutationFn: (comment: string) =>
