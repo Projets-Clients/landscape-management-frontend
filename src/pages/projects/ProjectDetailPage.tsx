@@ -151,6 +151,7 @@ export function ProjectDetailPage() {
         </div>
         {role === 'ADMIN' && (
           <button
+            aria-label="Modifier le chantier"
             className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-card active:bg-muted"
             onClick={() => void navigate(`/chantiers/${id}/modifier`)}
           >
