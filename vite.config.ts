@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -42,9 +41,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  test: {
-    environment: 'happy-dom',
-    globals: true,
-    setupFiles: './src/test/setup.ts',
-  },
+
 })

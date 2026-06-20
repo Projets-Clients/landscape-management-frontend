@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 const PUBLIC_REPORT = {
   project: {
@@ -23,7 +23,7 @@ const PUBLIC_REPORT = {
 }
 
 async function mockPublicReport(
-  page: Parameters<typeof test>[1] extends (args: { page: infer P }) => unknown ? P : never,
+  page: Page,
   token: string,
   alreadySigned = false,
   pdfUrl: string | null = null,
