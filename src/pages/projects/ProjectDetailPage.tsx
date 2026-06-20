@@ -13,6 +13,7 @@ import {
   Users,
   ChevronRight,
   Loader2,
+  Pencil,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -148,6 +149,14 @@ export function ProjectDetailPage() {
           </div>
           <h1 className="mt-0.5 text-lg font-bold leading-snug">{project.title}</h1>
         </div>
+        {role === 'ADMIN' && (
+          <button
+            className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-card active:bg-muted"
+            onClick={() => void navigate(`/chantiers/${id}/modifier`)}
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* DISPUTED warning */}
@@ -253,6 +262,12 @@ export function ProjectDetailPage() {
           <div className="p-4">
             <p className="text-xs text-muted-foreground mb-1">Description</p>
             <p className="text-sm whitespace-pre-wrap">{project.description}</p>
+          </div>
+        )}
+        {project.notes && (
+          <div className="p-4">
+            <p className="text-xs text-muted-foreground mb-1">Notes internes</p>
+            <p className="text-sm whitespace-pre-wrap text-muted-foreground">{project.notes}</p>
           </div>
         )}
       </Card>

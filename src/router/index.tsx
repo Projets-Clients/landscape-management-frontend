@@ -9,6 +9,7 @@ import { ProjectDetailPage } from '@/pages/projects/ProjectDetailPage'
 import { PhotosPage } from '@/pages/projects/PhotosPage'
 import { ReportPage } from '@/pages/projects/ReportPage'
 import { CreateProjectPage } from '@/pages/projects/CreateProjectPage'
+import { EditProjectPage } from '@/pages/projects/EditProjectPage'
 import { ClientsPage } from '@/pages/clients/ClientsPage'
 import { ClientDetailPage } from '@/pages/clients/ClientDetailPage'
 import { CreateClientPage } from '@/pages/clients/CreateClientPage'
@@ -41,6 +42,7 @@ export const router = createBrowserRouter([
             element: <RoleRoute allowed={['ADMIN']} />,
             children: [
               { path: 'chantiers/nouveau', element: <CreateProjectPage /> },
+              { path: 'chantiers/:id/modifier', element: <EditProjectPage /> },
               { path: 'clients', element: <ClientsPage /> },
               { path: 'clients/nouveau', element: <CreateClientPage /> },
               { path: 'clients/:id', element: <ClientDetailPage /> },

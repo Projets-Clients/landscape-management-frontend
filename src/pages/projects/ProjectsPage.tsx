@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { HardHat, Plus } from 'lucide-react'
+import { HardHat, Plus, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
@@ -54,7 +55,19 @@ export function ProjectsPage() {
   const statusParam = searchParams.get('status') as ProjectStatus | null
   const statusFilter = statusParam ?? undefined
 
+  const [searchQuery, setSearchQuery] = useState('')
+
   const { data, isLoading } = useProjects({ status: statusFilter })
+
+  const query = searchQuery.trim().toLowerCase()
+  const projects = data?.data ?? []
+  const visible = query
+    ? projects.filter(
+        (p) =>
+          p.title.toLowerCase().includes(query) ||
+          p.reference.toLowerCase().includes(query),
+      )
+    : projects
 
   return (
     <div className="space-y-4 pb-4">
@@ -69,6 +82,26 @@ export function ProjectsPage() {
             <Plus className="h-4 w-4 mr-1" />
             Nouveau
           </Button>
+        )}
+      </div>
+
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          type="search"
+          placeholder="Rechercher par titre ou référence…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="h-11 w-full rounded-xl border bg-card pl-9 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
         )}
       </div>
 
@@ -103,13 +136,19 @@ export function ProjectsPage() {
         </div>
       )}
 
-      {!isLoading && data?.data.length === 0 && (
+      {!isLoading && visible.length === 0 && (
         <EmptyState
           icon={HardHat}
-          title="Aucun chantier"
-          description={statusFilter ? 'Aucun chantier avec ce statut' : 'Aucun chantier pour le moment'}
+          title={query ? 'Aucun résultat' : 'Aucun chantier'}
+          description={
+            query
+              ? `Aucun chantier ne correspond à "${searchQuery.trim()}"`
+              : statusFilter
+                ? 'Aucun chantier avec ce statut'
+                : 'Aucun chantier pour le moment'
+          }
           action={
-            role === 'ADMIN'
+            !query && role === 'ADMIN'
               ? { label: 'Créer un chantier', onClick: () => void navigate('/chantiers/nouveau') }
               : undefined
           }
@@ -117,7 +156,7 @@ export function ProjectsPage() {
       )}
 
       <div className="space-y-3">
-        {data?.data.map((project) => (
+        {visible.map((project) => (
           <ProjectCard
             key={project.id}
             project={project}

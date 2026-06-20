@@ -128,6 +128,7 @@ export interface PublicReport {
   report: { comment: string | null } | null
   photos: Photo[]
   pdfUrl: string | null
+  alreadySigned: boolean
 }
 
 export interface Paginated<T> {

@@ -207,6 +207,32 @@ export function SignPage() {
     )
   }
 
+  if (data.alreadySigned) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+          <CheckCircle className="h-8 w-8 text-green-600" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold">Document déjà signé</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Ce rapport a déjà été signé. Merci pour votre confiance.
+          </p>
+        </div>
+        {data.pdfUrl && (
+          <a
+            href={data.pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-[48px] items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground"
+          >
+            Télécharger le rapport PDF
+          </a>
+        )}
+      </div>
+    )
+  }
+
   const { project, client, report, photos } = data
   const beforePhotos = photos.filter((p) => p.type === 'BEFORE')
   const afterPhotos = photos.filter((p) => p.type === 'AFTER')
