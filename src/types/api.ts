@@ -112,6 +112,7 @@ export interface PublicProject {
   address: string
   status: ProjectStatus
   startDate: string | null
+  expectedEndDate: string | null
   actualEndDate: string | null
 }
 

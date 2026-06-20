@@ -248,9 +248,9 @@ export function SignPage() {
         <p className="text-xs text-muted-foreground">{project.reference}</p>
         <h1 className="text-xl font-bold">{project.title}</h1>
         <p className="text-sm text-muted-foreground">{project.address}</p>
-        {(project.startDate ?? project.actualEndDate) && (
+        {(project.startDate ?? project.expectedEndDate) && (
           <p className="text-xs text-muted-foreground">
-            {formatDate(project.startDate)} → {formatDate(project.actualEndDate)}
+            {formatDate(project.startDate)} → {formatDate(project.expectedEndDate)}
           </p>
         )}
       </div>
