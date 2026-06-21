@@ -180,6 +180,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
           <Input
             id="cu-uname"
             autoCapitalize="none"
+            autoComplete="off"
             className="min-h-[44px]"
             value={form.username}
             onChange={(e) => set('username', e.target.value)}
@@ -201,6 +202,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
           <Input
             id="cu-pw"
             type="password"
+            autoComplete="new-password"
             className="min-h-[44px]"
             minLength={8}
             value={form.password}

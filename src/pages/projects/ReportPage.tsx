@@ -29,7 +29,7 @@ export function ReportPage() {
   }, [report?.comment])
 
   const canEdit = role === 'ADMIN' || role === 'FOREMAN'
-  const isLocked = project?.status === 'COMPLETED' || project?.status === 'DISPUTED'
+  const isLocked = project?.status === 'AWAITING_SIGNATURE' || project?.status === 'COMPLETED' || project?.status === 'DISPUTED'
 
   async function handleSave() {
     try {

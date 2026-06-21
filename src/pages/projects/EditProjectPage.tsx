@@ -31,6 +31,10 @@ export function EditProjectPage() {
 
   useEffect(() => {
     if (!project) return
+    if (['AWAITING_SIGNATURE', 'COMPLETED', 'DISPUTED'].includes(project.status)) {
+      void navigate(`/chantiers/${id}`, { replace: true })
+      return
+    }
     const { street, postalCode, city } = parseAddress(project.address)
     setForm({
       title: project.title,
