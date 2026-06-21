@@ -84,14 +84,25 @@ export function DashboardPage() {
           <p className="text-sm text-muted-foreground">Aperçu de l'activité</p>
         </div>
         {role === 'ADMIN' && (
-          <Button
-            size="sm"
-            className="min-h-[44px]"
-            onClick={() => void navigate('/chantiers/nouveau')}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Nouveau
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="min-h-[44px]"
+              onClick={() => void navigate('/clients/nouveau')}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              Nouveau client
+            </Button>
+            <Button
+              size="sm"
+              className="min-h-[44px]"
+              onClick={() => void navigate('/chantiers/nouveau')}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              Nouveau chantier
+            </Button>
+          </div>
         )}
       </div>
 
