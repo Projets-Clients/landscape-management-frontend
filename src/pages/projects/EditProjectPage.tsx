@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AddressAutocomplete } from '@/components/common/AddressAutocomplete'
 import { useProject, useUpdateProject } from '@/hooks/use-projects'
+import { buildAddress, parseAddress } from '@/lib/utils'
 
 export function EditProjectPage() {
   const { id } = useParams<{ id: string }>()
@@ -17,7 +19,9 @@ export function EditProjectPage() {
 
   const [form, setForm] = useState({
     title: '',
-    address: '',
+    street: '',
+    postalCode: '',
+    city: '',
     description: '',
     notes: '',
     quoteAmount: '',
@@ -27,9 +31,12 @@ export function EditProjectPage() {
 
   useEffect(() => {
     if (!project) return
+    const { street, postalCode, city } = parseAddress(project.address)
     setForm({
       title: project.title,
-      address: project.address,
+      street,
+      postalCode,
+      city,
       description: project.description ?? '',
       notes: project.notes ?? '',
       quoteAmount: project.quoteAmount ?? '',
@@ -44,14 +51,15 @@ export function EditProjectPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.title.trim() || !form.address.trim()) {
+    const address = buildAddress(form.street, form.postalCode, form.city)
+    if (!form.title.trim() || !address) {
       toast.error('Titre et adresse sont obligatoires')
       return
     }
     try {
       await updateProject.mutateAsync({
         title: form.title.trim(),
-        address: form.address.trim(),
+        address,
         description: form.description.trim() || undefined,
         notes: form.notes.trim() || undefined,
         quoteAmount: form.quoteAmount ? parseFloat(form.quoteAmount) : undefined,
@@ -112,14 +120,32 @@ export function EditProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="address">Adresse *</Label>
-          <Input
-            id="address"
+          <Label>Adresse *</Label>
+          <AddressAutocomplete
+            placeholder="Numéro et rue"
             className="min-h-[44px]"
-            value={form.address}
-            onChange={(e) => set('address', e.target.value)}
+            value={form.street}
+            onChange={(v) => set('street', v)}
+            onSelect={(s) => setForm((f) => ({ ...f, street: s.street, postalCode: s.postalCode, city: s.city }))}
             required
           />
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              placeholder="Code postal"
+              className="min-h-[44px]"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              value={form.postalCode}
+              onChange={(e) => set('postalCode', e.target.value)}
+            />
+            <Input
+              placeholder="Ville"
+              className="min-h-[44px]"
+              autoComplete="address-level2"
+              value={form.city}
+              onChange={(e) => set('city', e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

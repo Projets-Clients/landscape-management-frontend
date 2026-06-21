@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { HardHat, Clock, FileSignature, CheckCircle, Plus } from 'lucide-react'
+import { HardHat, FileSignature, CheckCircle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -74,10 +74,10 @@ export function DashboardPage() {
   const inProgress = useProjects({ status: 'IN_PROGRESS', limit: 1 })
   const awaitingSig = useProjects({ status: 'AWAITING_SIGNATURE', limit: 1 })
   const completed = useProjects({ status: 'COMPLETED', limit: 1 })
-  const recent = useProjects({ limit: 5 })
+  const recent = useProjects({ limit: 20 })
 
   return (
-    <div className="space-y-6 pb-4">
+    <div className="flex h-full flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">Bonjour, {username}</h1>
@@ -130,8 +130,8 @@ export function DashboardPage() {
         />
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold">Chantiers récents</h2>
           <button
             className="flex min-h-[44px] items-center text-xs font-medium text-primary"
@@ -141,37 +141,24 @@ export function DashboardPage() {
           </button>
         </div>
 
-        {recent.isLoading &&
-          [1, 2, 3].map((i) => <Skeleton key={i} className="h-[72px] rounded-xl" />)}
+        <div className="flex-1 overflow-y-auto space-y-3 pb-4">
+          {recent.isLoading &&
+            [1, 2, 3].map((i) => <Skeleton key={i} className="h-[72px] rounded-xl" />)}
 
-        {recent.data?.data.map((project) => (
-          <ProjectRow
-            key={project.id}
-            project={project}
-            onClick={() => void navigate(`/chantiers/${project.id}`)}
-          />
-        ))}
+          {recent.data?.data.map((project) => (
+            <ProjectRow
+              key={project.id}
+              project={project}
+              onClick={() => void navigate(`/chantiers/${project.id}`)}
+            />
+          ))}
 
-        {!recent.isLoading && recent.data?.data.length === 0 && (
-          <p className="py-8 text-center text-sm text-muted-foreground">
-            Aucun chantier pour le moment
-          </p>
-        )}
-
-        {awaitingSig.data && awaitingSig.data.total > 0 && (
-          <button
-            className="flex min-h-[56px] w-full items-center gap-2 rounded-xl border-2 border-orange-200 bg-orange-50 p-4 text-left"
-            onClick={() =>
-              void navigate('/chantiers?status=AWAITING_SIGNATURE')
-            }
-          >
-            <Clock className="h-4 w-4 shrink-0 text-orange-600" />
-            <p className="text-sm font-semibold text-orange-800">
-              {awaitingSig.data.total} chantier
-              {awaitingSig.data.total > 1 ? 's' : ''} en attente de signature
+          {!recent.isLoading && recent.data?.data.length === 0 && (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              Aucun chantier pour le moment
             </p>
-          </button>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

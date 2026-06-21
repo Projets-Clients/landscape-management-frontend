@@ -33,6 +33,21 @@ export function initials(user: { firstName: string; lastName: string }): string 
   return `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase()
 }
 
+export function buildAddress(street: string, postalCode: string, city: string): string | undefined {
+  const parts = [street.trim(), [postalCode.trim(), city.trim()].filter(Boolean).join(' ')].filter(Boolean)
+  return parts.join(', ') || undefined
+}
+
+export function parseAddress(address: string): { street: string; postalCode: string; city: string } {
+  // "1 rue des Roses, 45300 Pannecières" (with comma)
+  const withComma = address.match(/^(.+),\s*(\d{5})\s+(.+)$/)
+  if (withComma) return { street: withComma[1], postalCode: withComma[2], city: withComma[3] }
+  // "1 rue des Roses 45300 Pannecières" (without comma)
+  const withoutComma = address.match(/^(.+?)\s+(\d{5})\s+(.+)$/)
+  if (withoutComma) return { street: withoutComma[1], postalCode: withoutComma[2], city: withoutComma[3] }
+  return { street: address, postalCode: '', city: '' }
+}
+
 export function avatarColor(id: string): string {
   const colors = [
     'bg-red-100 text-red-700',

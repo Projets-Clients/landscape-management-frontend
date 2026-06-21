@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ArrowLeft, Mail, Phone, MapPin, FileText, Loader2 } from 'lucide-react'
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
+import { AddressAutocomplete } from '@/components/common/AddressAutocomplete'
 import { useClient, useUpdateClient, useDeactivateClient } from '@/hooks/use-clients'
 import { useProjects } from '@/hooks/use-projects'
-import { fullName, formatDate } from '@/lib/utils'
+import { fullName, formatDate, buildAddress, parseAddress } from '@/lib/utils'
 
 export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -23,20 +25,35 @@ export function ClientDetailPage() {
   const deactivate = useDeactivateClient(id ?? '')
 
   const [form, setForm] = useState<{
-    firstName: string; lastName: string; email: string; phone: string; address: string; notes: string
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+    street: string
+    postalCode: string
+    city: string
+    notes: string
   } | null>(null)
 
   function startEdit() {
     if (!client) return
+    const { street, postalCode, city } = parseAddress(client.address ?? '')
     setForm({
       firstName: client.firstName,
       lastName: client.lastName,
       email: client.email,
       phone: client.phone ?? '',
-      address: client.address ?? '',
+      street,
+      postalCode,
+      city,
       notes: client.notes ?? '',
     })
     setEditing(true)
+  }
+
+  function formatPhone(value: string): string {
+    const phone = parsePhoneNumberFromString(value, 'FR')
+    return phone?.isValid() ? phone.formatNational() : value
   }
 
   async function handleSave() {
@@ -47,7 +64,7 @@ export function ClientDetailPage() {
         lastName: form.lastName.trim(),
         email: form.email.trim(),
         phone: form.phone.trim() || undefined,
-        address: form.address.trim() || undefined,
+        address: buildAddress(form.street, form.postalCode, form.city),
         notes: form.notes.trim() || undefined,
       })
       toast.success('Client mis à jour')
@@ -103,24 +120,70 @@ export function ClientDetailPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Prénom</Label>
-              <Input className="min-h-[44px]" value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
+              <Input
+                className="min-h-[44px]"
+                autoComplete="given-name"
+                value={form.firstName}
+                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label>Nom</Label>
-              <Input className="min-h-[44px]" value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
+              <Input
+                className="min-h-[44px]"
+                autoComplete="family-name"
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              />
             </div>
           </div>
           <div className="space-y-2">
             <Label>Email</Label>
-            <Input className="min-h-[44px]" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Input
+              className="min-h-[44px]"
+              type="email"
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
           </div>
           <div className="space-y-2">
             <Label>Téléphone</Label>
-            <Input className="min-h-[44px]" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Input
+              className="min-h-[44px]"
+              type="tel"
+              autoComplete="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onBlur={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })}
+            />
           </div>
           <div className="space-y-2">
             <Label>Adresse</Label>
-            <Input className="min-h-[44px]" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+            <AddressAutocomplete
+              placeholder="Numéro et rue"
+              className="min-h-[44px]"
+              value={form.street}
+              onChange={(v) => setForm({ ...form, street: v })}
+              onSelect={(s) => setForm({ ...form, street: s.street, postalCode: s.postalCode, city: s.city })}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <Input
+                placeholder="Code postal"
+                className="min-h-[44px]"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                value={form.postalCode}
+                onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
+              />
+              <Input
+                placeholder="Ville"
+                className="min-h-[44px]"
+                autoComplete="address-level2"
+                value={form.city}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
+              />
+            </div>
           </div>
           <div className="flex gap-3">
             <Button

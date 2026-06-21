@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2 } from 'lucide-react'
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { AddressAutocomplete } from '@/components/common/AddressAutocomplete'
 import { useCreateClient } from '@/hooks/use-clients'
 
 export function CreateClientPage() {
@@ -17,12 +19,24 @@ export function CreateClientPage() {
     lastName: '',
     email: '',
     phone: '',
-    address: '',
+    street: '',
+    postalCode: '',
+    city: '',
     notes: '',
   })
 
   function set(key: string, value: string) {
     setForm((f) => ({ ...f, [key]: value }))
+  }
+
+  function formatPhone(value: string): string {
+    const phone = parsePhoneNumberFromString(value, 'FR')
+    return phone?.isValid() ? phone.formatNational() : value
+  }
+
+  function buildAddress() {
+    const parts = [form.street.trim(), [form.postalCode.trim(), form.city.trim()].filter(Boolean).join(' ')].filter(Boolean)
+    return parts.join(', ') || undefined
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -37,7 +51,7 @@ export function CreateClientPage() {
         lastName: form.lastName.trim(),
         email: form.email.trim(),
         phone: form.phone.trim() || undefined,
-        address: form.address.trim() || undefined,
+        address: buildAddress(),
         notes: form.notes.trim() || undefined,
       })
       toast.success('Client créé')
@@ -101,19 +115,39 @@ export function CreateClientPage() {
             id="phone"
             type="tel"
             className="min-h-[44px]"
+            autoComplete="tel"
             value={form.phone}
             onChange={(e) => set('phone', e.target.value)}
+            onBlur={(e) => set('phone', formatPhone(e.target.value))}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="address">Adresse</Label>
-          <Input
-            id="address"
+          <Label>Adresse</Label>
+          <AddressAutocomplete
+            placeholder="Numéro et rue"
             className="min-h-[44px]"
-            value={form.address}
-            onChange={(e) => set('address', e.target.value)}
+            value={form.street}
+            onChange={(v) => set('street', v)}
+            onSelect={(s) => setForm((f) => ({ ...f, street: s.street, postalCode: s.postalCode, city: s.city }))}
           />
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              placeholder="Code postal"
+              className="min-h-[44px]"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              value={form.postalCode}
+              onChange={(e) => set('postalCode', e.target.value)}
+            />
+            <Input
+              placeholder="Ville"
+              className="min-h-[44px]"
+              autoComplete="address-level2"
+              value={form.city}
+              onChange={(e) => set('city', e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
