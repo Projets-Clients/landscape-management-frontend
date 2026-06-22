@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, Monitor, Moon, Sun, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useAuthStore } from '@/store/auth.store'
+import { useTheme } from '@/providers/ThemeProvider'
 import { apiRequest } from '@/lib/api-client'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -16,6 +17,7 @@ const ROLE_LABELS: Record<string, string> = {
 export function ProfilePage() {
   const navigate = useNavigate()
   const { username, role, userId, clearAuth } = useAuthStore()
+  const { theme, setTheme } = useTheme()
 
   async function handleLogout() {
     try {
@@ -57,6 +59,33 @@ export function ProfilePage() {
           <p className="text-sm font-medium">{role ? (ROLE_LABELS[role] ?? role) : '—'}</p>
         </div>
       </Card>
+
+      <div className="space-y-2">
+        <p className="text-sm font-semibold">Apparence</p>
+        <Card className="p-1">
+          <div className="grid grid-cols-3 gap-1">
+            {([
+              { value: 'system', label: 'Système', icon: Monitor },
+              { value: 'light', label: 'Clair', icon: Sun },
+              { value: 'dark', label: 'Sombre', icon: Moon },
+            ] as const).map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                onClick={() => setTheme(value)}
+                className={[
+                  'flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors',
+                  theme === value
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted',
+                ].join(' ')}
+              >
+                <Icon className="h-4 w-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       <Separator />
 

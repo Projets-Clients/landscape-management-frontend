@@ -20,17 +20,35 @@ const ROLE_LABELS: Record<UserRole, string> = {
 
 function UserRow({ user }: { user: User }) {
   const [expanded, setExpanded] = useState(false)
-  const [editRole, setEditRole] = useState(user.role)
+  const [form, setForm] = useState({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email ?? '',
+    role: user.role,
+    password: '',
+  })
   const update = useUpdateUser(user.id)
 
-  async function handleRoleChange(role: UserRole) {
-    const prev = editRole
-    setEditRole(role)
+  function set(key: string, value: string) {
+    setForm((f) => ({ ...f, [key]: value }))
+  }
+
+  async function handleSave() {
+    if (form.password && form.password.length < 8) {
+      toast.error('Le mot de passe doit contenir au moins 8 caractères')
+      return
+    }
     try {
-      await update.mutateAsync({ role })
-      toast.success('Rôle mis à jour')
+      await update.mutateAsync({
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        email: form.email.trim() || undefined,
+        role: form.role,
+        ...(form.password ? { password: form.password } : {}),
+      })
+      setForm((f) => ({ ...f, password: '' }))
+      toast.success('Utilisateur mis à jour')
     } catch {
-      setEditRole(prev)
       toast.error('Erreur lors de la mise à jour')
     }
   }
@@ -73,11 +91,41 @@ function UserRow({ user }: { user: User }) {
 
       {expanded && (
         <div className="space-y-3 bg-muted/30 p-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Prénom</Label>
+              <Input
+                className="min-h-[44px]"
+                value={form.firstName}
+                onChange={(e) => set('firstName', e.target.value)}
+                disabled={update.isPending}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Nom</Label>
+              <Input
+                className="min-h-[44px]"
+                value={form.lastName}
+                onChange={(e) => set('lastName', e.target.value)}
+                disabled={update.isPending}
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Email</Label>
+            <Input
+              type="email"
+              className="min-h-[44px]"
+              value={form.email}
+              onChange={(e) => set('email', e.target.value)}
+              disabled={update.isPending}
+            />
+          </div>
           <div className="space-y-1.5">
             <Label className="text-xs">Rôle</Label>
             <select
-              value={editRole}
-              onChange={(e) => void handleRoleChange(e.target.value as UserRole)}
+              value={form.role}
+              onChange={(e) => set('role', e.target.value)}
               disabled={update.isPending}
               className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -86,9 +134,25 @@ function UserRow({ user }: { user: User }) {
               <option value="ADMIN">Administrateur</option>
             </select>
           </div>
-          {user.email && (
-            <p className="text-xs text-muted-foreground">{user.email}</p>
-          )}
+          <div className="space-y-1.5">
+            <Label className="text-xs">Nouveau mot de passe</Label>
+            <Input
+              type="password"
+              autoComplete="new-password"
+              className="min-h-[44px]"
+              placeholder="Laisser vide pour ne pas changer"
+              value={form.password}
+              onChange={(e) => set('password', e.target.value)}
+              disabled={update.isPending}
+            />
+          </div>
+          <Button
+            className="w-full min-h-[44px]"
+            onClick={() => void handleSave()}
+            disabled={update.isPending}
+          >
+            {update.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Enregistrer'}
+          </Button>
           <Button
             variant={user.active ? 'destructive' : 'outline'}
             size="sm"
@@ -96,9 +160,6 @@ function UserRow({ user }: { user: User }) {
             onClick={() => void handleToggleActive()}
             disabled={update.isPending}
           >
-            {update.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
             {user.active ? 'Désactiver le compte' : 'Réactiver le compte'}
           </Button>
         </div>
