@@ -41,18 +41,21 @@ const TRANSITION_LABELS: Partial<Record<ProjectStatus, string>> = {
   DRAFT: "Planifier",
   PLANNED: "Démarrer le chantier",
   IN_PROGRESS: "Clôturer le chantier",
+  DISPUTED: "Reprendre le chantier",
 };
 
 const NEXT_STATUS: Partial<Record<ProjectStatus, ProjectStatus>> = {
   DRAFT: "PLANNED",
   PLANNED: "IN_PROGRESS",
   IN_PROGRESS: "AWAITING_SIGNATURE",
+  DISPUTED: "IN_PROGRESS",
 };
 
 function canTransition(status: ProjectStatus, role: string | null): boolean {
   if (status === "DRAFT") return role === "ADMIN";
   if (status === "PLANNED") return role === "ADMIN" || role === "FOREMAN";
   if (status === "IN_PROGRESS") return role === "ADMIN" || role === "FOREMAN";
+  if (status === "DISPUTED") return role === "ADMIN";
   return false;
 }
 

@@ -17,6 +17,7 @@ const STATUS_FILTERS: { label: string; value: ProjectStatus | undefined }[] = [
   { label: 'En cours', value: 'IN_PROGRESS' },
   { label: 'Signature', value: 'AWAITING_SIGNATURE' },
   { label: 'Terminé', value: 'COMPLETED' },
+  { label: 'Litige', value: 'DISPUTED' },
 ]
 
 function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
