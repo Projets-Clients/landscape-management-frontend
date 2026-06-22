@@ -76,11 +76,8 @@ export interface ProjectDetail extends Omit<Project, 'client' | 'assignments'> {
   assignments: Required<ProjectAssignment>[]
   signatureRequests?: Array<{
     id: string
-    token: string
-    usedAt: string | null
-    refusedAt: string | null
+    refusedAt: string
     refusalComment: string | null
-    createdAt: string
   }>
 }
 
