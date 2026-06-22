@@ -30,3 +30,12 @@ export function useUpdateReport(projectId: string) {
       queryClient.invalidateQueries({ queryKey: ['report', projectId] }),
   })
 }
+
+export function useSendReport(projectId: string) {
+  return useMutation({
+    mutationFn: () =>
+      apiRequest<{ success: true }>(`/projects/${projectId}/report/send`, {
+        method: 'POST',
+      }),
+  })
+}

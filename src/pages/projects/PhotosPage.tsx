@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ArrowLeft, Camera, ImagePlus, Loader2 } from 'lucide-react'
+import { ArrowLeft, Camera, ImagePlus, Loader2, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PhotoLightbox } from '@/components/common/PhotoLightbox'
-import { usePhotos, useUploadPhoto } from '@/hooks/use-photos'
+import { usePhotos, useUploadPhoto, useDeletePhoto } from '@/hooks/use-photos'
 import { useProject } from '@/hooks/use-projects'
+import { useAuthStore } from '@/store/auth.store'
 import type { Photo, PhotoType } from '@/types/api'
 
 function PhotoSection({
@@ -13,16 +14,20 @@ function PhotoSection({
   label,
   projectId,
   locked,
+  canDelete,
 }: {
   type: PhotoType
   label: string
   projectId: string
   locked: boolean
+  canDelete: boolean
 }) {
   const { data: photos } = usePhotos(projectId)
   const upload = useUploadPhoto()
+  const deletePhoto = useDeletePhoto(projectId)
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [lightbox, setLightbox] = useState<{ photos: Photo[]; index: number; title: string } | null>(null)
 
   const filtered = photos?.filter((p) => p.type === type) ?? []
@@ -92,13 +97,39 @@ function PhotoSection({
       ) : (
         <div className="grid grid-cols-3 gap-2">
           {filtered.map((photo, i) => (
-            <button key={photo.id} onClick={() => setLightbox({ photos: filtered, index: i, title: `Photos ${label.toLowerCase()}` })}>
-              <img
-                src={photo.signedUrl ?? ''}
-                alt={`${label} ${photo.order}`}
-                className="aspect-square w-full rounded-lg object-cover"
-              />
-            </button>
+            <div key={photo.id} className="relative">
+              <button
+                className="w-full"
+                onClick={() => setLightbox({ photos: filtered, index: i, title: `Photos ${label.toLowerCase()}` })}
+              >
+                <img
+                  src={photo.signedUrl ?? ''}
+                  alt={`${label} ${photo.order}`}
+                  className="aspect-square w-full rounded-lg object-cover bg-muted"
+                />
+              </button>
+              {canDelete && (
+                <button
+                  className="absolute right-1 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white"
+                  disabled={deletingId === photo.id}
+                  onClick={async () => {
+                    setDeletingId(photo.id)
+                    try {
+                      await deletePhoto.mutateAsync(photo.id)
+                      toast.success('Photo supprimée')
+                    } catch {
+                      toast.error('Erreur lors de la suppression')
+                    } finally {
+                      setDeletingId(null)
+                    }
+                  }}
+                >
+                  {deletingId === photo.id
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Trash2 className="h-3.5 w-3.5" />}
+                </button>
+              )}
+            </div>
           ))}
           {!locked && (
             <button
@@ -129,10 +160,12 @@ export function PhotosPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data: project } = useProject(id ?? '')
+  const { role } = useAuthStore()
 
   if (!id) return null
 
   const locked = project ? LOCKED_STATUSES.includes(project.status) : false
+  const canDelete = !locked && (role === 'ADMIN' || role === 'FOREMAN')
 
   return (
     <div className="space-y-6 pb-8">
@@ -146,19 +179,14 @@ export function PhotosPage() {
         <h1 className="text-lg font-bold">Photos</h1>
       </div>
 
-      {locked ? (
+      {locked && (
         <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
-          Ce chantier est verrouillé. Les photos ne peuvent plus être ajoutées.
-        </div>
-      ) : (
-        <div className="rounded-xl bg-muted/50 p-3 text-xs text-muted-foreground">
-          Les photos ne peuvent pas être supprimées après l'upload.
-          Assurez-vous de la qualité avant de prendre la photo.
+          Ce chantier est verrouillé. Les photos ne peuvent plus être modifiées.
         </div>
       )}
 
-      <PhotoSection type="BEFORE" label="Avant" projectId={id} locked={locked} />
-      <PhotoSection type="AFTER" label="Après" projectId={id} locked={locked} />
+      <PhotoSection type="BEFORE" label="Avant" projectId={id} locked={locked} canDelete={canDelete} />
+      <PhotoSection type="AFTER" label="Après" projectId={id} locked={locked} canDelete={canDelete} />
 
       <Button
         variant="outline"

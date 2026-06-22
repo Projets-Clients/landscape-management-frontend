@@ -29,7 +29,7 @@ import {
   useUnassignUser,
 } from "@/hooks/use-projects";
 import { usePhotos } from "@/hooks/use-photos";
-import { useReport, useReportPdfUrl } from "@/hooks/use-report";
+import { useReport, useReportPdfUrl, useSendReport } from "@/hooks/use-report";
 import { useCreateSignatureRequest } from "@/hooks/use-signature";
 import { useUsers } from "@/hooks/use-users";
 import { useAuthStore } from "@/store/auth.store";
@@ -63,7 +63,11 @@ export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const role = useAuthStore((s) => s.role);
-  const [lightbox, setLightbox] = useState<{ photos: Photo[]; index: number; title?: string } | null>(null);
+  const [lightbox, setLightbox] = useState<{
+    photos: Photo[];
+    index: number;
+    title?: string;
+  } | null>(null);
 
   const { data: project, isLoading } = useProject(id ?? "");
   const { data: photos } = usePhotos(id ?? "");
@@ -76,6 +80,7 @@ export function ProjectDetailPage() {
 
   const updateStatus = useUpdateProjectStatus(id ?? "");
   const createSigRequest = useCreateSignatureRequest(id ?? "");
+  const sendReport = useSendReport(id ?? "");
   const assignUsers = useAssignUsers(id ?? "");
   const unassignUser = useUnassignUser(id ?? "");
 
@@ -109,7 +114,9 @@ export function ProjectDetailPage() {
   const afterPhotos = photos?.filter((p) => p.type === "AFTER") ?? [];
   const assignedUserIds = new Set(project.assignments.map((a) => a.userId));
   const assignedUsers = project.assignments.map((a) => a.user);
-  const isLocked = ["AWAITING_SIGNATURE", "COMPLETED", "DISPUTED"].includes(project.status);
+  const isLocked = ["AWAITING_SIGNATURE", "COMPLETED", "DISPUTED"].includes(
+    project.status,
+  );
 
   async function handleTransition() {
     const next = NEXT_STATUS[project!.status];
@@ -185,27 +192,34 @@ export function ProjectDetailPage() {
       </div>
 
       {/* DISPUTED warning */}
-      {project.status === "DISPUTED" && (() => {
-        const refusal = project.signatureRequests?.[0]
-        const hasRefusal = refusal?.refusedAt !== null && refusal?.refusedAt !== undefined
-        return (
-          <div className="flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-            <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-red-800">
-                {hasRefusal ? "Signature refusée par le client" : "Chantier en litige"}
-              </p>
-              {hasRefusal && refusal?.refusalComment ? (
-                <p className="text-xs text-red-700 mt-1 italic">« {refusal.refusalComment} »</p>
-              ) : (
-                <p className="text-xs text-red-700 mt-0.5">
-                  Ce chantier fait l'objet d'un litige. Contactez le client pour résoudre la situation.
+      {project.status === "DISPUTED" &&
+        (() => {
+          const refusal = project.signatureRequests?.[0];
+          const hasRefusal =
+            refusal?.refusedAt !== null && refusal?.refusedAt !== undefined;
+          return (
+            <div className="flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-red-800">
+                  {hasRefusal
+                    ? "Signature refusée par le client"
+                    : "Chantier en litige"}
                 </p>
-              )}
+                {hasRefusal && refusal?.refusalComment ? (
+                  <p className="text-xs text-red-700 mt-1 italic">
+                    « {refusal.refusalComment} »
+                  </p>
+                ) : (
+                  <p className="text-xs text-red-700 mt-0.5">
+                    Ce chantier fait l'objet d'un litige. Contactez le client
+                    pour résoudre la situation.
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        )
-      })()}
+          );
+        })()}
 
       {/* Stepper */}
       {project.status !== "DISPUTED" && (
@@ -244,17 +258,37 @@ export function ProjectDetailPage() {
           </Button>
         )}
 
-      {/* PDF download */}
+      {/* PDF download + send to client */}
       {project.status === "COMPLETED" && pdfData?.pdfUrl && (
-        <a
-          href={pdfData.pdfUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full min-h-[48px] items-center justify-center gap-2 rounded-lg border bg-card px-4 text-sm font-medium transition-colors hover:bg-muted"
-        >
-          <Download className="h-4 w-4" />
-          Télécharger le rapport PDF
-        </a>
+        <div className="flex gap-2">
+          <a
+            href={pdfData.pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-1 min-h-[48px] items-center justify-center gap-2 rounded-lg border bg-card px-4 text-sm font-medium transition-colors hover:bg-muted"
+          >
+            <Download className="h-4 w-4" />
+            Télécharger le rapport
+          </a>
+          {project.client.email && (role === "ADMIN" || role === "FOREMAN") && (
+            <Button
+              variant="outline"
+              className="flex-1 min-h-[48px] gap-2"
+              disabled={sendReport.isPending}
+              onClick={async () => {
+                try {
+                  await sendReport.mutateAsync();
+                  toast.success("Rapport envoyé au client");
+                } catch {
+                  toast.error("Erreur lors de l'envoi");
+                }
+              }}
+            >
+              <Send className="h-4 w-4" />
+              {sendReport.isPending ? "Envoi…" : "Envoyer le rapport au client"}
+            </Button>
+          )}
+        </div>
       )}
 
       {/* Info */}
@@ -395,13 +429,13 @@ export function ProjectDetailPage() {
           isLocked ? (
             <p className="text-sm text-muted-foreground italic">Aucune photo</p>
           ) : (
-          <button
-            className="w-full flex items-center gap-2 rounded-lg border border-dashed p-3 text-muted-foreground transition-colors active:bg-muted"
-            onClick={() => void navigate(`/chantiers/${id}/photos`)}
-          >
-            <Camera className="h-4 w-4 shrink-0" />
-            <span className="text-sm">Aucune photo · Ajouter</span>
-          </button>
+            <button
+              className="w-full flex items-center gap-2 rounded-lg border border-dashed p-3 text-muted-foreground transition-colors active:bg-muted"
+              onClick={() => void navigate(`/chantiers/${id}/photos`)}
+            >
+              <Camera className="h-4 w-4 shrink-0" />
+              <span className="text-sm">Aucune photo · Ajouter</span>
+            </button>
           )
         ) : (
           <div className="space-y-3">
@@ -426,12 +460,21 @@ export function ProjectDetailPage() {
                     {list.slice(-5).map((photo, i) => (
                       <button
                         key={photo.id}
-                        onClick={() => setLightbox({ photos: list, index: i, title: `Photos ${label.toLowerCase()}` })}
+                        onClick={() =>
+                          setLightbox({
+                            photos: list,
+                            index: i,
+                            title: `Photos ${label.toLowerCase()}`,
+                          })
+                        }
                       >
                         <img
                           src={photo.signedUrl ?? ""}
                           alt=""
-                          className="h-24 w-24 shrink-0 rounded-md object-cover"
+                          className="h-24 w-24 shrink-0 rounded-md object-cover bg-muted"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
                         />
                       </button>
                     ))}

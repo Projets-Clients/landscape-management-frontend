@@ -34,3 +34,12 @@ export function useUploadPhoto() {
       queryClient.invalidateQueries({ queryKey: ['photos', variables.projectId] }),
   })
 }
+
+export function useDeletePhoto(projectId: string) {
+  return useMutation({
+    mutationFn: (photoId: string) =>
+      apiRequest(`/projects/${projectId}/photos/${photoId}`, { method: 'DELETE' }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['photos', projectId] }),
+  })
+}
