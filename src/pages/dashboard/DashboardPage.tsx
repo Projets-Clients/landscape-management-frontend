@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus } from 'lucide-react'
+import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
@@ -83,29 +83,33 @@ export function DashboardPage() {
 
   return (
     <div className="flex h-full flex-col gap-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">Bonjour, {username}</h1>
           <p className="text-sm text-muted-foreground">Aperçu de l'activité</p>
         </div>
         {role === 'ADMIN' && (
-          <div className="flex justify-end gap-2">
+          <div className="flex shrink-0 gap-2">
             <Button
               size="sm"
               variant="outline"
-              className="min-h-[44px]"
+              className="min-h-[44px] min-w-[44px] gap-0.5 sm:gap-1"
               onClick={() => void navigate('/clients/nouveau')}
+              title="Nouveau client"
             >
-              <Plus className="mr-1 h-4 w-4" />
-              Nouveau client
+              <Plus className="h-3.5 w-3.5" />
+              <User className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Nouveau client</span>
             </Button>
             <Button
               size="sm"
-              className="min-h-[44px]"
+              className="min-h-[44px] min-w-[44px] gap-0.5 sm:gap-1"
               onClick={() => void navigate('/chantiers/nouveau')}
+              title="Nouveau chantier"
             >
-              <Plus className="mr-1 h-4 w-4" />
-              Nouveau chantier
+              <Plus className="h-3.5 w-3.5" />
+              <HardHat className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Nouveau chantier</span>
             </Button>
           </div>
         )}
