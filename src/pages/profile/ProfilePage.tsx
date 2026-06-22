@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useAuthStore } from '@/store/auth.store'
-import { useTheme } from '@/providers/ThemeProvider'
+import { useTheme, COLORS } from '@/providers/ThemeProvider'
+import type { ColorKey } from '@/providers/ThemeProvider'
 import { apiRequest } from '@/lib/api-client'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -17,7 +18,7 @@ const ROLE_LABELS: Record<string, string> = {
 export function ProfilePage() {
   const navigate = useNavigate()
   const { username, role, userId, clearAuth } = useAuthStore()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, color, setColor } = useTheme()
 
   async function handleLogout() {
     try {
@@ -59,6 +60,37 @@ export function ProfilePage() {
           <p className="text-sm font-medium">{role ? (ROLE_LABELS[role] ?? role) : '—'}</p>
         </div>
       </Card>
+
+      <div className="space-y-2">
+        <p className="text-sm font-semibold">Couleur</p>
+        <Card className="p-3">
+          <div className="grid grid-cols-4 gap-3">
+            {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { label, hex }]) => (
+              <button
+                key={key}
+                title={label}
+                onClick={() => setColor(key)}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-full ring-offset-background transition-all"
+                  style={{
+                    backgroundColor: hex,
+                    boxShadow: color === key ? `0 0 0 2px white, 0 0 0 4px ${hex}` : undefined,
+                  }}
+                >
+                  {color === key && (
+                    <svg viewBox="0 0 12 12" className="h-3 w-3 fill-white">
+                      <path d="M1.5 6.5l3 3 6-6" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <span className="text-[10px] text-muted-foreground">{label}</span>
+              </button>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       <div className="space-y-2">
         <p className="text-sm font-semibold">Apparence</p>
