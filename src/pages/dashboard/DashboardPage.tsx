@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { HardHat, FileSignature, CheckCircle, Plus } from 'lucide-react'
+import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -15,15 +15,20 @@ function StatCard({
   value,
   loading,
   color,
+  onClick,
 }: {
   icon: React.ElementType
   label: string
   value: number | undefined
   loading: boolean
   color: string
+  onClick: () => void
 }) {
   return (
-    <Card className="flex items-center gap-3 p-4">
+    <button
+      onClick={onClick}
+      className="flex w-full items-center gap-3 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted"
+    >
       <div className={`rounded-xl p-2.5 ${color}`}>
         <Icon className="h-5 w-5" />
       </div>
@@ -35,7 +40,7 @@ function StatCard({
         )}
         <p className="mt-0.5 text-xs text-muted-foreground">{label}</p>
       </div>
-    </Card>
+    </button>
   )
 }
 
@@ -74,6 +79,7 @@ export function DashboardPage() {
   const inProgress = useProjects({ status: 'IN_PROGRESS', limit: 1 })
   const awaitingSig = useProjects({ status: 'AWAITING_SIGNATURE', limit: 1 })
   const completed = useProjects({ status: 'COMPLETED', limit: 1 })
+  const disputed = useProjects({ status: 'DISPUTED', limit: 1 })
   const recent = useProjects({ limit: 20 })
 
   return (
@@ -106,13 +112,14 @@ export function DashboardPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         <StatCard
           icon={HardHat}
           label="En cours"
           value={inProgress.data?.total}
           loading={inProgress.isLoading}
           color="bg-amber-100 text-amber-700"
+          onClick={() => void navigate('/chantiers?status=IN_PROGRESS')}
         />
         <StatCard
           icon={FileSignature}
@@ -120,6 +127,7 @@ export function DashboardPage() {
           value={awaitingSig.data?.total}
           loading={awaitingSig.isLoading}
           color="bg-orange-100 text-orange-700"
+          onClick={() => void navigate('/chantiers?status=AWAITING_SIGNATURE')}
         />
         <StatCard
           icon={CheckCircle}
@@ -127,6 +135,15 @@ export function DashboardPage() {
           value={completed.data?.total}
           loading={completed.isLoading}
           color="bg-green-100 text-green-700"
+          onClick={() => void navigate('/chantiers?status=COMPLETED')}
+        />
+        <StatCard
+          icon={AlertTriangle}
+          label="Litiges"
+          value={disputed.data?.total}
+          loading={disputed.isLoading}
+          color="bg-red-100 text-red-700"
+          onClick={() => void navigate('/chantiers?status=DISPUTED')}
         />
       </div>
 

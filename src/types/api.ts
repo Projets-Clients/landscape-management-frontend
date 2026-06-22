@@ -97,6 +97,7 @@ export interface Report {
   projectId: string
   comment: string | null
   pdfKey: string | null
+  lastSentAt: string | null
   createdAt: string
   updatedAt: string
 }

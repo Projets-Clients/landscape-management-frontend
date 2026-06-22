@@ -272,33 +272,50 @@ export function ProjectDetailPage() {
 
       {/* PDF download + send to client */}
       {project.status === "COMPLETED" && pdfData?.pdfUrl && (
-        <div className="flex gap-2">
-          <a
-            href={pdfData.pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-1 min-h-[48px] items-center justify-center gap-2 rounded-lg border bg-card px-4 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            <Download className="h-4 w-4" />
-            Télécharger le rapport
-          </a>
-          {project.client.email && (role === "ADMIN" || role === "FOREMAN") && (
-            <Button
-              variant="outline"
-              className="flex-1 min-h-[48px] gap-2"
-              disabled={sendReport.isPending}
-              onClick={async () => {
-                try {
-                  await sendReport.mutateAsync();
-                  toast.success("Rapport envoyé au client");
-                } catch {
-                  toast.error("Erreur lors de l'envoi");
-                }
-              }}
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <a
+              href={pdfData.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-1 min-h-[48px] items-center justify-center gap-2 rounded-lg border bg-card px-4 text-sm font-medium transition-colors hover:bg-muted"
             >
-              <Send className="h-4 w-4" />
-              {sendReport.isPending ? "Envoi…" : "Envoyer le rapport au client"}
-            </Button>
+              <Download className="h-4 w-4" />
+              Télécharger
+            </a>
+            {project.client.email && (role === "ADMIN" || role === "FOREMAN") && (
+              <Button
+                variant="outline"
+                className="flex-1 min-h-[48px] gap-2"
+                disabled={sendReport.isPending}
+                onClick={async () => {
+                  try {
+                    await sendReport.mutateAsync();
+                    toast.success("Rapport envoyé au client");
+                  } catch {
+                    toast.error("Erreur lors de l'envoi");
+                  }
+                }}
+              >
+                <Send className="h-4 w-4" />
+                {sendReport.isPending ? "Envoi…" : "Envoyer au client"}
+              </Button>
+            )}
+          </div>
+          {report?.lastSentAt && (
+            <p className="text-center text-xs text-muted-foreground">
+              Rapport envoyé le{" "}
+              {new Date(report.lastSentAt).toLocaleDateString("fr-FR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}{" "}
+              à{" "}
+              {new Date(report.lastSentAt).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
           )}
         </div>
       )}
