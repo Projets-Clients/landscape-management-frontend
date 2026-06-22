@@ -53,3 +53,22 @@ export function useSign(token: string) {
       queryClient.invalidateQueries({ queryKey: ['public', token] }),
   })
 }
+
+export function useRefuse(token: string) {
+  return useMutation({
+    mutationFn: async (dto: { comment: string }) => {
+      const res = await fetch(`${API_URL}/public/${token}/refuse`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
+      })
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { message?: string }
+        throw new Error(body.message ?? 'Erreur lors du refus')
+      }
+      return res.json()
+    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['public', token] }),
+  })
+}

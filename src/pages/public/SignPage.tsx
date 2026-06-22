@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Leaf, CheckCircle, Loader2, RotateCcw } from 'lucide-react'
+import { Leaf, CheckCircle, XCircle, Loader2, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { usePublicReport, useSign } from '@/hooks/use-signature'
+import { usePublicReport, useSign, useRefuse } from '@/hooks/use-signature'
 import { formatDate } from '@/lib/utils'
 
 function SignatureCanvas({
@@ -126,6 +126,10 @@ export function SignPage() {
   const [validationConform, setValidationConform] = useState(false)
   const [hasSignature, setHasSignature] = useState(false)
   const [signed, setSigned] = useState(false)
+  const [showRefuseForm, setShowRefuseForm] = useState(false)
+  const [refuseComment, setRefuseComment] = useState('')
+  const [refused, setRefused] = useState(false)
+  const refuse = useRefuse(token ?? '')
 
   useEffect(() => {
     if (data?.client) {
@@ -186,6 +190,22 @@ export function SignPage() {
     )
   }
 
+  if (refused) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100">
+          <XCircle className="h-8 w-8 text-orange-600" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold">Refus enregistré</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Votre refus a bien été transmis. L'entreprise prendra contact avec vous.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="mx-auto max-w-lg space-y-4 p-6">
@@ -203,6 +223,27 @@ export function SignPage() {
         <p className="text-sm text-muted-foreground">
           Ce lien de signature n'est plus valide. Contactez votre prestataire.
         </p>
+      </div>
+    )
+  }
+
+  if (data.alreadyRefused) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100">
+          <XCircle className="h-8 w-8 text-orange-600" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold">Document refusé</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Vous avez refusé de signer ce rapport. L'entreprise va prendre contact avec vous.
+          </p>
+          {data.refusalComment && (
+            <p className="mt-3 rounded-lg bg-muted p-3 text-left text-sm italic text-muted-foreground">
+              « {data.refusalComment} »
+            </p>
+          )}
+        </div>
       </div>
     )
   }
@@ -341,10 +382,60 @@ export function SignPage() {
           <SignatureCanvas canvasRef={canvasRef} onHasStrokes={setHasSignature} />
         </div>
 
-        <Button type="submit" className="w-full min-h-[52px] text-base" disabled={sign.isPending}>
+        <Button type="submit" className="w-full min-h-[52px] text-base" disabled={sign.isPending || refuse.isPending}>
           {sign.isPending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
           Signer et valider
         </Button>
+
+        <div className="pt-2">
+          {!showRefuseForm ? (
+            <button
+              type="button"
+              onClick={() => setShowRefuseForm(true)}
+              className="w-full text-sm text-muted-foreground underline-offset-4 hover:underline min-h-[44px]"
+            >
+              Refuser les travaux
+            </button>
+          ) : (
+            <div className="space-y-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+              <p className="text-sm font-medium text-destructive">Motif du refus</p>
+              <textarea
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                rows={4}
+                placeholder="Décrivez ce qui ne vous convient pas..."
+                value={refuseComment}
+                onChange={(e) => setRefuseComment(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 min-h-[44px]"
+                  onClick={() => { setShowRefuseForm(false); setRefuseComment('') }}
+                  disabled={refuse.isPending}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="flex-1 min-h-[44px]"
+                  disabled={!refuseComment.trim() || refuse.isPending}
+                  onClick={async () => {
+                    try {
+                      await refuse.mutateAsync({ comment: refuseComment.trim() })
+                      setRefused(true)
+                    } catch (err) {
+                      toast.error(err instanceof Error ? err.message : 'Erreur')
+                    }
+                  }}
+                >
+                  {refuse.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirmer le refus'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </form>
     </div>
   )

@@ -182,20 +182,27 @@ export function ProjectDetailPage() {
       </div>
 
       {/* DISPUTED warning */}
-      {project.status === "DISPUTED" && (
-        <div className="flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-red-800">
-              Chantier en litige
-            </p>
-            <p className="text-xs text-red-700 mt-0.5">
-              Ce chantier fait l'objet d'un litige. Contactez le client pour
-              résoudre la situation.
-            </p>
+      {project.status === "DISPUTED" && (() => {
+        const refusal = project.signatureRequests?.[0]
+        const hasRefusal = refusal?.refusedAt !== null && refusal?.refusedAt !== undefined
+        return (
+          <div className="flex gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+            <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-red-800">
+                {hasRefusal ? "Signature refusée par le client" : "Chantier en litige"}
+              </p>
+              {hasRefusal && refusal?.refusalComment ? (
+                <p className="text-xs text-red-700 mt-1 italic">« {refusal.refusalComment} »</p>
+              ) : (
+                <p className="text-xs text-red-700 mt-0.5">
+                  Ce chantier fait l'objet d'un litige. Contactez le client pour résoudre la situation.
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Stepper */}
       {project.status !== "DISPUTED" && (

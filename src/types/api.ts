@@ -74,6 +74,14 @@ export interface Project {
 export interface ProjectDetail extends Omit<Project, 'client' | 'assignments'> {
   client: Client
   assignments: Required<ProjectAssignment>[]
+  signatureRequests?: Array<{
+    id: string
+    token: string
+    usedAt: string | null
+    refusedAt: string | null
+    refusalComment: string | null
+    createdAt: string
+  }>
 }
 
 export interface Photo {
@@ -101,6 +109,8 @@ export interface SignatureRequest {
   projectId: string
   token: string
   usedAt: string | null
+  refusedAt: string | null
+  refusalComment: string | null
   createdAt: string
 }
 
@@ -130,6 +140,8 @@ export interface PublicReport {
   photos: Photo[]
   pdfUrl: string | null
   alreadySigned: boolean
+  alreadyRefused: boolean
+  refusalComment: string | null
 }
 
 export interface Paginated<T> {
