@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { router } from '@/router'
-import { useAuthStore } from '@/store/auth.store'
+import { useAuthStore, getStoredRefreshToken } from '@/store/auth.store'
 
 const API_URL = import.meta.env.VITE_API_URL
 
+function buildRefreshRequest(): Request {
+  const storedToken = getStoredRefreshToken()
+  return new Request(`${API_URL}/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: storedToken ? { 'Content-Type': 'application/json' } : {},
+    body: storedToken ? JSON.stringify({ refreshToken: storedToken }) : undefined,
+  })
+}
+
 // Fired once at module load — survives React StrictMode double-invocation
-const sessionRefresh: Promise<{ accessToken: string } | null> = fetch(
-  `${API_URL}/auth/refresh`,
-  { method: 'POST', credentials: 'include' },
+const sessionRefresh: Promise<{ accessToken: string; refreshToken: string } | null> = fetch(
+  buildRefreshRequest(),
 )
-  .then((res) => (res.ok ? (res.json() as Promise<{ accessToken: string }>) : null))
+  .then((res) => (res.ok ? (res.json() as Promise<{ accessToken: string; refreshToken: string }>) : null))
   .catch(() => null)
 
 export function SessionProvider() {
@@ -21,7 +30,7 @@ export function SessionProvider() {
   useEffect(() => {
     void sessionRefresh.then((data) => {
       if (data) {
-        setAuth(data.accessToken, sessionStorage.getItem('username') ?? '')
+        setAuth(data.accessToken, sessionStorage.getItem('username') ?? '', data.refreshToken)
       } else {
         clearAuth()
       }

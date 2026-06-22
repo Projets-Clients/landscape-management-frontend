@@ -1,12 +1,14 @@
 import { create } from 'zustand'
 import type { UserRole } from '@/types/api'
 
+const REFRESH_TOKEN_KEY = 'landscape-rt'
+
 interface AuthState {
   accessToken: string | null
   username: string
   role: UserRole | null
   userId: string | null
-  setAuth: (accessToken: string, username: string) => void
+  setAuth: (accessToken: string, username: string, refreshToken?: string) => void
   clearAuth: () => void
 }
 
@@ -30,9 +32,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   role: null,
   userId: null,
 
-  setAuth: (accessToken, username) => {
+  setAuth: (accessToken, username, refreshToken) => {
     const decoded = decodeJwtPayload(accessToken)
     sessionStorage.setItem('username', username)
+    if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
     set({
       accessToken,
       username,
@@ -43,6 +46,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   clearAuth: () => {
     sessionStorage.removeItem('username')
+    localStorage.removeItem(REFRESH_TOKEN_KEY)
     set({ accessToken: null, username: '', role: null, userId: null })
   },
 }))
+
+export function getStoredRefreshToken(): string | null {
+  return localStorage.getItem(REFRESH_TOKEN_KEY)
+}

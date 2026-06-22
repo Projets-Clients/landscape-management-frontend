@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { useProjects } from '@/hooks/use-projects'
@@ -84,13 +83,13 @@ export function DashboardPage() {
 
   return (
     <div className="flex h-full flex-col gap-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-bold">Bonjour, {username}</h1>
           <p className="text-sm text-muted-foreground">Aperçu de l'activité</p>
         </div>
         {role === 'ADMIN' && (
-          <div className="flex gap-2">
+          <div className="flex justify-end gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -112,7 +111,7 @@ export function DashboardPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           icon={HardHat}
           label="En cours"

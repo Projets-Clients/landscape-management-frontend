@@ -26,7 +26,7 @@ export function LoginPage() {
         method: 'POST',
         body: JSON.stringify({ username: username.trim(), password }),
       })
-      setAuth(data.accessToken, username.trim())
+      setAuth(data.accessToken, username.trim(), data.refreshToken)
       void navigate('/', { replace: true })
     } catch (err) {
       const msg =

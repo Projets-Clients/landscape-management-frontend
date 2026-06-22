@@ -107,7 +107,7 @@ export function ProjectsPage() {
         )}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex flex-wrap gap-2">
         {STATUS_FILTERS.map((f) => (
           <button
             key={f.label}
@@ -119,7 +119,7 @@ export function ProjectsPage() {
               }
             }}
             className={[
-              'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
+              'rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
               statusFilter === f.value
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground',

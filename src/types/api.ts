@@ -151,4 +151,5 @@ export interface Paginated<T> {
 
 export interface LoginResponse {
   accessToken: string
+  refreshToken: string
 }

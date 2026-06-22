@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/store/auth.store'
+import { useAuthStore, getStoredRefreshToken } from '@/store/auth.store'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,15 +15,17 @@ export class ApiError extends Error {
 let isRefreshing = false
 let refreshQueue: Array<(token: string | null) => void> = []
 
-async function refreshAccessToken(): Promise<string | null> {
+async function refreshAccessToken(): Promise<{ accessToken: string; refreshToken: string } | null> {
   try {
+    const storedToken = getStoredRefreshToken()
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
+      headers: storedToken ? { 'Content-Type': 'application/json' } : {},
+      body: storedToken ? JSON.stringify({ refreshToken: storedToken }) : undefined,
     })
     if (!res.ok) return null
-    const data = (await res.json()) as { accessToken: string }
-    return data.accessToken
+    return (await res.json()) as { accessToken: string; refreshToken: string }
   } catch {
     return null
   }
@@ -35,20 +37,21 @@ function waitForRefresh(): Promise<string | null> {
 
 async function doRefresh(): Promise<string | null> {
   isRefreshing = true
-  const token = await refreshAccessToken()
+  const result = await refreshAccessToken()
   isRefreshing = false
 
   const { setAuth, clearAuth } = useAuthStore.getState()
-  if (token) {
+  const newAccessToken = result?.accessToken ?? null
+  if (result) {
     const username = sessionStorage.getItem('username') ?? ''
-    setAuth(token, username)
+    setAuth(result.accessToken, username, result.refreshToken)
   } else {
     clearAuth()
   }
 
-  refreshQueue.forEach((cb) => cb(token))
+  refreshQueue.forEach((cb) => cb(newAccessToken))
   refreshQueue = []
-  return token
+  return newAccessToken
 }
 
 async function fetchWithAuth(
