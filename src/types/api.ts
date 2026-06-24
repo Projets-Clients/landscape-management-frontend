@@ -1,5 +1,14 @@
 export type UserRole = 'ADMIN' | 'FOREMAN' | 'EMPLOYEE'
 
+export interface Organization {
+  id: string
+  name: string
+  slug: string
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export type ProjectStatus =
   | 'DRAFT'
   | 'PLANNED'

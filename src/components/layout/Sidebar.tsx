@@ -4,11 +4,12 @@ import {
   HardHat,
   Users,
   UserCog,
-  User,
   Leaf,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
+import { useOrganization } from "@/hooks/use-organization";
 import type { UserRole } from "@/types/api";
 
 interface NavItem {
@@ -24,17 +25,17 @@ const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     { to: "/chantiers", icon: HardHat, label: "Chantiers" },
     { to: "/clients", icon: Users, label: "Clients" },
     { to: "/utilisateurs", icon: UserCog, label: "Équipe" },
-    { to: "/profil", icon: User, label: "Profil" },
+    { to: "/parametres", icon: Settings, label: "Paramètres" },
   ],
   FOREMAN: [
     { to: "/", icon: LayoutDashboard, label: "Tableau de bord", end: true },
     { to: "/chantiers", icon: HardHat, label: "Chantiers" },
-    { to: "/profil", icon: User, label: "Profil" },
+    { to: "/parametres", icon: Settings, label: "Paramètres" },
   ],
   EMPLOYEE: [
     { to: "/", icon: LayoutDashboard, label: "Tableau de bord", end: true },
     { to: "/chantiers", icon: HardHat, label: "Chantiers" },
-    { to: "/profil", icon: User, label: "Profil" },
+    { to: "/parametres", icon: Settings, label: "Paramètres" },
   ],
 };
 
@@ -45,14 +46,22 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const role = useAuthStore((s) => s.role);
   const items = role ? NAV_BY_ROLE[role] : [];
+  const { data: org } = useOrganization();
 
   return (
     <aside className={cn("w-60 flex-col border-r bg-card", className)}>
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <Leaf className="h-5 w-5 text-primary" />
-        <span className="font-bold tracking-tight text-foreground">
-          Landscape
-        </span>
+        <Leaf className="h-5 w-5 text-primary shrink-0" />
+        <div className="min-w-0">
+          <p className="font-bold tracking-tight text-foreground leading-tight">
+            Landscape
+          </p>
+          {org && (
+            <p className="text-xs text-muted-foreground leading-tight truncate">
+              {org.name}
+            </p>
+          )}
+        </div>
       </div>
       <nav className="flex flex-col gap-0.5 p-2">
         {items.map(({ to, icon: Icon, label, end }) => (

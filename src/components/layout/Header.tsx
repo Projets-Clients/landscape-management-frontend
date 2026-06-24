@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth.store'
+import { useOrganization } from '@/hooks/use-organization'
 
 interface HeaderProps {
   className?: string
@@ -7,6 +8,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const username = useAuthStore((s) => s.username)
+  const { data: org } = useOrganization()
 
   return (
     <header
@@ -15,7 +17,7 @@ export function Header({ className }: HeaderProps) {
         className,
       )}
     >
-      <span className="font-semibold text-primary">Landscape</span>
+      <span className="font-semibold text-primary">{org?.name ?? 'Landscape'}</span>
       <span className="text-sm text-muted-foreground">{username}</span>
     </header>
   )

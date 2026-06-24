@@ -1,13 +1,18 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { LogOut, Monitor, Moon, Sun, User } from 'lucide-react'
+import { LogOut, Monitor, Moon, Sun, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { useAuthStore } from '@/store/auth.store'
 import { useTheme, COLORS } from '@/providers/ThemeProvider'
 import type { ColorKey } from '@/providers/ThemeProvider'
 import { apiRequest } from '@/lib/api-client'
+import { useOrganization, useUpdateOrganization } from '@/hooks/use-organization'
+import { useUpdateMe } from '@/hooks/use-update-me'
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: 'Administrateur',
@@ -15,10 +20,37 @@ const ROLE_LABELS: Record<string, string> = {
   EMPLOYEE: 'Employé',
 }
 
-export function ProfilePage() {
+export function SettingsPage() {
   const navigate = useNavigate()
   const { username, role, userId, clearAuth } = useAuthStore()
+  const isAdmin = role === 'ADMIN'
   const { theme, setTheme, color, setColor } = useTheme()
+
+  // Username change
+  const [newUsername, setNewUsername] = useState(username)
+  const updateMe = useUpdateMe()
+
+  useEffect(() => { setNewUsername(username) }, [username])
+
+  function handleUsernameSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = newUsername.trim()
+    if (!trimmed || trimmed === username) return
+    void updateMe.mutateAsync({ username: trimmed })
+  }
+
+  // Org name change (admin only)
+  const { data: org, isLoading: orgLoading } = useOrganization()
+  const updateOrg = useUpdateOrganization()
+  const [orgName, setOrgName] = useState('')
+
+  useEffect(() => { if (org) setOrgName(org.name) }, [org])
+
+  function handleOrgSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!orgName.trim()) return
+    void updateOrg.mutateAsync({ name: orgName.trim() })
+  }
 
   async function handleLogout() {
     try {
@@ -33,8 +65,9 @@ export function ProfilePage() {
 
   return (
     <div className="space-y-6 pb-4">
-      <h1 className="text-xl font-bold">Profil</h1>
+      <h1 className="text-xl font-bold">Paramètres</h1>
 
+      {/* Avatar + identité */}
       <div className="flex flex-col items-center gap-3 py-4">
         <div className={[
           'flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold',
@@ -44,12 +77,11 @@ export function ProfilePage() {
         </div>
         <div className="text-center">
           <p className="font-bold text-lg">{username}</p>
-          {role && (
-            <p className="text-sm text-muted-foreground">{ROLE_LABELS[role] ?? role}</p>
-          )}
+          {role && <p className="text-sm text-muted-foreground">{ROLE_LABELS[role] ?? role}</p>}
         </div>
       </div>
 
+      {/* Infos */}
       <Card className="divide-y">
         <div className="flex items-center justify-between p-4 min-h-[56px]">
           <p className="text-sm text-muted-foreground">Identifiant</p>
@@ -61,6 +93,37 @@ export function ProfilePage() {
         </div>
       </Card>
 
+      {/* Changement de nom */}
+      <div className="space-y-2">
+        <p className="text-sm font-semibold">Nom d'utilisateur</p>
+        <Card className="p-4">
+          <form onSubmit={handleUsernameSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="username">Nouveau nom d'utilisateur</Label>
+              <Input
+                id="username"
+                className="min-h-[44px]"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                minLength={3}
+                maxLength={30}
+                pattern="^[a-zA-Z0-9_.\-]+$"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full min-h-[48px]"
+              disabled={updateMe.isPending || !newUsername.trim() || newUsername.trim() === username}
+            >
+              {updateMe.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Enregistrer
+            </Button>
+          </form>
+        </Card>
+      </div>
+
+      {/* Couleur */}
       <div className="space-y-2">
         <p className="text-sm font-semibold">Couleur</p>
         <Card className="p-3">
@@ -92,6 +155,7 @@ export function ProfilePage() {
         </Card>
       </div>
 
+      {/* Apparence */}
       <div className="space-y-2">
         <p className="text-sm font-semibold">Apparence</p>
         <Card className="p-1">
@@ -118,6 +182,51 @@ export function ProfilePage() {
           </div>
         </Card>
       </div>
+
+      {/* Organisation (admin seulement) */}
+      {isAdmin && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">Organisation</p>
+          <Card className="p-4">
+            {orgLoading ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <form onSubmit={handleOrgSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="orgName">Nom de l'entreprise</Label>
+                  <Input
+                    id="orgName"
+                    className="min-h-[44px]"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    minLength={2}
+                    maxLength={30}
+                    required
+                  />
+                  <p className={[
+                    'text-right text-xs tabular-nums transition-colors',
+                    orgName.length >= 30 ? 'text-destructive font-medium' :
+                    orgName.length >= 25 ? 'text-orange-500' :
+                    'text-muted-foreground',
+                  ].join(' ')}>
+                    {orgName.length}/30
+                  </p>
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full min-h-[48px]"
+                  disabled={updateOrg.isPending || !orgName.trim() || orgName.trim() === org?.name}
+                >
+                  {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Enregistrer
+                </Button>
+              </form>
+            )}
+          </Card>
+        </div>
+      )}
 
       <Separator />
 

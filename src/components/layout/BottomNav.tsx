@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, HardHat, Users, UserCog, User } from 'lucide-react'
+import { LayoutDashboard, HardHat, Users, UserCog, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth.store'
 import type { UserRole } from '@/types/api'
@@ -17,17 +17,17 @@ const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     { to: '/chantiers', icon: HardHat, label: 'Chantiers' },
     { to: '/clients', icon: Users, label: 'Clients' },
     { to: '/utilisateurs', icon: UserCog, label: 'Équipe' },
-    { to: '/profil', icon: User, label: 'Profil' },
+    { to: '/parametres', icon: Settings, label: 'Paramètres' },
   ],
   FOREMAN: [
     { to: '/', icon: LayoutDashboard, label: 'Accueil', end: true },
     { to: '/chantiers', icon: HardHat, label: 'Chantiers' },
-    { to: '/profil', icon: User, label: 'Profil' },
+    { to: '/parametres', icon: Settings, label: 'Paramètres' },
   ],
   EMPLOYEE: [
     { to: '/', icon: LayoutDashboard, label: 'Accueil', end: true },
     { to: '/chantiers', icon: HardHat, label: 'Chantiers' },
-    { to: '/profil', icon: User, label: 'Profil' },
+    { to: '/parametres', icon: Settings, label: 'Paramètres' },
   ],
 }
 

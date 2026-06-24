@@ -14,7 +14,7 @@ import { ClientsPage } from '@/pages/clients/ClientsPage'
 import { ClientDetailPage } from '@/pages/clients/ClientDetailPage'
 import { CreateClientPage } from '@/pages/clients/CreateClientPage'
 import { UsersPage } from '@/pages/users/UsersPage'
-import { ProfilePage } from '@/pages/profile/ProfilePage'
+import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { SignPage } from '@/pages/public/SignPage'
 
 export const router = createBrowserRouter([
@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
           { path: 'chantiers/:id', element: <ProjectDetailPage /> },
           { path: 'chantiers/:id/photos', element: <PhotosPage /> },
           { path: 'chantiers/:id/rapport', element: <ReportPage /> },
-          { path: 'profil', element: <ProfilePage /> },
+          { path: 'parametres', element: <SettingsPage /> },
           {
             element: <RoleRoute allowed={['ADMIN']} />,
             children: [
