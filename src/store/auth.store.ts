@@ -8,19 +8,20 @@ interface AuthState {
   username: string
   role: UserRole | null
   userId: string | null
+  organizationId: string | null
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
   clearAuth: () => void
 }
 
 function decodeJwtPayload(
   token: string,
-): { sub: string; role: UserRole } | null {
+): { sub: string; role: UserRole; orgId: string } | null {
   try {
     const base64url = token.split('.')[1]
     if (!base64url) return null
     const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
     const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=')
-    return JSON.parse(atob(padded)) as { sub: string; role: UserRole }
+    return JSON.parse(atob(padded)) as { sub: string; role: UserRole; orgId: string }
   } catch {
     return null
   }
@@ -31,6 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   username: sessionStorage.getItem('username') ?? '',
   role: null,
   userId: null,
+  organizationId: null,
 
   setAuth: (accessToken, username, refreshToken) => {
     const decoded = decodeJwtPayload(accessToken)
@@ -41,13 +43,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       username,
       role: decoded?.role ?? null,
       userId: decoded?.sub ?? null,
+      organizationId: decoded?.orgId ?? null,
     })
   },
 
   clearAuth: () => {
     sessionStorage.removeItem('username')
     localStorage.removeItem(REFRESH_TOKEN_KEY)
-    set({ accessToken: null, username: '', role: null, userId: null })
+    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null })
   },
 }))
 
