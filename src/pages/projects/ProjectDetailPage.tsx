@@ -29,7 +29,7 @@ import {
   useUnassignUser,
 } from "@/hooks/use-projects";
 import { usePhotos } from "@/hooks/use-photos";
-import { useReport, useReportPdfUrl, useSendReport } from "@/hooks/use-report";
+import { useReport, useReportPdfUrl, useSendReport, useGenerateReport } from "@/hooks/use-report";
 import { useCreateSignatureRequest } from "@/hooks/use-signature";
 import { useUsers } from "@/hooks/use-users";
 import { useAuthStore } from "@/store/auth.store";
@@ -81,6 +81,7 @@ export function ProjectDetailPage() {
   const updateStatus = useUpdateProjectStatus(id ?? "");
   const createSigRequest = useCreateSignatureRequest(id ?? "");
   const sendReport = useSendReport(id ?? "");
+  const generateReport = useGenerateReport(id ?? "");
   const assignUsers = useAssignUsers(id ?? "");
   const unassignUser = useUnassignUser(id ?? "");
 
@@ -269,6 +270,26 @@ export function ProjectDetailPage() {
               : "Envoyer le lien de signature"}
           </Button>
         )}
+
+      {/* Generate report — COMPLETED but no PDF yet */}
+      {project.status === "COMPLETED" && pdfData && !pdfData.pdfUrl && role === "ADMIN" && (
+        <Button
+          variant="outline"
+          className="w-full min-h-[48px] gap-2"
+          disabled={generateReport.isPending}
+          onClick={async () => {
+            try {
+              await generateReport.mutateAsync();
+              toast.success("Rapport généré");
+            } catch {
+              toast.error("Erreur lors de la génération");
+            }
+          }}
+        >
+          <FileText className="h-4 w-4" />
+          {generateReport.isPending ? "Génération…" : "Générer le rapport"}
+        </Button>
+      )}
 
       {/* PDF download + send to client */}
       {project.status === "COMPLETED" && pdfData?.pdfUrl && (

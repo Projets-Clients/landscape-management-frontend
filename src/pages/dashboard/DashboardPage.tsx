@@ -26,18 +26,18 @@ function StatCard({
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted"
+      className="flex w-full flex-col items-center gap-1 rounded-xl border bg-card p-2.5 text-left transition-colors active:bg-muted sm:flex-row sm:gap-3 sm:p-4"
     >
-      <div className={`rounded-xl p-2.5 ${color}`}>
-        <Icon className="h-5 w-5" />
+      <div className={`rounded-xl p-1.5 sm:p-2.5 ${color}`}>
+        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
       </div>
-      <div>
+      <div className="text-center sm:text-left">
         {loading ? (
-          <Skeleton className="mb-1 h-6 w-8" />
+          <Skeleton className="mb-1 h-5 w-6 sm:h-6 sm:w-8" />
         ) : (
-          <p className="text-2xl font-bold leading-none">{value ?? 0}</p>
+          <p className="text-lg font-bold leading-none sm:text-2xl">{value ?? 0}</p>
         )}
-        <p className="mt-0.5 text-xs text-muted-foreground">{label}</p>
+        <p className="mt-0.5 hidden text-xs text-muted-foreground sm:block">{label}</p>
       </div>
     </button>
   )
@@ -86,7 +86,7 @@ export function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">Bonjour, {username}</h1>
-          <p className="text-sm text-muted-foreground">Aperçu de l'activité</p>
+          <p className="hidden text-sm text-muted-foreground sm:block">Aperçu de l'activité</p>
         </div>
         {role === 'ADMIN' && (
           <div className="flex shrink-0 gap-2">
@@ -115,7 +115,7 @@ export function DashboardPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
         <StatCard
           icon={HardHat}
           label="En cours"

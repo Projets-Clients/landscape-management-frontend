@@ -31,11 +31,27 @@ export function useUpdateReport(projectId: string) {
   })
 }
 
+export function useGenerateReport(projectId: string) {
+  return useMutation({
+    mutationFn: () =>
+      apiRequest<void>(`/projects/${projectId}/report/generate`, {
+        method: 'POST',
+      }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['report', projectId] }),
+        queryClient.invalidateQueries({ queryKey: ['report-pdf', projectId] }),
+      ]),
+  })
+}
+
 export function useSendReport(projectId: string) {
   return useMutation({
     mutationFn: () =>
       apiRequest<{ success: true }>(`/projects/${projectId}/report/send`, {
         method: 'POST',
       }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['report', projectId] }),
   })
 }
