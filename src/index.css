@@ -9,6 +9,16 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+  /* Pousse le contenu au-dessus du home indicator iOS */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Padding bas = hauteur BottomNav (3.5rem) + home indicator */
+  .pb-nav {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @layer base {

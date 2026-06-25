@@ -5,7 +5,7 @@ import { BottomNav } from './BottomNav'
 
 export function AppShell() {
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-[100dvh] bg-background">
       <Sidebar className="hidden lg:flex" />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header className="lg:hidden" />
