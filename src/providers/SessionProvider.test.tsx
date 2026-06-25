@@ -47,7 +47,7 @@ afterEach(() => {
 describe("SessionProvider", () => {
   it("affiche un spinner pendant le fetch initial", async () => {
     // Promise qui ne résout jamais → spinner visible indéfiniment
-    vi.spyOn(global, "fetch").mockReturnValueOnce(new Promise(() => {}));
+    vi.spyOn(globalThis, "fetch").mockReturnValueOnce(new Promise(() => {}));
 
     const { SessionProvider } = await import("./SessionProvider");
     render(<SessionProvider />);
@@ -56,7 +56,7 @@ describe("SessionProvider", () => {
   });
 
   it("cache le spinner une fois la promesse résolue (succès)", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({ accessToken: "token" }),
     );
 
@@ -69,7 +69,7 @@ describe("SessionProvider", () => {
   });
 
   it("cache le spinner une fois la promesse résolue (échec)", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(errorResponse(401));
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(errorResponse(401));
 
     const { SessionProvider } = await import("./SessionProvider");
     render(<SessionProvider />);
@@ -80,7 +80,7 @@ describe("SessionProvider", () => {
   });
 
   it("restaure la session quand /auth/refresh retourne 200", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({ accessToken: "restored-token" }),
     );
     sessionStorage.setItem("username", "admin");
@@ -98,7 +98,7 @@ describe("SessionProvider", () => {
   });
 
   it("appelle clearAuth quand /auth/refresh retourne 401", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(errorResponse(401));
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(errorResponse(401));
 
     const { SessionProvider } = await import("./SessionProvider");
     const { useAuthStore } = await import("@/store/auth.store");
@@ -119,7 +119,7 @@ describe("SessionProvider", () => {
   });
 
   it("appelle clearAuth quand le réseau est indisponible", async () => {
-    vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("fetch failed"));
+    vi.spyOn(globalThis, "fetch").mockRejectedValueOnce(new Error("fetch failed"));
 
     const { SessionProvider } = await import("./SessionProvider");
     const { useAuthStore } = await import("@/store/auth.store");
@@ -130,7 +130,7 @@ describe("SessionProvider", () => {
   });
 
   it("affiche le RouterProvider après résolution (contenu app visible)", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({ accessToken: "token" }),
     );
 
