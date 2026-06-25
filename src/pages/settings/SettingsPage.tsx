@@ -147,20 +147,26 @@ export function SettingsPage() {
       <div className="space-y-2">
         <p className="text-sm font-semibold">{t('settings.language_section')}</p>
         <Card className="p-1">
-          <div className="grid grid-cols-2 gap-1">
-            {(['fr', 'en'] as const).map((lang) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1">
+            {([
+              { code: 'fr', flag: '🇫🇷' },
+              { code: 'en', flag: '🇬🇧' },
+              { code: 'es', flag: '🇪🇸' },
+              { code: 'it', flag: '🇮🇹' },
+              { code: 'de', flag: '🇩🇪' },
+            ] as const).map(({ code, flag }) => (
               <button
-                key={lang}
-                onClick={() => handleLanguageChange(lang)}
+                key={code}
+                onClick={() => handleLanguageChange(code)}
                 className={[
                   'flex items-center justify-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors',
-                  i18n.language === lang
+                  i18n.language === code
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted',
                 ].join(' ')}
               >
                 <Languages className="h-4 w-4" />
-                <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'} {t(`settings.lang_${lang}`)}</span>
+                <span>{flag} {t(`settings.lang_${code}`)}</span>
               </button>
             ))}
           </div>
