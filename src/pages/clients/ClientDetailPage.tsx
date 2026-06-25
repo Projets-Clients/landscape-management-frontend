@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ArrowLeft, Mail, Phone, MapPin, FileText, Loader2 } from 'lucide-react'
+import { ArrowLeft, Mail, Phone, MapPin, FileText, Loader2, MessageSquare } from 'lucide-react'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -212,13 +212,19 @@ export function ClientDetailPage() {
             <p className="text-sm text-primary underline-offset-2 hover:underline">{client.email}</p>
           </a>
           {client.phone && (
-            <a
-              href={`tel:${client.phone}`}
-              className="flex items-center gap-3 p-4 min-h-[56px] hover:bg-muted/50 transition-colors"
-            >
+            <div className="flex items-center gap-3 p-4 min-h-[56px]">
               <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <p className="text-sm text-primary underline-offset-2 hover:underline">{client.phone}</p>
-            </a>
+              <a href={`tel:${client.phone}`} className="text-sm text-primary flex-1 underline-offset-2 hover:underline">
+                {client.phone}
+              </a>
+              <a
+                href={`sms:${client.phone}`}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Envoyer un SMS"
+              >
+                <MessageSquare className="h-4 w-4" />
+              </a>
+            </div>
           )}
           {client.address && (
             <a
