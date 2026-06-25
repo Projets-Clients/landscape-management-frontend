@@ -1,19 +1,24 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 interface PaginationProps {
-  page: number
-  total: number
-  limit: number
-  onChange: (page: number) => void
+  page: number;
+  total: number;
+  limit: number;
+  onChange: (page: number) => void;
 }
 
 export function Pagination({ page, total, limit, onChange }: PaginationProps) {
-  const totalPages = Math.ceil(total / limit)
-  if (totalPages <= 1) return null
+  const totalPages = Math.ceil(total / limit);
+  if (totalPages <= 1) return null;
 
   return (
     <div className="flex items-center justify-center gap-1.5 py-2">
-      {totalPages > 5 && (
+      {totalPages > 3 && (
         <button
           onClick={() => onChange(1)}
           disabled={page <= 1}
@@ -35,7 +40,7 @@ export function Pagination({ page, total, limit, onChange }: PaginationProps) {
 
       <span className="min-w-[72px] text-center text-sm text-muted-foreground">
         <span className="font-medium text-foreground">{page}</span>
-        {' / '}
+        {" / "}
         {totalPages}
       </span>
 
@@ -48,7 +53,7 @@ export function Pagination({ page, total, limit, onChange }: PaginationProps) {
         <ChevronRight className="h-4 w-4" />
       </button>
 
-      {totalPages > 5 && (
+      {totalPages > 2 && (
         <button
           onClick={() => onChange(totalPages)}
           disabled={page >= totalPages}
@@ -59,5 +64,5 @@ export function Pagination({ page, total, limit, onChange }: PaginationProps) {
         </button>
       )}
     </div>
-  )
+  );
 }
