@@ -204,21 +204,32 @@ export function ClientDetailPage() {
         </Card>
       ) : (
         <Card className="divide-y">
-          <div className="flex items-center gap-3 p-4 min-h-[56px]">
+          <a
+            href={`mailto:${client.email}`}
+            className="flex items-center gap-3 p-4 min-h-[56px] hover:bg-muted/50 transition-colors"
+          >
             <Mail className="h-4 w-4 shrink-0 text-muted-foreground" />
-            <p className="text-sm">{client.email}</p>
-          </div>
+            <p className="text-sm text-primary underline-offset-2 hover:underline">{client.email}</p>
+          </a>
           {client.phone && (
-            <div className="flex items-center gap-3 p-4 min-h-[56px]">
+            <a
+              href={`tel:${client.phone}`}
+              className="flex items-center gap-3 p-4 min-h-[56px] hover:bg-muted/50 transition-colors"
+            >
               <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <p className="text-sm">{client.phone}</p>
-            </div>
+              <p className="text-sm text-primary underline-offset-2 hover:underline">{client.phone}</p>
+            </a>
           )}
           {client.address && (
-            <div className="flex items-center gap-3 p-4 min-h-[56px]">
+            <a
+              href={`https://maps.google.com/?q=${encodeURIComponent(client.address)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-4 min-h-[56px] hover:bg-muted/50 transition-colors"
+            >
               <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <p className="text-sm">{client.address}</p>
-            </div>
+              <p className="text-sm text-primary underline-offset-2 hover:underline">{client.address}</p>
+            </a>
           )}
           {client.notes && (
             <div className="flex items-start gap-3 p-4">
