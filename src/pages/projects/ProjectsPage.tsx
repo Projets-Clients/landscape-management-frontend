@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { HardHat, Plus, Search, X } from 'lucide-react'
 import type { ProjectSort } from '@/hooks/use-projects'
 import { Button } from '@/components/ui/button'
@@ -12,14 +13,16 @@ import { useAuthStore } from '@/store/auth.store'
 import { formatDate } from '@/lib/utils'
 import type { Project, ProjectStatus } from '@/types/api'
 
-const STATUS_FILTERS: { label: string; value: ProjectStatus | undefined }[] = [
-  { label: 'Tous', value: undefined },
-  { label: 'Brouillon', value: 'DRAFT' },
-  { label: 'Planifié', value: 'PLANNED' },
-  { label: 'En cours', value: 'IN_PROGRESS' },
-  { label: 'Signature', value: 'AWAITING_SIGNATURE' },
-  { label: 'Terminé', value: 'COMPLETED' },
-  { label: 'Litige', value: 'DISPUTED' },
+type StatusFilter = { labelKey: string; value: ProjectStatus | undefined }
+
+const STATUS_FILTERS: StatusFilter[] = [
+  { labelKey: 'projects.filter_all',         value: undefined },
+  { labelKey: 'projects.filter_draft',       value: 'DRAFT' },
+  { labelKey: 'projects.filter_planned',     value: 'PLANNED' },
+  { labelKey: 'projects.filter_in_progress', value: 'IN_PROGRESS' },
+  { labelKey: 'projects.filter_awaiting_sig',value: 'AWAITING_SIGNATURE' },
+  { labelKey: 'projects.filter_completed',   value: 'COMPLETED' },
+  { labelKey: 'projects.filter_disputed',    value: 'DISPUTED' },
 ]
 
 function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
@@ -52,6 +55,7 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
 
 export function ProjectsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const role = useAuthStore((s) => s.role)
 
@@ -79,7 +83,7 @@ export function ProjectsPage() {
       {/* Sticky top: title + search + filters */}
       <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">Chantiers</h1>
+          <h1 className="text-xl font-bold">{t('projects.title')}</h1>
           {role === 'ADMIN' && (
             <Button
               size="sm"
@@ -87,7 +91,7 @@ export function ProjectsPage() {
               onClick={() => void navigate('/chantiers/nouveau')}
             >
               <Plus className="h-4 w-4 mr-1" />
-              Nouveau
+              {t('projects.new')}
             </Button>
           )}
         </div>
@@ -97,7 +101,7 @@ export function ProjectsPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="search"
-              placeholder="Rechercher par titre ou référence…"
+              placeholder={t('projects.search_placeholder')}
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setPage(1) }}
               className="h-11 w-full rounded-xl border bg-card pl-9 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring"
@@ -117,19 +121,19 @@ export function ProjectsPage() {
             value={sort}
             onChange={(e) => { setSort(e.target.value as ProjectSort); setPage(1) }}
             className="h-11 rounded-xl border bg-card px-3 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
-            aria-label="Trier par"
+            aria-label={t('projects.sort_recent')}
           >
-            <option value="recent">Plus récent</option>
-            <option value="start">Date début</option>
-            <option value="updated">Mis à jour</option>
-            <option value="title">Titre A→Z</option>
+            <option value="recent">{t('projects.sort_recent')}</option>
+            <option value="start">{t('projects.sort_start')}</option>
+            <option value="updated">{t('projects.sort_updated')}</option>
+            <option value="title">{t('projects.sort_title')}</option>
           </select>
         </div>
 
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
           {STATUS_FILTERS.map((f) => (
             <button
-              key={f.label}
+              key={f.labelKey}
               onClick={() => {
                 setPage(1)
                 if (f.value) {
@@ -145,7 +149,7 @@ export function ProjectsPage() {
                   : 'bg-muted text-muted-foreground',
               ].join(' ')}
             >
-              {f.label}
+              {t(f.labelKey)}
             </button>
           ))}
         </div>
@@ -164,17 +168,17 @@ export function ProjectsPage() {
         {!isLoading && visible.length === 0 && (
           <EmptyState
             icon={HardHat}
-            title={query ? 'Aucun résultat' : 'Aucun chantier'}
+            title={query ? t('projects.empty_no_results') : t('projects.empty_title')}
             description={
               query
-                ? `Aucun chantier ne correspond à "${searchQuery.trim()}"`
+                ? t('projects.empty_no_results_desc', { query: searchQuery.trim() })
                 : statusFilter
-                  ? 'Aucun chantier avec ce statut'
-                  : 'Aucun chantier pour le moment'
+                  ? t('projects.empty_status_desc')
+                  : t('projects.empty_desc')
             }
             action={
               !query && role === 'ADMIN'
-                ? { label: 'Créer un chantier', onClick: () => void navigate('/chantiers/nouveau') }
+                ? { label: t('projects.create'), onClick: () => void navigate('/chantiers/nouveau') }
                 : undefined
             }
           />

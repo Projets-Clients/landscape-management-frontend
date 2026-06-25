@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import { queryClient } from '@/lib/query-client'
 import { SessionProvider } from '@/providers/SessionProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
+import './i18n/config'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(

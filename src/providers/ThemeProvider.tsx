@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
 type Theme = 'system' | 'light' | 'dark'
 export type ColorKey = 'green' | 'blue' | 'violet' | 'teal' | 'orange' | 'rose' | 'amber' | 'slate'
@@ -73,16 +73,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyColor(color)
   }, [color])
 
-  function setTheme(t: Theme) {
+  const setTheme = useCallback((t: Theme) => {
     localStorage.setItem(THEME_KEY, t)
     setThemeState(t)
-  }
+  }, [])
 
-  function setColor(c: ColorKey) {
+  const setColor = useCallback((c: ColorKey) => {
     localStorage.setItem(COLOR_KEY, c)
     setColorState(c)
     applyColor(c)
-  }
+  }, [])
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, color, setColor }}>

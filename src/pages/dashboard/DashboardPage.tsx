@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus, User } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
@@ -44,12 +45,12 @@ function StatCard({
 }
 
 function ProjectRow({ project, onClick }: { project: Project; onClick: () => void }) {
+  const { t } = useTranslation()
   return (
     <button
       onClick={onClick}
       className="flex min-h-[72px] w-full items-start gap-3 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted"
     >
-      <HardHat className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{project.title}</p>
         <p className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -60,7 +61,7 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
         <div className="mt-1 flex items-center justify-between gap-2">
           {project.expectedEndDate ? (
             <p className="text-xs text-muted-foreground">
-              Fin prévue : {formatDate(project.expectedEndDate)}
+              {t('dashboard.expected_end', { date: formatDate(project.expectedEndDate) })}
             </p>
           ) : <span />}
           <StatusBadge status={project.status} />
@@ -72,6 +73,7 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
 
 export function DashboardPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const role = useAuthStore((s) => s.role)
   const username = useAuthStore((s) => s.username)
 
@@ -85,8 +87,8 @@ export function DashboardPage() {
     <div className="flex h-full flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">Bonjour, {username}</h1>
-          <p className="hidden text-sm text-muted-foreground sm:block">Aperçu de l'activité</p>
+          <h1 className="text-xl font-bold">{t('dashboard.greeting', { username })}</h1>
+          <p className="hidden text-sm text-muted-foreground sm:block">{t('dashboard.subtitle')}</p>
         </div>
         {role === 'ADMIN' && (
           <div className="flex shrink-0 gap-2">
@@ -95,21 +97,19 @@ export function DashboardPage() {
               variant="outline"
               className="min-h-[44px] min-w-[44px] gap-0.5 sm:gap-1"
               onClick={() => void navigate('/clients/nouveau')}
-              title="Nouveau client"
+              title={t('dashboard.new_client')}
             >
               <Plus className="h-3.5 w-3.5" />
-              <User className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Nouveau client</span>
+              <span className="hidden sm:inline">{t('dashboard.new_client')}</span>
             </Button>
             <Button
               size="sm"
               className="min-h-[44px] min-w-[44px] gap-0.5 sm:gap-1"
               onClick={() => void navigate('/chantiers/nouveau')}
-              title="Nouveau chantier"
+              title={t('dashboard.new_project')}
             >
               <Plus className="h-3.5 w-3.5" />
-              <HardHat className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Nouveau chantier</span>
+              <span className="hidden sm:inline">{t('dashboard.new_project')}</span>
             </Button>
           </div>
         )}
@@ -118,7 +118,7 @@ export function DashboardPage() {
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
         <StatCard
           icon={HardHat}
-          label="En cours"
+          label={t('dashboard.stat_in_progress')}
           value={inProgress.data?.total}
           loading={inProgress.isLoading}
           color="bg-amber-100 text-amber-700"
@@ -126,7 +126,7 @@ export function DashboardPage() {
         />
         <StatCard
           icon={FileSignature}
-          label="À signer"
+          label={t('dashboard.stat_awaiting_sig')}
           value={awaitingSig.data?.total}
           loading={awaitingSig.isLoading}
           color="bg-orange-100 text-orange-700"
@@ -134,7 +134,7 @@ export function DashboardPage() {
         />
         <StatCard
           icon={CheckCircle}
-          label="Terminés"
+          label={t('dashboard.stat_completed')}
           value={completed.data?.total}
           loading={completed.isLoading}
           color="bg-green-100 text-green-700"
@@ -142,7 +142,7 @@ export function DashboardPage() {
         />
         <StatCard
           icon={AlertTriangle}
-          label="Litiges"
+          label={t('dashboard.stat_disputed')}
           value={disputed.data?.total}
           loading={disputed.isLoading}
           color="bg-red-100 text-red-700"
@@ -152,12 +152,12 @@ export function DashboardPage() {
 
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Chantiers récents</h2>
+          <h2 className="text-sm font-semibold">{t('dashboard.recent_projects')}</h2>
           <button
             className="flex min-h-[44px] items-center text-xs font-medium text-primary"
             onClick={() => void navigate('/chantiers')}
           >
-            Voir tout
+            {t('dashboard.see_all')}
           </button>
         </div>
 
@@ -175,7 +175,7 @@ export function DashboardPage() {
 
           {!recent.isLoading && recent.data?.data.length === 0 && (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              Aucun chantier pour le moment
+              {t('dashboard.no_projects')}
             </p>
           )}
         </div>

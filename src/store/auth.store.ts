@@ -9,7 +9,11 @@ interface AuthState {
   role: UserRole | null
   userId: string | null
   organizationId: string | null
+  language: string
+  theme: string
+  accentColor: string
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
+  setPreferences: (language: string, theme: string, accentColor: string) => void
   clearAuth: () => void
 }
 
@@ -33,6 +37,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   role: null,
   userId: null,
   organizationId: null,
+  language: 'fr',
+  theme: 'system',
+  accentColor: 'green',
 
   setAuth: (accessToken, username, refreshToken) => {
     const decoded = decodeJwtPayload(accessToken)
@@ -45,6 +52,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       userId: decoded?.sub ?? null,
       organizationId: decoded?.orgId ?? null,
     })
+  },
+
+  setPreferences: (language, theme, accentColor) => {
+    set({ language, theme, accentColor })
   },
 
   clearAuth: () => {

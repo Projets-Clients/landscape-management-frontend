@@ -6,6 +6,7 @@ import {
   UserCog,
   Settings,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import type { UserRole } from "@/types/api";
@@ -13,27 +14,27 @@ import type { UserRole } from "@/types/api";
 interface NavItem {
   to: string;
   icon: React.ElementType;
-  label: string;
+  labelKey: string;
   end?: boolean;
 }
 
 const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
   ADMIN: [
-    { to: "/", icon: LayoutDashboard, label: "Tableau", end: true },
-    { to: "/chantiers", icon: HardHat, label: "Chantiers" },
-    { to: "/clients", icon: Users, label: "Clients" },
-    { to: "/utilisateurs", icon: UserCog, label: "Équipe" },
-    { to: "/parametres", icon: Settings, label: "Paramètres" },
+    { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard_short", end: true },
+    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+    { to: "/clients", icon: Users, labelKey: "nav.clients" },
+    { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team" },
+    { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
   ],
   FOREMAN: [
-    { to: "/", icon: LayoutDashboard, label: "Tableau", end: true },
-    { to: "/chantiers", icon: HardHat, label: "Chantiers" },
-    { to: "/parametres", icon: Settings, label: "Paramètres" },
+    { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard_short", end: true },
+    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+    { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
   ],
   EMPLOYEE: [
-    { to: "/", icon: LayoutDashboard, label: "Tableau", end: true },
-    { to: "/chantiers", icon: HardHat, label: "Chantiers" },
-    { to: "/parametres", icon: Settings, label: "Paramètres" },
+    { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard_short", end: true },
+    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+    { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
   ],
 };
 
@@ -43,6 +44,7 @@ interface BottomNavProps {
 
 export function BottomNav({ className }: BottomNavProps) {
   const role = useAuthStore((s) => s.role);
+  const { t } = useTranslation();
   const items = role ? NAV_BY_ROLE[role] : [];
 
   return (
@@ -52,7 +54,7 @@ export function BottomNav({ className }: BottomNavProps) {
         className,
       )}
     >
-      {items.map(({ to, icon: Icon, label, end }) => (
+      {items.map(({ to, icon: Icon, labelKey, end }) => (
         <NavLink
           key={to}
           to={to}
@@ -65,7 +67,7 @@ export function BottomNav({ className }: BottomNavProps) {
           }
         >
           <Icon className="h-5 w-5" />
-          <span className="leading-none">{label}</span>
+          <span className="leading-none">{t(labelKey)}</span>
         </NavLink>
       ))}
     </nav>

@@ -1,7 +1,15 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { apiRequest } from '@/lib/api-client'
 import { useAuthStore } from '@/store/auth.store'
+
+interface UpdateMePayload {
+  username?: string
+  language?: string
+  theme?: string
+  accentColor?: string
+}
 
 interface UpdateMeResponse {
   id: string
@@ -9,21 +17,26 @@ interface UpdateMeResponse {
 }
 
 export function useUpdateMe() {
+  const { t } = useTranslation()
   const setAuth = useAuthStore((s) => s.setAuth)
   const accessToken = useAuthStore((s) => s.accessToken)
 
   return useMutation({
-    mutationFn: (data: { username: string }) =>
+    mutationFn: (data: UpdateMePayload) =>
       apiRequest<UpdateMeResponse>('/users/me', {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
-    onSuccess: (updated) => {
-      if (accessToken) {
+    onSuccess: (updated, variables) => {
+      if (variables.username && accessToken) {
         setAuth(accessToken, updated.username)
+        toast.success(t('settings.username_updated'))
       }
-      toast.success('Nom d\'utilisateur mis à jour')
     },
-    onError: () => toast.error('Ce nom d\'utilisateur est déjà pris'),
+    onError: (_, variables) => {
+      if (variables.username) {
+        toast.error(t('settings.username_taken'))
+      }
+    },
   })
 }

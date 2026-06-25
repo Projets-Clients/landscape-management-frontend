@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { RouterProvider } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { router } from '@/router'
 import { useAuthStore, getStoredRefreshToken } from '@/store/auth.store'
+import { useTheme } from '@/providers/ThemeProvider'
+import type { ColorKey } from '@/providers/ThemeProvider'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -26,17 +29,35 @@ export function SessionProvider() {
   const [ready, setReady] = useState(false)
   const setAuth = useAuthStore((s) => s.setAuth)
   const clearAuth = useAuthStore((s) => s.clearAuth)
+  const setPreferences = useAuthStore((s) => s.setPreferences)
+  const { setTheme, setColor } = useTheme()
+  const { i18n } = useTranslation()
 
   useEffect(() => {
-    void sessionRefresh.then((data) => {
+    void sessionRefresh.then(async (data) => {
       if (data) {
         setAuth(data.accessToken, sessionStorage.getItem('username') ?? '', data.refreshToken)
+        try {
+          const res = await fetch(`${API_URL}/users/me`, {
+            headers: { Authorization: `Bearer ${data.accessToken}` },
+          })
+          if (res.ok) {
+            const me = (await res.json()) as { language: string; theme: string; accentColor: string }
+            setPreferences(me.language, me.theme, me.accentColor)
+            setTheme(me.theme as 'system' | 'light' | 'dark')
+            setColor(me.accentColor as ColorKey)
+            localStorage.setItem('landscape-lang', me.language)
+            void i18n.changeLanguage(me.language)
+          }
+        } catch {
+          // ignore — local preferences remain active
+        }
       } else {
         clearAuth()
       }
       setReady(true)
     })
-  }, [setAuth, clearAuth])
+  }, [setAuth, clearAuth, setTheme, setColor, i18n, setPreferences])
 
   if (!ready) {
     return (

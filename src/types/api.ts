@@ -27,6 +27,9 @@ export interface User {
   lastName: string
   role: UserRole
   active: boolean
+  language: string
+  theme: string
+  accentColor: string
   createdAt: string
   updatedAt: string
 }

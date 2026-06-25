@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { LogOut, Monitor, Moon, Sun, User, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { LogOut, Monitor, Moon, Sun, User, Loader2, Languages } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -14,17 +15,18 @@ import { apiRequest } from '@/lib/api-client'
 import { useOrganization, useUpdateOrganization } from '@/hooks/use-organization'
 import { useUpdateMe } from '@/hooks/use-update-me'
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: 'Administrateur',
-  FOREMAN: 'Chef d\'équipe',
-  EMPLOYEE: 'Employé',
-}
-
 export function SettingsPage() {
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
   const { username, role, userId, clearAuth } = useAuthStore()
   const isAdmin = role === 'ADMIN'
   const { theme, setTheme, color, setColor } = useTheme()
+
+  const ROLE_LABELS: Record<string, string> = {
+    ADMIN: t('settings.role_admin'),
+    FOREMAN: t('settings.role_foreman'),
+    EMPLOYEE: t('settings.role_employee'),
+  }
 
   // Username change
   const [newUsername, setNewUsername] = useState(username)
@@ -52,6 +54,24 @@ export function SettingsPage() {
     void updateOrg.mutateAsync({ name: orgName.trim() })
   }
 
+  function handleThemeChange(newTheme: 'system' | 'light' | 'dark') {
+    setTheme(newTheme)
+    void apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify({ theme: newTheme }) })
+  }
+
+  function handleColorChange(newColor: ColorKey) {
+    setColor(newColor)
+    void apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify({ accentColor: newColor }) })
+  }
+
+  function handleLanguageChange(lang: string) {
+    localStorage.setItem('landscape-lang', lang)
+    void i18n.changeLanguage(lang)
+    void apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify({ language: lang }) }).then(() => {
+      toast.success(t('settings.language_updated'))
+    })
+  }
+
   async function handleLogout() {
     try {
       await apiRequest('/auth/logout', { method: 'POST' })
@@ -60,12 +80,12 @@ export function SettingsPage() {
     }
     clearAuth()
     void navigate('/login', { replace: true })
-    toast.success('Déconnecté')
+    toast.success(t('settings.logged_out'))
   }
 
   return (
     <div className="space-y-6 pb-4">
-      <h1 className="text-xl font-bold">Paramètres</h1>
+      <h1 className="text-xl font-bold">{t('settings.title')}</h1>
 
       {/* Avatar + identité */}
       <div className="flex flex-col items-center gap-3 py-4">
@@ -84,22 +104,22 @@ export function SettingsPage() {
       {/* Infos */}
       <Card className="divide-y">
         <div className="flex items-center justify-between p-4 min-h-[56px]">
-          <p className="text-sm text-muted-foreground">Identifiant</p>
+          <p className="text-sm text-muted-foreground">{t('settings.label_identifier')}</p>
           <p className="text-sm font-medium">@{username}</p>
         </div>
         <div className="flex items-center justify-between p-4 min-h-[56px]">
-          <p className="text-sm text-muted-foreground">Rôle</p>
+          <p className="text-sm text-muted-foreground">{t('settings.label_role')}</p>
           <p className="text-sm font-medium">{role ? (ROLE_LABELS[role] ?? role) : '—'}</p>
         </div>
       </Card>
 
       {/* Changement de nom */}
       <div className="space-y-2">
-        <p className="text-sm font-semibold">Nom d'utilisateur</p>
+        <p className="text-sm font-semibold">{t('settings.username_section')}</p>
         <Card className="p-4">
           <form onSubmit={handleUsernameSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="username">Nouveau nom d'utilisateur</Label>
+              <Label htmlFor="username">{t('settings.username_label')}</Label>
               <Input
                 id="username"
                 className="min-h-[44px]"
@@ -117,22 +137,46 @@ export function SettingsPage() {
               disabled={updateMe.isPending || !newUsername.trim() || newUsername.trim() === username}
             >
               {updateMe.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Enregistrer
+              {t('settings.save')}
             </Button>
           </form>
         </Card>
       </div>
 
+      {/* Langue */}
+      <div className="space-y-2">
+        <p className="text-sm font-semibold">{t('settings.language_section')}</p>
+        <Card className="p-1">
+          <div className="grid grid-cols-2 gap-1">
+            {(['fr', 'en'] as const).map((lang) => (
+              <button
+                key={lang}
+                onClick={() => handleLanguageChange(lang)}
+                className={[
+                  'flex items-center justify-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors',
+                  i18n.language === lang
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted',
+                ].join(' ')}
+              >
+                <Languages className="h-4 w-4" />
+                <span>{lang === 'fr' ? '🇫🇷' : '🇬🇧'} {t(`settings.lang_${lang}`)}</span>
+              </button>
+            ))}
+          </div>
+        </Card>
+      </div>
+
       {/* Couleur */}
       <div className="space-y-2">
-        <p className="text-sm font-semibold">Couleur</p>
+        <p className="text-sm font-semibold">{t('settings.color_section')}</p>
         <Card className="p-3">
           <div className="grid grid-cols-4 gap-3">
             {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { label, hex }]) => (
               <button
                 key={key}
                 title={label}
-                onClick={() => setColor(key)}
+                onClick={() => handleColorChange(key)}
                 className="flex flex-col items-center gap-1.5"
               >
                 <span
@@ -157,17 +201,17 @@ export function SettingsPage() {
 
       {/* Apparence */}
       <div className="space-y-2">
-        <p className="text-sm font-semibold">Apparence</p>
+        <p className="text-sm font-semibold">{t('settings.appearance_section')}</p>
         <Card className="p-1">
           <div className="grid grid-cols-3 gap-1">
             {([
-              { value: 'system', label: 'Système', icon: Monitor },
-              { value: 'light', label: 'Clair', icon: Sun },
-              { value: 'dark', label: 'Sombre', icon: Moon },
-            ] as const).map(({ value, label, icon: Icon }) => (
+              { value: 'system', labelKey: 'settings.theme_system', icon: Monitor },
+              { value: 'light',  labelKey: 'settings.theme_light',  icon: Sun },
+              { value: 'dark',   labelKey: 'settings.theme_dark',   icon: Moon },
+            ] as const).map(({ value, labelKey, icon: Icon }) => (
               <button
                 key={value}
-                onClick={() => setTheme(value)}
+                onClick={() => handleThemeChange(value)}
                 className={[
                   'flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors',
                   theme === value
@@ -176,7 +220,7 @@ export function SettingsPage() {
                 ].join(' ')}
               >
                 <Icon className="h-4 w-4" />
-                {label}
+                {t(labelKey)}
               </button>
             ))}
           </div>
@@ -186,7 +230,7 @@ export function SettingsPage() {
       {/* Organisation (admin seulement) */}
       {isAdmin && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Organisation</p>
+          <p className="text-sm font-semibold">{t('settings.org_section')}</p>
           <Card className="p-4">
             {orgLoading ? (
               <div className="flex justify-center py-4">
@@ -195,7 +239,7 @@ export function SettingsPage() {
             ) : (
               <form onSubmit={handleOrgSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="orgName">Nom de l'entreprise</Label>
+                  <Label htmlFor="orgName">{t('settings.org_name_label')}</Label>
                   <Input
                     id="orgName"
                     className="min-h-[44px]"
@@ -220,7 +264,7 @@ export function SettingsPage() {
                   disabled={updateOrg.isPending || !orgName.trim() || orgName.trim() === org?.name}
                 >
                   {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Enregistrer
+                  {t('settings.save')}
                 </Button>
               </form>
             )}
@@ -236,7 +280,7 @@ export function SettingsPage() {
         onClick={() => void handleLogout()}
       >
         <LogOut className="h-4 w-4" />
-        Se déconnecter
+        {t('settings.logout')}
       </Button>
     </div>
   )

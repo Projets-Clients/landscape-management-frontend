@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Users, Search, Plus, ChevronRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { fullName } from '@/lib/utils'
 
 export function ClientsPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [sort, setSort] = useState<ClientSort>('name')
@@ -23,14 +25,14 @@ export function ClientsPage() {
       {/* Sticky top: title + search */}
       <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">Clients</h1>
+          <h1 className="text-xl font-bold">{t('clients.title')}</h1>
           <Button
             size="sm"
             className="min-h-[44px]"
             onClick={() => void navigate('/clients/nouveau')}
           >
             <Plus className="mr-1 h-4 w-4" />
-            Nouveau
+            {t('clients.new')}
           </Button>
         </div>
 
@@ -39,7 +41,7 @@ export function ClientsPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="min-h-[44px] pl-9"
-              placeholder="Rechercher un client…"
+              placeholder={t('clients.search_placeholder')}
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             />
@@ -48,11 +50,11 @@ export function ClientsPage() {
             value={sort}
             onChange={(e) => { setSort(e.target.value as ClientSort); setPage(1) }}
             className="h-11 rounded-xl border bg-card px-3 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
-            aria-label="Trier par"
+            aria-label={t('clients.sort_name')}
           >
-            <option value="name">A → Z</option>
-            <option value="recent">Plus récent</option>
-            <option value="updated">Mis à jour</option>
+            <option value="name">{t('clients.sort_name')}</option>
+            <option value="recent">{t('clients.sort_recent')}</option>
+            <option value="updated">{t('clients.sort_updated')}</option>
           </select>
         </div>
       </div>
@@ -70,9 +72,9 @@ export function ClientsPage() {
         {!isLoading && data?.data.length === 0 && (
           <EmptyState
             icon={Users}
-            title="Aucun client"
-            description={search ? 'Aucun résultat pour cette recherche' : 'Créez votre premier client'}
-            action={{ label: 'Nouveau client', onClick: () => void navigate('/clients/nouveau') }}
+            title={t('clients.empty_title')}
+            description={search ? t('clients.empty_no_results') : t('clients.empty_desc')}
+            action={{ label: t('clients.new_client'), onClick: () => void navigate('/clients/nouveau') }}
           />
         )}
 
