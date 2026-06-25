@@ -15,7 +15,7 @@ const STATUS_CONFIG: Record<ProjectStatus, { label: string; className: string }>
     className: 'bg-amber-50 text-amber-700 border border-amber-200',
   },
   AWAITING_SIGNATURE: {
-    label: 'En attente de signature',
+    label: 'Signature',
     className: 'bg-orange-50 text-orange-700 border border-orange-200',
   },
   COMPLETED: {

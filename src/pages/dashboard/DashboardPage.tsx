@@ -51,20 +51,20 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
     >
       <HardHat className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-sm font-semibold">{project.title}</p>
-          <StatusBadge status={project.status} />
-        </div>
+        <p className="truncate text-sm font-semibold">{project.title}</p>
         <p className="mt-0.5 truncate text-xs text-muted-foreground">
           {project.reference}
           {project.client &&
             ` · ${project.client.firstName} ${project.client.lastName}`}
         </p>
-        {project.expectedEndDate && (
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Fin prévue : {formatDate(project.expectedEndDate)}
-          </p>
-        )}
+        <div className="mt-1 flex items-center justify-between gap-2">
+          {project.expectedEndDate ? (
+            <p className="text-xs text-muted-foreground">
+              Fin prévue : {formatDate(project.expectedEndDate)}
+            </p>
+          ) : <span />}
+          <StatusBadge status={project.status} />
+        </div>
       </div>
     </button>
   )

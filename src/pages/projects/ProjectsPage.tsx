@@ -28,12 +28,9 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
       onClick={onClick}
       className="flex w-full flex-col gap-2 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted min-h-[88px]"
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate font-semibold text-foreground">{project.title}</p>
-          <p className="text-xs text-muted-foreground">{project.reference}</p>
-        </div>
-        <StatusBadge status={project.status} />
+      <div className="min-w-0">
+        <p className="truncate font-semibold text-foreground">{project.title}</p>
+        <p className="text-xs text-muted-foreground">{project.reference}</p>
       </div>
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         {project.client && (
@@ -45,7 +42,10 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
           <span className="shrink-0">→ {formatDate(project.expectedEndDate)}</span>
         )}
       </div>
-      <p className="truncate text-xs text-muted-foreground">{project.address}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="truncate text-xs text-muted-foreground">{project.address}</p>
+        <StatusBadge status={project.status} />
+      </div>
     </button>
   )
 }
