@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { LogOut, Monitor, Moon, Sun, User, Loader2, Languages } from 'lucide-react'
+import { LogOut, Monitor, Moon, Sun, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -146,30 +146,18 @@ export function SettingsPage() {
       {/* Langue */}
       <div className="space-y-2">
         <p className="text-sm font-semibold">{t('settings.language_section')}</p>
-        <Card className="p-1">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1">
-            {([
-              { code: 'fr', flag: '🇫🇷' },
-              { code: 'en', flag: '🇬🇧' },
-              { code: 'es', flag: '🇪🇸' },
-              { code: 'it', flag: '🇮🇹' },
-              { code: 'de', flag: '🇩🇪' },
-            ] as const).map(({ code, flag }) => (
-              <button
-                key={code}
-                onClick={() => handleLanguageChange(code)}
-                className={[
-                  'flex items-center justify-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors',
-                  i18n.language === code
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted',
-                ].join(' ')}
-              >
-                <Languages className="h-4 w-4" />
-                <span>{flag} {t(`settings.lang_${code}`)}</span>
-              </button>
-            ))}
-          </div>
+        <Card className="p-4">
+          <select
+            value={i18n.language}
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+          >
+            <option value="fr">🇫🇷 {t('settings.lang_fr')}</option>
+            <option value="en">🇬🇧 {t('settings.lang_en')}</option>
+            <option value="es">🇪🇸 {t('settings.lang_es')}</option>
+            <option value="it">🇮🇹 {t('settings.lang_it')}</option>
+            <option value="de">🇩🇪 {t('settings.lang_de')}</option>
+          </select>
         </Card>
       </div>
 
