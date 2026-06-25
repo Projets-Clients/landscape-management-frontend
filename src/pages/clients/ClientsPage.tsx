@@ -88,7 +88,7 @@ export function ClientsPage() {
       </div>
 
       {/* Sticky bottom: pagination */}
-      <div className="shrink-0 px-4 pb-20 lg:pb-4 pt-1 bg-background">
+      <div className="shrink-0 px-4 pb-14 lg:pb-2 pt-1 bg-background">
         {data && (
           <Pagination
             page={page}
