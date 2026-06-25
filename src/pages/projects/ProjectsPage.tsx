@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { HardHat, Plus, Search, X } from 'lucide-react'
+import type { ProjectSort } from '@/hooks/use-projects'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
@@ -59,8 +60,9 @@ export function ProjectsPage() {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(1)
+  const [sort, setSort] = useState<ProjectSort>('recent')
 
-  const { data, isLoading } = useProjects({ status: statusFilter, page, limit: 20 })
+  const { data, isLoading } = useProjects({ status: statusFilter, page, limit: 20, sort })
 
   const query = searchQuery.trim().toLowerCase()
   const projects = data?.data ?? []
@@ -90,28 +92,41 @@ export function ProjectsPage() {
           )}
         </div>
 
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="search"
-            placeholder="Rechercher par titre ou référence…"
-            value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); setPage(1) }}
-            className="h-11 w-full rounded-xl border bg-card pl-9 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              aria-label="Effacer la recherche"
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="search"
+              placeholder="Rechercher par titre ou référence…"
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1) }}
+              className="h-11 w-full rounded-xl border bg-card pl-9 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                aria-label="Effacer la recherche"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => { setSort(e.target.value as ProjectSort); setPage(1) }}
+            className="h-11 rounded-xl border bg-card px-3 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Trier par"
+          >
+            <option value="recent">Plus récent</option>
+            <option value="start">Date début</option>
+            <option value="updated">Mis à jour</option>
+            <option value="title">Titre A→Z</option>
+          </select>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
           {STATUS_FILTERS.map((f) => (
             <button
               key={f.label}
@@ -124,7 +139,7 @@ export function ProjectsPage() {
                 }
               }}
               className={[
-                'rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
+                'shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
                 statusFilter === f.value
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground',

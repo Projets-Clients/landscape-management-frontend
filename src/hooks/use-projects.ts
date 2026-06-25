@@ -8,18 +8,22 @@ import type {
   ProjectStatus,
 } from '@/types/api'
 
+export type ProjectSort = 'recent' | 'start' | 'updated' | 'title'
+
 interface ProjectsParams {
   status?: ProjectStatus
   clientId?: string
   page?: number
   limit?: number
+  sort?: ProjectSort
 }
 
 export function useProjects(params: ProjectsParams = {}) {
-  const { status, clientId, page = 1, limit = 20 } = params
+  const { status, clientId, page = 1, limit = 20, sort } = params
   const qs = new URLSearchParams()
   if (status) qs.set('status', status)
   if (clientId) qs.set('clientId', clientId)
+  if (sort && sort !== 'recent') qs.set('sort', sort)
   qs.set('page', String(page))
   qs.set('limit', String(limit))
 
