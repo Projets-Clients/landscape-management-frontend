@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
+import { ScrollLayout } from '@/components/layout/ScrollLayout'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { ProjectsPage } from '@/pages/projects/ProjectsPage'
@@ -32,21 +33,33 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         children: [
-          { index: true, element: <DashboardPage /> },
+          // Pages with sticky header + footer (manage their own scroll)
           { path: 'chantiers', element: <ProjectsPage /> },
-          { path: 'chantiers/:id', element: <ProjectDetailPage /> },
-          { path: 'chantiers/:id/photos', element: <PhotosPage /> },
-          { path: 'chantiers/:id/rapport', element: <ReportPage /> },
-          { path: 'parametres', element: <SettingsPage /> },
           {
             element: <RoleRoute allowed={['ADMIN']} />,
             children: [
-              { path: 'chantiers/nouveau', element: <CreateProjectPage /> },
-              { path: 'chantiers/:id/modifier', element: <EditProjectPage /> },
               { path: 'clients', element: <ClientsPage /> },
-              { path: 'clients/nouveau', element: <CreateClientPage /> },
-              { path: 'clients/:id', element: <ClientDetailPage /> },
-              { path: 'utilisateurs', element: <UsersPage /> },
+            ],
+          },
+          // All other pages scroll normally inside ScrollLayout
+          {
+            element: <ScrollLayout />,
+            children: [
+              { index: true, element: <DashboardPage /> },
+              { path: 'chantiers/:id', element: <ProjectDetailPage /> },
+              { path: 'chantiers/:id/photos', element: <PhotosPage /> },
+              { path: 'chantiers/:id/rapport', element: <ReportPage /> },
+              { path: 'parametres', element: <SettingsPage /> },
+              {
+                element: <RoleRoute allowed={['ADMIN']} />,
+                children: [
+                  { path: 'chantiers/nouveau', element: <CreateProjectPage /> },
+                  { path: 'chantiers/:id/modifier', element: <EditProjectPage /> },
+                  { path: 'clients/nouveau', element: <CreateClientPage /> },
+                  { path: 'clients/:id', element: <ClientDetailPage /> },
+                  { path: 'utilisateurs', element: <UsersPage /> },
+                ],
+              },
             ],
           },
         ],

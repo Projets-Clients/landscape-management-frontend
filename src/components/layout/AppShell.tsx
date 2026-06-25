@@ -9,7 +9,7 @@ export function AppShell() {
       <Sidebar className="hidden lg:flex" />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header className="lg:hidden" />
-        <main className="flex-1 overflow-y-auto p-4 pb-20 lg:pb-4">
+        <main className="flex-1 overflow-hidden flex flex-col">
           <Outlet />
         </main>
         <BottomNav className="lg:hidden" />

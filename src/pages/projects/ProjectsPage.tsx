@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { EmptyState } from '@/components/common/EmptyState'
+import { Pagination } from '@/components/common/Pagination'
 import { useProjects } from '@/hooks/use-projects'
 import { useAuthStore } from '@/store/auth.store'
 import { formatDate } from '@/lib/utils'
@@ -57,8 +58,9 @@ export function ProjectsPage() {
   const statusFilter = statusParam ?? undefined
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [page, setPage] = useState(1)
 
-  const { data, isLoading } = useProjects({ status: statusFilter })
+  const { data, isLoading } = useProjects({ status: statusFilter, page, limit: 20 })
 
   const query = searchQuery.trim().toLowerCase()
   const projects = data?.data ?? []
@@ -71,100 +73,119 @@ export function ProjectsPage() {
     : projects
 
   return (
-    <div className="space-y-4 pb-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Chantiers</h1>
-        {role === 'ADMIN' && (
-          <Button
-            size="sm"
-            className="min-h-[44px]"
-            onClick={() => void navigate('/chantiers/nouveau')}
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            Nouveau
-          </Button>
-        )}
-      </div>
+    <div className="flex flex-col flex-1 overflow-hidden min-h-0">
+      {/* Sticky top: title + search + filters */}
+      <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold">Chantiers</h1>
+          {role === 'ADMIN' && (
+            <Button
+              size="sm"
+              className="min-h-[44px]"
+              onClick={() => void navigate('/chantiers/nouveau')}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Nouveau
+            </Button>
+          )}
+        </div>
 
-      <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="search"
-          placeholder="Rechercher par titre ou référence…"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-11 w-full rounded-xl border bg-card pl-9 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            aria-label="Effacer la recherche"
-            onClick={() => setSearchQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            placeholder="Rechercher par titre ou référence…"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1) }}
+            className="h-11 w-full rounded-xl border bg-card pl-9 pr-9 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              aria-label="Effacer la recherche"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
-      <div className="flex flex-wrap gap-2">
-        {STATUS_FILTERS.map((f) => (
-          <button
-            key={f.label}
-            onClick={() => {
-              if (f.value) {
-                setSearchParams({ status: f.value })
-              } else {
-                setSearchParams({})
-              }
-            }}
-            className={[
-              'rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
-              statusFilter === f.value
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground',
-            ].join(' ')}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
-      {isLoading && (
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-[88px] rounded-xl" />
+        <div className="flex flex-wrap gap-2">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.label}
+              onClick={() => {
+                setPage(1)
+                if (f.value) {
+                  setSearchParams({ status: f.value })
+                } else {
+                  setSearchParams({})
+                }
+              }}
+              className={[
+                'rounded-full px-3 py-1.5 text-xs font-medium transition-colors min-h-[36px]',
+                statusFilter === f.value
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground',
+              ].join(' ')}
+            >
+              {f.label}
+            </button>
           ))}
         </div>
-      )}
+      </div>
 
-      {!isLoading && visible.length === 0 && (
-        <EmptyState
-          icon={HardHat}
-          title={query ? 'Aucun résultat' : 'Aucun chantier'}
-          description={
-            query
-              ? `Aucun chantier ne correspond à "${searchQuery.trim()}"`
-              : statusFilter
-                ? 'Aucun chantier avec ce statut'
-                : 'Aucun chantier pour le moment'
-          }
-          action={
-            !query && role === 'ADMIN'
-              ? { label: 'Créer un chantier', onClick: () => void navigate('/chantiers/nouveau') }
-              : undefined
-          }
-        />
-      )}
+      {/* Scrollable list */}
+      <div className="flex-1 overflow-y-auto px-4">
+        {isLoading && (
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-[88px] rounded-xl" />
+            ))}
+          </div>
+        )}
 
-      <div className="space-y-3">
-        {visible.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onClick={() => void navigate(`/chantiers/${project.id}`)}
+        {!isLoading && visible.length === 0 && (
+          <EmptyState
+            icon={HardHat}
+            title={query ? 'Aucun résultat' : 'Aucun chantier'}
+            description={
+              query
+                ? `Aucun chantier ne correspond à "${searchQuery.trim()}"`
+                : statusFilter
+                  ? 'Aucun chantier avec ce statut'
+                  : 'Aucun chantier pour le moment'
+            }
+            action={
+              !query && role === 'ADMIN'
+                ? { label: 'Créer un chantier', onClick: () => void navigate('/chantiers/nouveau') }
+                : undefined
+            }
           />
-        ))}
+        )}
+
+        <div className="space-y-3 pb-3">
+          {visible.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onClick={() => void navigate(`/chantiers/${project.id}`)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Sticky bottom: pagination */}
+      <div className="shrink-0 px-4 pb-20 lg:pb-4 pt-1 bg-background">
+        {!searchQuery && data && (
+          <Pagination
+            page={page}
+            total={data.total}
+            limit={20}
+            onChange={setPage}
+          />
+        )}
       </div>
     </div>
   )
