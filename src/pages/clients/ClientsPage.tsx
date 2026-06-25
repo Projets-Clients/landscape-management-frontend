@@ -7,14 +7,16 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
 import { Pagination } from '@/components/common/Pagination'
 import { useClients } from '@/hooks/use-clients'
+import type { ClientSort } from '@/hooks/use-clients'
 import { fullName } from '@/lib/utils'
 
 export function ClientsPage() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [sort, setSort] = useState<ClientSort>('name')
 
-  const { data, isLoading } = useClients({ search: search || undefined, active: true, page, limit: 20 })
+  const { data, isLoading } = useClients({ search: search || undefined, active: true, page, limit: 20, sort })
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden min-h-0">
@@ -32,14 +34,26 @@ export function ClientsPage() {
           </Button>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            className="min-h-[44px] pl-9"
-            placeholder="Rechercher un client…"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-          />
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="min-h-[44px] pl-9"
+              placeholder="Rechercher un client…"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => { setSort(e.target.value as ClientSort); setPage(1) }}
+            className="h-11 rounded-xl border bg-card px-3 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Trier par"
+          >
+            <option value="name">A → Z</option>
+            <option value="recent">Plus récent</option>
+            <option value="updated">Mis à jour</option>
+          </select>
         </div>
       </div>
 

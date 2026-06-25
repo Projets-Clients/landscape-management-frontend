@@ -3,18 +3,22 @@ import { apiRequest } from '@/lib/api-client'
 import { queryClient } from '@/lib/query-client'
 import type { Client, Paginated } from '@/types/api'
 
+export type ClientSort = 'name' | 'recent' | 'updated'
+
 interface ClientsParams {
   search?: string
   active?: boolean
   page?: number
   limit?: number
+  sort?: ClientSort
 }
 
 export function useClients(params: ClientsParams = {}) {
-  const { search, active, page = 1, limit = 20 } = params
+  const { search, active, page = 1, limit = 20, sort } = params
   const qs = new URLSearchParams()
   if (search) qs.set('search', search)
   if (active !== undefined) qs.set('active', String(active))
+  if (sort && sort !== 'name') qs.set('sort', sort)
   qs.set('page', String(page))
   qs.set('limit', String(limit))
 
