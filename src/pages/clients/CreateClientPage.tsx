@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { useCreateClient } from '@/hooks/use-clients'
 
 export function CreateClientPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const createClient = useCreateClient()
 
   const [form, setForm] = useState({
@@ -42,7 +44,7 @@ export function CreateClientPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.firstName || !form.lastName || !form.email) {
-      toast.error('Prénom, nom et email sont obligatoires')
+      toast.error(t('create_client.required_error'))
       return
     }
     try {
@@ -54,10 +56,10 @@ export function CreateClientPage() {
         address: buildAddress(),
         notes: form.notes.trim() || undefined,
       })
-      toast.success('Client créé')
+      toast.success(t('create_client.success'))
       void navigate(`/clients/${client.id}`)
     } catch {
-      toast.error('Erreur lors de la création')
+      toast.error(t('create_client.error'))
     }
   }
 
@@ -70,13 +72,13 @@ export function CreateClientPage() {
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-lg font-bold">Nouveau client</h1>
+        <h1 className="text-lg font-bold">{t('create_client.title')}</h1>
       </div>
 
       <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <Label htmlFor="firstName">Prénom *</Label>
+            <Label htmlFor="firstName">{t('common.first_name')} *</Label>
             <Input
               id="firstName"
               className="min-h-[44px]"
@@ -86,7 +88,7 @@ export function CreateClientPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lastName">Nom *</Label>
+            <Label htmlFor="lastName">{t('common.last_name')} *</Label>
             <Input
               id="lastName"
               className="min-h-[44px]"
@@ -98,7 +100,7 @@ export function CreateClientPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email *</Label>
+          <Label htmlFor="email">{t('common.email')} *</Label>
           <Input
             id="email"
             type="email"
@@ -110,7 +112,7 @@ export function CreateClientPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone">Téléphone</Label>
+          <Label htmlFor="phone">{t('common.phone')}</Label>
           <Input
             id="phone"
             type="tel"
@@ -123,9 +125,9 @@ export function CreateClientPage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Adresse</Label>
+          <Label>{t('common.address')}</Label>
           <AddressAutocomplete
-            placeholder="Numéro et rue"
+            placeholder={t('common.street_placeholder')}
             className="min-h-[44px]"
             value={form.street}
             onChange={(v) => set('street', v)}
@@ -133,7 +135,7 @@ export function CreateClientPage() {
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              placeholder="Code postal"
+              placeholder={t('common.postal_code')}
               className="min-h-[44px]"
               inputMode="numeric"
               autoComplete="postal-code"
@@ -141,7 +143,7 @@ export function CreateClientPage() {
               onChange={(e) => set('postalCode', e.target.value)}
             />
             <Input
-              placeholder="Ville"
+              placeholder={t('common.city')}
               className="min-h-[44px]"
               autoComplete="address-level2"
               value={form.city}
@@ -151,12 +153,12 @@ export function CreateClientPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t('create_client.notes_label')}</Label>
           <Textarea
             id="notes"
             value={form.notes}
             onChange={(e) => set('notes', e.target.value)}
-            placeholder="Informations complémentaires…"
+            placeholder={t('create_client.notes_placeholder')}
             className="min-h-[100px]"
           />
         </div>
@@ -169,7 +171,7 @@ export function CreateClientPage() {
           {createClient.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
-          Créer le client
+          {t('create_client.submit')}
         </Button>
       </form>
     </div>

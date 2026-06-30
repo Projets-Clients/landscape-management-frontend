@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   MapPin,
@@ -37,13 +38,6 @@ import { formatDate, formatCurrency, fullName } from "@/lib/utils";
 import type { Photo, ProjectStatus } from "@/types/api";
 import { PhotoLightbox } from "@/components/common/PhotoLightbox";
 
-const TRANSITION_LABELS: Partial<Record<ProjectStatus, string>> = {
-  DRAFT: "Planifier",
-  PLANNED: "Démarrer le chantier",
-  IN_PROGRESS: "Clôturer le chantier",
-  DISPUTED: "Reprendre le chantier",
-};
-
 const NEXT_STATUS: Partial<Record<ProjectStatus, ProjectStatus>> = {
   DRAFT: "PLANNED",
   PLANNED: "IN_PROGRESS",
@@ -62,12 +56,20 @@ function canTransition(status: ProjectStatus, role: string | null): boolean {
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const role = useAuthStore((s) => s.role);
   const [lightbox, setLightbox] = useState<{
     photos: Photo[];
     index: number;
     title?: string;
   } | null>(null);
+
+  const TRANSITION_LABELS: Partial<Record<ProjectStatus, string>> = {
+    DRAFT: t('project.transition_plan'),
+    PLANNED: t('project.transition_start'),
+    IN_PROGRESS: t('project.transition_close'),
+    DISPUTED: t('project.transition_resume'),
+  };
 
   const { data: project, isLoading } = useProject(id ?? "");
   const { data: photos } = usePhotos(id ?? "");
@@ -99,13 +101,13 @@ export function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-muted-foreground">Chantier introuvable</p>
+        <p className="text-muted-foreground">{t('project.not_found')}</p>
         <Button
           variant="ghost"
           className="mt-4 min-h-[44px]"
           onClick={() => void navigate(-1)}
         >
-          Retour
+          {t('common.back')}
         </Button>
       </div>
     );
@@ -124,36 +126,36 @@ export function ProjectDetailPage() {
     if (!next) return;
     try {
       await updateStatus.mutateAsync(next);
-      toast.success("Statut mis à jour");
+      toast.success(t('project.status_updated'));
     } catch {
-      toast.error("Impossible de changer le statut");
+      toast.error(t('project.status_error'));
     }
   }
 
   async function handleSendSignature() {
     try {
       await createSigRequest.mutateAsync();
-      toast.success("Lien de signature envoyé au client");
+      toast.success(t('project.sig_sent'));
     } catch {
-      toast.error("Erreur lors de l'envoi");
+      toast.error(t('project.sig_error'));
     }
   }
 
   async function handleAssign(userId: string) {
     try {
       await assignUsers.mutateAsync([userId]);
-      toast.success("Membre ajouté");
+      toast.success(t('project.member_added'));
     } catch {
-      toast.error("Erreur lors de l'assignation");
+      toast.error(t('project.member_add_error'));
     }
   }
 
   async function handleUnassign(userId: string) {
     try {
       await unassignUser.mutateAsync(userId);
-      toast.success("Membre retiré");
+      toast.success(t('project.member_removed'));
     } catch {
-      toast.error("Erreur lors du retrait");
+      toast.error(t('project.member_remove_error'));
     }
   }
 
@@ -183,7 +185,7 @@ export function ProjectDetailPage() {
         </div>
         {role === "ADMIN" && !isLocked && (
           <button
-            aria-label="Modifier le chantier"
+            aria-label={t('project.edit_aria')}
             className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-card active:bg-muted"
             onClick={() => void navigate(`/chantiers/${id}/modifier`)}
           >
@@ -199,8 +201,8 @@ export function ProjectDetailPage() {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-red-800">
               {(project.signatureRequests?.length ?? 0) > 0
-                ? "Signature refusée par le client"
-                : "Chantier en litige"}
+                ? t('project.sig_refused')
+                : t('project.disputed_title')}
             </p>
             {project.signatureRequests?.[0]?.refusalComment && (
               <p className="text-xs text-red-700 mt-1 italic">
@@ -215,12 +217,12 @@ export function ProjectDetailPage() {
       {(project.signatureRequests?.length ?? 0) > 0 && project.status !== "DISPUTED" && (
         <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 space-y-2">
           <p className="text-xs font-semibold text-orange-800">
-            Historique des refus
+            {t('project.refusal_history')}
           </p>
           {project.signatureRequests!.map((r) => (
             <div key={r.id} className="space-y-0.5">
               <p className="text-xs text-orange-700">
-                {new Date(r.refusedAt).toLocaleDateString("fr-FR", {
+                {new Date(r.refusedAt).toLocaleDateString(i18n.language, {
                   day: "2-digit",
                   month: "long",
                   year: "numeric",
@@ -266,8 +268,8 @@ export function ProjectDetailPage() {
           >
             <Send className="h-4 w-4" />
             {createSigRequest.isPending
-              ? "Envoi…"
-              : "Envoyer le lien de signature"}
+              ? t('project.sending')
+              : t('project.send_sig_link')}
           </Button>
         )}
 
@@ -280,14 +282,14 @@ export function ProjectDetailPage() {
           onClick={async () => {
             try {
               await generateReport.mutateAsync();
-              toast.success("Rapport généré");
+              toast.success(t('project.report_generated'));
             } catch {
-              toast.error("Erreur lors de la génération");
+              toast.error(t('project.report_generate_error'));
             }
           }}
         >
           <FileText className="h-4 w-4" />
-          {generateReport.isPending ? "Génération…" : "Générer le rapport"}
+          {generateReport.isPending ? t('project.generating') : t('project.generate_report')}
         </Button>
       )}
 
@@ -302,7 +304,7 @@ export function ProjectDetailPage() {
               className="flex flex-1 min-h-[48px] items-center justify-center gap-2 rounded-lg border bg-card px-4 text-sm font-medium transition-colors hover:bg-muted"
             >
               <Download className="h-4 w-4" />
-              Télécharger
+              {t('common.download')}
             </a>
             {project.client.email && (role === "ADMIN" || role === "FOREMAN") && (
               <Button
@@ -312,29 +314,29 @@ export function ProjectDetailPage() {
                 onClick={async () => {
                   try {
                     await sendReport.mutateAsync();
-                    toast.success("Rapport envoyé au client");
+                    toast.success(t('project.report_sent'));
                   } catch {
-                    toast.error("Erreur lors de l'envoi");
+                    toast.error(t('project.report_send_error'));
                   }
                 }}
               >
                 <Send className="h-4 w-4" />
-                {sendReport.isPending ? "Envoi…" : "Envoyer au client"}
+                {sendReport.isPending ? t('project.sending') : t('project.send_to_client')}
               </Button>
             )}
           </div>
           {report?.lastSentAt && (
             <p className="text-center text-xs text-muted-foreground">
-              Rapport envoyé le{" "}
-              {new Date(report.lastSentAt).toLocaleDateString("fr-FR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              })}{" "}
-              à{" "}
-              {new Date(report.lastSentAt).toLocaleTimeString("fr-FR", {
-                hour: "2-digit",
-                minute: "2-digit",
+              {t('project.report_sent_on', {
+                date: new Date(report.lastSentAt).toLocaleDateString(i18n.language, {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                }),
+                time: new Date(report.lastSentAt).toLocaleTimeString(i18n.language, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
               })}
             </p>
           )}
@@ -346,14 +348,14 @@ export function ProjectDetailPage() {
         <div className="flex items-start gap-3 p-4">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
           <div>
-            <p className="text-xs text-muted-foreground">Adresse</p>
+            <p className="text-xs text-muted-foreground">{t('project.info_address')}</p>
             <p className="text-sm font-medium">{project.address}</p>
           </div>
         </div>
         <div className="flex items-start gap-3 p-4">
           <Users className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
           <div>
-            <p className="text-xs text-muted-foreground">Client</p>
+            <p className="text-xs text-muted-foreground">{t('project.info_client')}</p>
             <p className="text-sm font-medium">{fullName(project.client)}</p>
             {project.client.email && (
               <p className="text-xs text-muted-foreground">
@@ -366,7 +368,7 @@ export function ProjectDetailPage() {
           <div className="flex items-start gap-3 p-4">
             <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div>
-              <p className="text-xs text-muted-foreground">Dates</p>
+              <p className="text-xs text-muted-foreground">{t('project.info_dates')}</p>
               <p className="text-sm">
                 {formatDate(project.startDate)} →{" "}
                 {formatDate(project.expectedEndDate)}
@@ -378,7 +380,7 @@ export function ProjectDetailPage() {
           <div className="flex items-start gap-3 p-4">
             <Euro className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div>
-              <p className="text-xs text-muted-foreground">Montant devis</p>
+              <p className="text-xs text-muted-foreground">{t('project.info_quote')}</p>
               <p className="text-sm font-semibold">
                 {formatCurrency(project.quoteAmount)}
               </p>
@@ -387,13 +389,13 @@ export function ProjectDetailPage() {
         )}
         {project.description && (
           <div className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">Description</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('project.info_description')}</p>
             <p className="text-sm whitespace-pre-wrap">{project.description}</p>
           </div>
         )}
         {project.notes && (
           <div className="p-4">
-            <p className="text-xs text-muted-foreground mb-1">Notes internes</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('project.info_notes')}</p>
             <p className="text-sm whitespace-pre-wrap text-muted-foreground">
               {project.notes}
             </p>
@@ -403,11 +405,11 @@ export function ProjectDetailPage() {
 
       {/* Team */}
       <div className="space-y-2">
-        <h2 className="text-sm font-semibold">Équipe</h2>
+        <h2 className="text-sm font-semibold">{t('project.team')}</h2>
         <Card className="divide-y">
           {assignedUsers.length === 0 && (
             <p className="p-4 text-sm text-muted-foreground">
-              Aucun membre assigné
+              {t('project.no_member')}
             </p>
           )}
           {assignedUsers.map((user) => (
@@ -423,7 +425,7 @@ export function ProjectDetailPage() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{fullName(user)}</p>
                 <p className="text-xs text-muted-foreground capitalize">
-                  {user.role === "FOREMAN" ? "Chef d'équipe" : "Employé"}
+                  {user.role === "FOREMAN" ? t('project.role_foreman') : t('project.role_employee')}
                 </p>
               </div>
               {role === "ADMIN" && !isLocked && (
@@ -431,7 +433,7 @@ export function ProjectDetailPage() {
                   className="text-xs text-red-600 min-h-[44px] px-2"
                   onClick={() => void handleUnassign(user.id)}
                 >
-                  Retirer
+                  {t('project.remove_member')}
                 </button>
               )}
             </div>
@@ -441,7 +443,7 @@ export function ProjectDetailPage() {
         {role === "ADMIN" && !isLocked && availableToAssign.length > 0 && (
           <Card className="divide-y">
             <p className="p-3 text-xs font-medium text-muted-foreground">
-              Ajouter un membre
+              {t('project.add_member')}
             </p>
             {availableToAssign.map((user) => (
               <button
@@ -466,32 +468,32 @@ export function ProjectDetailPage() {
       {/* Photos */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Photos</h2>
+          <h2 className="text-sm font-semibold">{t('project.photos')}</h2>
           <button
             className="flex items-center gap-1 text-xs text-primary font-medium min-h-[44px]"
             onClick={() => void navigate(`/chantiers/${id}/photos`)}
           >
             <Camera className="h-3.5 w-3.5" />
-            {isLocked ? "Voir" : "Gérer"}
+            {isLocked ? t('project.view_photos') : t('project.manage_photos')}
           </button>
         </div>
         {(photos ?? []).length === 0 ? (
           isLocked ? (
-            <p className="text-sm text-muted-foreground italic">Aucune photo</p>
+            <p className="text-sm text-muted-foreground italic">{t('project.no_photo')}</p>
           ) : (
             <button
               className="w-full flex items-center gap-2 rounded-lg border border-dashed p-3 text-muted-foreground transition-colors active:bg-muted"
               onClick={() => void navigate(`/chantiers/${id}/photos`)}
             >
               <Camera className="h-4 w-4 shrink-0" />
-              <span className="text-sm">Aucune photo · Ajouter</span>
+              <span className="text-sm">{t('project.no_photo_add')}</span>
             </button>
           )
         ) : (
           <div className="space-y-3">
             {[
-              { label: "Avant", list: beforePhotos },
-              { label: "Après", list: afterPhotos },
+              { label: t('project.photos_before'), list: beforePhotos },
+              { label: t('project.photos_after'), list: afterPhotos },
             ].map(({ label, list }) => (
               <div key={label} className="space-y-1.5">
                 <p className="text-xs font-medium text-muted-foreground">
@@ -503,7 +505,7 @@ export function ProjectDetailPage() {
                     className="text-xs text-muted-foreground italic"
                     onClick={() => void navigate(`/chantiers/${id}/photos`)}
                   >
-                    Aucune photo · Ajouter
+                    {t('project.no_photo_add')}
                   </button>
                 ) : (
                   <div className="flex gap-2 overflow-x-auto pb-1">
@@ -548,14 +550,14 @@ export function ProjectDetailPage() {
       {/* Report */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Rapport</h2>
+          <h2 className="text-sm font-semibold">{t('project.report')}</h2>
           {(role === "ADMIN" || role === "FOREMAN") && !isLocked && (
             <button
               className="flex items-center gap-1 text-xs text-primary font-medium min-h-[44px]"
               onClick={() => void navigate(`/chantiers/${id}/rapport`)}
             >
               <FileText className="h-3.5 w-3.5" />
-              Modifier
+              {t('project.edit_report')}
             </button>
           )}
         </div>
@@ -564,7 +566,7 @@ export function ProjectDetailPage() {
             <p className="text-sm whitespace-pre-wrap">{report.comment}</p>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Aucun commentaire saisi
+              {t('project.no_comment')}
             </p>
           )}
         </Card>

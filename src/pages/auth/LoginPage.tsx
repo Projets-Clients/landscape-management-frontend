@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Leaf, Eye, EyeOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +12,7 @@ import type { LoginResponse } from '@/types/api'
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const setAuth = useAuthStore((s) => s.setAuth)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -31,8 +33,8 @@ export function LoginPage() {
     } catch (err) {
       const msg =
         err instanceof ApiError && err.status === 401
-          ? 'Identifiants incorrects'
-          : 'Erreur de connexion, réessayez'
+          ? t('login.error_401')
+          : t('login.error_generic')
       toast.error(msg)
     } finally {
       setLoading(false)
@@ -47,12 +49,12 @@ export function LoginPage() {
             <Leaf className="h-7 w-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Landscape</h1>
-          <p className="text-sm text-muted-foreground">Suivi de chantier</p>
+          <p className="text-sm text-muted-foreground">{t('login.subtitle')}</p>
         </div>
 
         <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username">Identifiant</Label>
+            <Label htmlFor="username">{t('login.username_label')}</Label>
             <Input
               id="username"
               type="text"
@@ -68,7 +70,7 @@ export function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
+            <Label htmlFor="password">{t('login.password_label')}</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -96,7 +98,7 @@ export function LoginPage() {
             className="w-full min-h-[44px] text-base"
             disabled={loading}
           >
-            {loading ? 'Connexion…' : 'Se connecter'}
+            {loading ? t('login.connecting') : t('login.submit')}
           </Button>
         </form>
       </div>

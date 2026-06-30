@@ -166,10 +166,10 @@ export function SettingsPage() {
         <p className="text-sm font-semibold">{t('settings.color_section')}</p>
         <Card className="p-3">
           <div className="grid grid-cols-4 gap-3">
-            {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { label, hex }]) => (
+            {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { hex }]) => (
               <button
                 key={key}
-                title={label}
+                title={t(`settings.color_${key}`)}
                 onClick={() => handleColorChange(key)}
                 className="flex flex-col items-center gap-1.5"
               >
@@ -186,7 +186,7 @@ export function SettingsPage() {
                     </svg>
                   )}
                 </span>
-                <span className="text-[10px] text-muted-foreground">{label}</span>
+                <span className="text-[10px] text-muted-foreground">{t(`settings.color_${key}`)}</span>
               </button>
             ))}
           </div>

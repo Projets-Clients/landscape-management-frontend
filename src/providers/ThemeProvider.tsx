@@ -3,15 +3,15 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 type Theme = 'system' | 'light' | 'dark'
 export type ColorKey = 'green' | 'blue' | 'violet' | 'teal' | 'orange' | 'rose' | 'amber' | 'slate'
 
-export const COLORS: Record<ColorKey, { label: string; hsl: string; hex: string }> = {
-  green:  { label: 'Vert',     hsl: '142 72% 29%', hex: '#277a3f' },
-  blue:   { label: 'Bleu',     hsl: '217 91% 40%', hex: '#0d5cc7' },
-  violet: { label: 'Violet',   hsl: '265 70% 45%', hex: '#7c3aed' },
-  teal:   { label: 'Sarcelle', hsl: '174 72% 30%', hex: '#0d9488' },
-  orange: { label: 'Orange',   hsl: '25 90% 45%',  hex: '#c2610d' },
-  rose:   { label: 'Rose',     hsl: '330 70% 45%', hex: '#be185d' },
-  amber:  { label: 'Ambre',    hsl: '38 92% 40%',  hex: '#b45309' },
-  slate:  { label: 'Ardoise',  hsl: '220 15% 35%', hex: '#475569' },
+export const COLORS: Record<ColorKey, { hsl: string; hex: string }> = {
+  green:  { hsl: '142 72% 29%', hex: '#277a3f' },
+  blue:   { hsl: '217 91% 40%', hex: '#0d5cc7' },
+  violet: { hsl: '265 70% 45%', hex: '#7c3aed' },
+  teal:   { hsl: '174 72% 30%', hex: '#0d9488' },
+  orange: { hsl: '25 90% 45%',  hex: '#c2610d' },
+  rose:   { hsl: '330 70% 45%', hex: '#be185d' },
+  amber:  { hsl: '38 92% 40%',  hex: '#b45309' },
+  slate:  { hsl: '220 15% 35%', hex: '#475569' },
 }
 
 interface ThemeContextValue {

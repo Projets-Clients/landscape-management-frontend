@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,6 +14,7 @@ import { useAuthStore } from '@/store/auth.store'
 export function ReportPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const role = useAuthStore((s) => s.role)
 
   const { data: project } = useProject(id ?? '')
@@ -35,9 +37,9 @@ export function ReportPage() {
     try {
       await updateReport.mutateAsync(comment)
       setDirty(false)
-      toast.success('Rapport enregistré')
+      toast.success(t('report.report_saved'))
     } catch {
-      toast.error('Erreur lors de l\'enregistrement')
+      toast.error(t('report.save_error'))
     }
   }
 
@@ -51,7 +53,7 @@ export function ReportPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <h1 className="text-lg font-bold">Rapport</h1>
+          <h1 className="text-lg font-bold">{t('report.title')}</h1>
         </div>
         {canEdit && !isLocked && dirty && (
           <Button
@@ -65,7 +67,7 @@ export function ReportPage() {
             ) : (
               <Save className="h-3.5 w-3.5" />
             )}
-            Enregistrer
+            {t('report.save')}
           </Button>
         )}
       </div>
@@ -78,7 +80,7 @@ export function ReportPage() {
 
       {isLocked && (
         <div className="rounded-xl bg-muted p-3 text-xs text-muted-foreground">
-          Le rapport est verrouillé après signature.
+          {t('report.locked_notice')}
         </div>
       )}
 
@@ -86,7 +88,7 @@ export function ReportPage() {
         <Skeleton className="h-48 rounded-xl" />
       ) : (
         <div className="space-y-2">
-          <Label htmlFor="comment">Commentaire de fin de chantier</Label>
+          <Label htmlFor="comment">{t('report.comment_label')}</Label>
           <Textarea
             id="comment"
             value={comment}
@@ -97,8 +99,8 @@ export function ReportPage() {
             disabled={!canEdit || isLocked}
             placeholder={
               canEdit && !isLocked
-                ? 'Décrivez le déroulement des travaux, les observations particulières…'
-                : 'Aucun commentaire'
+                ? t('report.placeholder_edit')
+                : t('report.placeholder_readonly')
             }
             className="min-h-[200px] text-sm"
             readOnly={!canEdit || isLocked}
@@ -115,7 +117,7 @@ export function ReportPage() {
           {updateReport.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
-          {dirty ? 'Enregistrer' : 'Enregistré'}
+          {dirty ? t('report.save') : t('report.saved')}
         </Button>
       )}
     </div>

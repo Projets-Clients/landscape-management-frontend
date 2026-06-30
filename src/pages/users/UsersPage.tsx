@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { Plus, ChevronDown, ChevronUp, Loader2, UserCog } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -12,13 +13,8 @@ import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
 import { fullName } from '@/lib/utils'
 import type { User, UserRole } from '@/types/api'
 
-const ROLE_LABELS: Record<UserRole, string> = {
-  ADMIN: 'Administrateur',
-  FOREMAN: "Chef d'équipe",
-  EMPLOYEE: 'Employé',
-}
-
 function UserRow({ user }: { user: User }) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [form, setForm] = useState({
     firstName: user.firstName,
@@ -35,7 +31,7 @@ function UserRow({ user }: { user: User }) {
 
   async function handleSave() {
     if (form.password && form.password.length < 8) {
-      toast.error('Le mot de passe doit contenir au moins 8 caractères')
+      toast.error(t('users.password_min_error'))
       return
     }
     try {
@@ -47,19 +43,25 @@ function UserRow({ user }: { user: User }) {
         ...(form.password ? { password: form.password } : {}),
       })
       setForm((f) => ({ ...f, password: '' }))
-      toast.success('Utilisateur mis à jour')
+      toast.success(t('users.updated'))
     } catch {
-      toast.error('Erreur lors de la mise à jour')
+      toast.error(t('users.update_error'))
     }
   }
 
   async function handleToggleActive() {
     try {
       await update.mutateAsync({ active: !user.active })
-      toast.success(user.active ? 'Compte désactivé' : 'Compte réactivé')
+      toast.success(user.active ? t('users.deactivated_account') : t('users.activated'))
     } catch {
-      toast.error('Erreur')
+      toast.error(t('users.toggle_error'))
     }
+  }
+
+  const ROLE_LABELS: Record<UserRole, string> = {
+    ADMIN: t('users.role_admin'),
+    FOREMAN: t('users.role_foreman'),
+    EMPLOYEE: t('users.role_employee'),
   }
 
   return (
@@ -74,7 +76,7 @@ function UserRow({ user }: { user: User }) {
             <p className="text-sm font-semibold">{fullName(user)}</p>
             {!user.active && (
               <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-                Inactif
+                {t('common.inactive')}
               </span>
             )}
           </div>
@@ -93,7 +95,7 @@ function UserRow({ user }: { user: User }) {
         <div className="space-y-3 bg-muted/30 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Prénom</Label>
+              <Label className="text-xs">{t('common.first_name')}</Label>
               <Input
                 className="min-h-[44px]"
                 value={form.firstName}
@@ -102,7 +104,7 @@ function UserRow({ user }: { user: User }) {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Nom</Label>
+              <Label className="text-xs">{t('common.last_name')}</Label>
               <Input
                 className="min-h-[44px]"
                 value={form.lastName}
@@ -112,7 +114,7 @@ function UserRow({ user }: { user: User }) {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Email</Label>
+            <Label className="text-xs">{t('common.email')}</Label>
             <Input
               type="email"
               className="min-h-[44px]"
@@ -122,25 +124,25 @@ function UserRow({ user }: { user: User }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Rôle</Label>
+            <Label className="text-xs">{t('common.role')}</Label>
             <select
               value={form.role}
               onChange={(e) => set('role', e.target.value)}
               disabled={update.isPending}
               className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="EMPLOYEE">Employé</option>
-              <option value="FOREMAN">Chef d'équipe</option>
-              <option value="ADMIN">Administrateur</option>
+              <option value="EMPLOYEE">{t('users.role_employee')}</option>
+              <option value="FOREMAN">{t('users.role_foreman')}</option>
+              <option value="ADMIN">{t('users.role_admin')}</option>
             </select>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Nouveau mot de passe</Label>
+            <Label className="text-xs">{t('users.new_password')}</Label>
             <Input
               type="password"
               autoComplete="new-password"
               className="min-h-[44px]"
-              placeholder="Laisser vide pour ne pas changer"
+              placeholder={t('users.password_placeholder')}
               value={form.password}
               onChange={(e) => set('password', e.target.value)}
               disabled={update.isPending}
@@ -151,7 +153,7 @@ function UserRow({ user }: { user: User }) {
             onClick={() => void handleSave()}
             disabled={update.isPending}
           >
-            {update.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Enregistrer'}
+            {update.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.save')}
           </Button>
           <Button
             variant={user.active ? 'destructive' : 'outline'}
@@ -160,7 +162,7 @@ function UserRow({ user }: { user: User }) {
             onClick={() => void handleToggleActive()}
             disabled={update.isPending}
           >
-            {user.active ? 'Désactiver le compte' : 'Réactiver le compte'}
+            {user.active ? t('users.deactivate_account') : t('users.activate_account')}
           </Button>
         </div>
       )}
@@ -169,6 +171,7 @@ function UserRow({ user }: { user: User }) {
 }
 
 function CreateUserForm({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation()
   const createUser = useCreateUser()
   const [form, setForm] = useState({
     username: '',
@@ -186,7 +189,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (form.password.length < 8) {
-      toast.error('Le mot de passe doit contenir au moins 8 caractères')
+      toast.error(t('users.password_min_error'))
       return
     }
     try {
@@ -198,16 +201,16 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
         role: form.role,
         email: form.email.trim() || undefined,
       })
-      toast.success('Utilisateur créé')
+      toast.success(t('users.created'))
       onClose()
     } catch {
-      toast.error('Erreur lors de la création')
+      toast.error(t('users.create_error'))
     }
   }
 
   return (
     <Card className="p-4">
-      <h2 className="mb-4 font-semibold">Nouvel utilisateur</h2>
+      <h2 className="mb-4 font-semibold">{t('users.new_user')}</h2>
       <form
         onSubmit={(e) => {
           void handleSubmit(e)
@@ -216,7 +219,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
       >
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="cu-fn">Prénom</Label>
+            <Label htmlFor="cu-fn">{t('common.first_name')}</Label>
             <Input
               id="cu-fn"
               className="min-h-[44px]"
@@ -226,7 +229,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="cu-ln">Nom</Label>
+            <Label htmlFor="cu-ln">{t('common.last_name')}</Label>
             <Input
               id="cu-ln"
               className="min-h-[44px]"
@@ -237,7 +240,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cu-uname">Identifiant</Label>
+          <Label htmlFor="cu-uname">{t('common.identifier')}</Label>
           <Input
             id="cu-uname"
             autoCapitalize="none"
@@ -249,7 +252,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cu-email">Email</Label>
+          <Label htmlFor="cu-email">{t('common.email')}</Label>
           <Input
             id="cu-email"
             type="email"
@@ -259,7 +262,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cu-pw">Mot de passe</Label>
+          <Label htmlFor="cu-pw">{t('common.password')}</Label>
           <Input
             id="cu-pw"
             type="password"
@@ -272,16 +275,16 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cu-role">Rôle</Label>
+          <Label htmlFor="cu-role">{t('common.role')}</Label>
           <select
             id="cu-role"
             value={form.role}
             onChange={(e) => set('role', e.target.value)}
             className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <option value="EMPLOYEE">Employé</option>
-            <option value="FOREMAN">Chef d'équipe</option>
-            <option value="ADMIN">Administrateur</option>
+            <option value="EMPLOYEE">{t('users.role_employee')}</option>
+            <option value="FOREMAN">{t('users.role_foreman')}</option>
+            <option value="ADMIN">{t('users.role_admin')}</option>
           </select>
         </div>
         <div className="flex gap-3 pt-1">
@@ -291,7 +294,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
             className="min-h-[44px] flex-1"
             onClick={onClose}
           >
-            Annuler
+            {t('common.cancel')}
           </Button>
           <Button
             type="submit"
@@ -301,7 +304,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
             {createUser.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              'Créer'
+              t('common.new')
             )}
           </Button>
         </div>
@@ -311,6 +314,7 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
 }
 
 export function UsersPage() {
+  const { t } = useTranslation()
   const { data: users, isLoading } = useUsers()
   const [showCreate, setShowCreate] = useState(false)
 
@@ -320,14 +324,14 @@ export function UsersPage() {
   return (
     <div className="space-y-4 pb-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Utilisateurs</h1>
+        <h1 className="text-xl font-bold">{t('users.title')}</h1>
         <Button
           size="sm"
           className="min-h-[44px]"
           onClick={() => setShowCreate((v) => !v)}
         >
           <Plus className="mr-1 h-4 w-4" />
-          Nouveau
+          {t('common.new')}
         </Button>
       </div>
 
@@ -342,7 +346,7 @@ export function UsersPage() {
       )}
 
       {!isLoading && users?.length === 0 && (
-        <EmptyState icon={UserCog} title="Aucun utilisateur" />
+        <EmptyState icon={UserCog} title={t('users.empty')} />
       )}
 
       {active.length > 0 && (
@@ -356,7 +360,7 @@ export function UsersPage() {
       {inactive.length > 0 && (
         <div className="space-y-1">
           <p className="px-1 text-xs font-medium text-muted-foreground">
-            Comptes inactifs
+            {t('users.inactive_accounts')}
           </p>
           <div className="overflow-hidden rounded-xl border bg-card opacity-60">
             {inactive.map((user) => (

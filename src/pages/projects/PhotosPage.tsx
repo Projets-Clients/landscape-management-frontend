@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Camera, ImagePlus, Loader2, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PhotoLightbox } from '@/components/common/PhotoLightbox'
@@ -22,6 +23,7 @@ function PhotoSection({
   locked: boolean
   canDelete: boolean
 }) {
+  const { t } = useTranslation()
   const { data: photos } = usePhotos(projectId)
   const upload = useUploadPhoto()
   const deletePhoto = useDeletePhoto(projectId)
@@ -43,9 +45,9 @@ function PhotoSection({
         type,
         order: filtered.length,
       })
-      toast.success('Photo ajoutée')
+      toast.success(t('photos.photo_added'))
     } catch {
-      toast.error('Erreur lors de l\'upload')
+      toast.error(t('photos.upload_error'))
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ''
@@ -84,14 +86,14 @@ function PhotoSection({
 
       {filtered.length === 0 ? (
         locked ? (
-          <p className="text-sm text-muted-foreground italic">Aucune photo</p>
+          <p className="text-sm text-muted-foreground italic">{t('photos.no_photo')}</p>
         ) : (
           <button
             onClick={() => inputRef.current?.click()}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-muted py-4 text-muted-foreground transition-colors active:bg-muted"
           >
             <Camera className="h-5 w-5" />
-            <span className="text-sm">Prendre une photo {label.toLowerCase()}</span>
+            <span className="text-sm">{t('photos.take_photo', { label: label.toLowerCase() })}</span>
           </button>
         )
       ) : (
@@ -116,9 +118,9 @@ function PhotoSection({
                     setDeletingId(photo.id)
                     try {
                       await deletePhoto.mutateAsync(photo.id)
-                      toast.success('Photo supprimée')
+                      toast.success(t('photos.photo_deleted'))
                     } catch {
-                      toast.error('Erreur lors de la suppression')
+                      toast.error(t('photos.delete_error'))
                     } finally {
                       setDeletingId(null)
                     }
@@ -159,6 +161,7 @@ const LOCKED_STATUSES = ['AWAITING_SIGNATURE', 'COMPLETED', 'DISPUTED']
 export function PhotosPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { data: project } = useProject(id ?? '')
   const { role } = useAuthStore()
 
@@ -176,24 +179,24 @@ export function PhotosPage() {
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-lg font-bold">Photos</h1>
+        <h1 className="text-lg font-bold">{t('photos.title')}</h1>
       </div>
 
       {locked && (
         <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
-          Ce chantier est verrouillé. Les photos ne peuvent plus être modifiées.
+          {t('photos.locked_notice')}
         </div>
       )}
 
-      <PhotoSection type="BEFORE" label="Avant" projectId={id} locked={locked} canDelete={canDelete} />
-      <PhotoSection type="AFTER" label="Après" projectId={id} locked={locked} canDelete={canDelete} />
+      <PhotoSection type="BEFORE" label={t('photos.before')} projectId={id} locked={locked} canDelete={canDelete} />
+      <PhotoSection type="AFTER" label={t('photos.after')} projectId={id} locked={locked} canDelete={canDelete} />
 
       <Button
         variant="outline"
         className="w-full min-h-[44px]"
         onClick={() => void navigate(`/chantiers/${id}`)}
       >
-        Retour au chantier
+        {t('photos.back_to_project')}
       </Button>
     </div>
   )

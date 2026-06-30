@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Loader2, Search, X, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +20,7 @@ function ClientSearch({
   value: Client | null
   onChange: (client: Client | null) => void
 }) {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [open, setOpen] = useState(false)
@@ -74,7 +76,7 @@ function ClientSearch({
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           className="min-h-[44px] pl-9 pr-9"
-          placeholder="Rechercher un client…"
+          placeholder={t('create_project.search_client')}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value)
@@ -99,11 +101,11 @@ function ClientSearch({
           {isFetching && (
             <li className="flex items-center gap-2 px-3 py-2.5 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Recherche…
+              {t('common.searching')}
             </li>
           )}
           {!isFetching && data?.data.length === 0 && (
-            <li className="px-3 py-2.5 text-sm text-muted-foreground">Aucun client trouvé</li>
+            <li className="px-3 py-2.5 text-sm text-muted-foreground">{t('create_project.no_client')}</li>
           )}
           {data?.data.map((client) => (
             <li key={client.id} className="border-b last:border-0">
@@ -127,6 +129,7 @@ function ClientSearch({
 
 export function CreateProjectPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const createProject = useCreateProject()
 
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -158,7 +161,7 @@ export function CreateProjectPage() {
     e.preventDefault()
     const address = buildAddress(form.street, form.postalCode, form.city)
     if (!form.reference || !form.title || !address || !selectedClient) {
-      toast.error('Référence, titre, adresse et client sont obligatoires')
+      toast.error(t('create_project.required_error'))
       return
     }
     try {
@@ -172,10 +175,10 @@ export function CreateProjectPage() {
         startDate: form.startDate || undefined,
         expectedEndDate: form.expectedEndDate || undefined,
       })
-      toast.success('Chantier créé')
+      toast.success(t('create_project.success'))
       void navigate(`/chantiers/${project.id}`)
     } catch {
-      toast.error('Erreur lors de la création')
+      toast.error(t('create_project.error'))
     }
   }
 
@@ -188,12 +191,12 @@ export function CreateProjectPage() {
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <h1 className="text-lg font-bold">Nouveau chantier</h1>
+        <h1 className="text-lg font-bold">{t('create_project.title')}</h1>
       </div>
 
       <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="reference">Référence *</Label>
+          <Label htmlFor="reference">{t('create_project.label_reference')} *</Label>
           <Input
             id="reference"
             className="min-h-[44px]"
@@ -205,7 +208,7 @@ export function CreateProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="title">Intitulé *</Label>
+          <Label htmlFor="title">{t('create_project.label_title')} *</Label>
           <Input
             id="title"
             className="min-h-[44px]"
@@ -217,14 +220,14 @@ export function CreateProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Client *</Label>
+          <Label>{t('create_project.label_client')} *</Label>
           <ClientSearch value={selectedClient} onChange={handleClientChange} />
         </div>
 
         <div className="space-y-2">
-          <Label>Adresse *</Label>
+          <Label>{t('common.address')} *</Label>
           <AddressAutocomplete
-            placeholder="Numéro et rue"
+            placeholder={t('common.street_placeholder')}
             className="min-h-[44px]"
             value={form.street}
             onChange={(v) => set('street', v)}
@@ -233,7 +236,7 @@ export function CreateProjectPage() {
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              placeholder="Code postal"
+              placeholder={t('common.postal_code')}
               className="min-h-[44px]"
               inputMode="numeric"
               autoComplete="postal-code"
@@ -241,7 +244,7 @@ export function CreateProjectPage() {
               onChange={(e) => set('postalCode', e.target.value)}
             />
             <Input
-              placeholder="Ville"
+              placeholder={t('common.city')}
               className="min-h-[44px]"
               autoComplete="address-level2"
               value={form.city}
@@ -252,7 +255,7 @@ export function CreateProjectPage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <Label htmlFor="startDate">Date de début</Label>
+            <Label htmlFor="startDate">{t('common.start_date')}</Label>
             <Input
               id="startDate"
               type="date"
@@ -262,7 +265,7 @@ export function CreateProjectPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="expectedEndDate">Date de fin</Label>
+            <Label htmlFor="expectedEndDate">{t('common.end_date')}</Label>
             <Input
               id="expectedEndDate"
               type="date"
@@ -274,7 +277,7 @@ export function CreateProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="quoteAmount">Montant devis (€)</Label>
+          <Label htmlFor="quoteAmount">{t('common.quote_amount')}</Label>
           <Input
             id="quoteAmount"
             type="number"
@@ -288,12 +291,12 @@ export function CreateProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('common.description')}</Label>
           <Textarea
             id="description"
             value={form.description}
             onChange={(e) => set('description', e.target.value)}
-            placeholder="Description des travaux…"
+            placeholder={t('create_project.description_placeholder')}
             className="min-h-[100px]"
           />
         </div>
@@ -306,7 +309,7 @@ export function CreateProjectPage() {
           {createProject.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
-          Créer le chantier
+          {t('create_project.submit')}
         </Button>
       </form>
     </div>

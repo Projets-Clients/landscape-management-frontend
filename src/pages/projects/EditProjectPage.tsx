@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +15,7 @@ import { buildAddress, parseAddress } from '@/lib/utils'
 export function EditProjectPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { data: project, isLoading } = useProject(id ?? '')
   const updateProject = useUpdateProject(id ?? '')
 
@@ -57,7 +59,7 @@ export function EditProjectPage() {
     e.preventDefault()
     const address = buildAddress(form.street, form.postalCode, form.city)
     if (!form.title.trim() || !address) {
-      toast.error('Titre et adresse sont obligatoires')
+      toast.error(t('edit_project.required_error'))
       return
     }
     try {
@@ -70,10 +72,10 @@ export function EditProjectPage() {
         startDate: form.startDate || undefined,
         expectedEndDate: form.expectedEndDate || undefined,
       })
-      toast.success('Chantier mis à jour')
+      toast.success(t('edit_project.success'))
       void navigate(`/chantiers/${id ?? ''}`)
     } catch {
-      toast.error('Erreur lors de la mise à jour')
+      toast.error(t('edit_project.error'))
     }
   }
 
@@ -91,7 +93,7 @@ export function EditProjectPage() {
   if (!project) {
     return (
       <div className="py-16 text-center">
-        <p className="text-muted-foreground">Chantier introuvable</p>
+        <p className="text-muted-foreground">{t('project.not_found')}</p>
       </div>
     )
   }
@@ -107,13 +109,13 @@ export function EditProjectPage() {
         </button>
         <div className="min-w-0">
           <p className="text-xs font-mono text-muted-foreground">{project.reference}</p>
-          <h1 className="text-lg font-bold">Modifier le chantier</h1>
+          <h1 className="text-lg font-bold">{t('edit_project.title')}</h1>
         </div>
       </div>
 
       <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="title">Intitulé *</Label>
+          <Label htmlFor="title">{t('create_project.label_title')} *</Label>
           <Input
             id="title"
             className="min-h-[44px]"
@@ -124,9 +126,9 @@ export function EditProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Adresse *</Label>
+          <Label>{t('common.address')} *</Label>
           <AddressAutocomplete
-            placeholder="Numéro et rue"
+            placeholder={t('common.street_placeholder')}
             className="min-h-[44px]"
             value={form.street}
             onChange={(v) => set('street', v)}
@@ -135,7 +137,7 @@ export function EditProjectPage() {
           />
           <div className="grid grid-cols-2 gap-3">
             <Input
-              placeholder="Code postal"
+              placeholder={t('common.postal_code')}
               className="min-h-[44px]"
               inputMode="numeric"
               autoComplete="postal-code"
@@ -143,7 +145,7 @@ export function EditProjectPage() {
               onChange={(e) => set('postalCode', e.target.value)}
             />
             <Input
-              placeholder="Ville"
+              placeholder={t('common.city')}
               className="min-h-[44px]"
               autoComplete="address-level2"
               value={form.city}
@@ -154,7 +156,7 @@ export function EditProjectPage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <Label htmlFor="startDate">Date de début</Label>
+            <Label htmlFor="startDate">{t('common.start_date')}</Label>
             <Input
               id="startDate"
               type="date"
@@ -164,7 +166,7 @@ export function EditProjectPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="expectedEndDate">Date de fin</Label>
+            <Label htmlFor="expectedEndDate">{t('common.end_date')}</Label>
             <Input
               id="expectedEndDate"
               type="date"
@@ -176,7 +178,7 @@ export function EditProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="quoteAmount">Montant devis (€)</Label>
+          <Label htmlFor="quoteAmount">{t('common.quote_amount')}</Label>
           <Input
             id="quoteAmount"
             type="number"
@@ -190,23 +192,23 @@ export function EditProjectPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t('common.description')}</Label>
           <Textarea
             id="description"
             value={form.description}
             onChange={(e) => set('description', e.target.value)}
-            placeholder="Description des travaux…"
+            placeholder={t('create_project.description_placeholder')}
             className="min-h-[100px]"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes internes</Label>
+          <Label htmlFor="notes">{t('common.internal_notes')}</Label>
           <Textarea
             id="notes"
             value={form.notes}
             onChange={(e) => set('notes', e.target.value)}
-            placeholder="Notes pour l'équipe…"
+            placeholder={t('create_project.notes_placeholder')}
             className="min-h-[80px]"
           />
         </div>
@@ -219,7 +221,7 @@ export function EditProjectPage() {
           {updateProject.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
-          Enregistrer
+          {t('edit_project.submit')}
         </Button>
       </form>
     </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Mail, Phone, MapPin, FileText, Loader2, MessageSquare } from 'lucide-react'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import { fullName, formatDate, buildAddress, parseAddress } from '@/lib/utils'
 export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
 
   const { data: client, isLoading } = useClient(id ?? '')
@@ -67,21 +69,21 @@ export function ClientDetailPage() {
         address: buildAddress(form.street, form.postalCode, form.city),
         notes: form.notes.trim() || undefined,
       })
-      toast.success('Client mis à jour')
+      toast.success(t('client_detail.updated'))
       setEditing(false)
     } catch {
-      toast.error('Erreur lors de la mise à jour')
+      toast.error(t('client_detail.update_error'))
     }
   }
 
   async function handleDeactivate() {
-    if (!confirm('Désactiver ce client ? Il ne sera plus accessible dans les formulaires.')) return
+    if (!confirm(t('client_detail.deactivate_confirm'))) return
     try {
       await deactivate.mutateAsync()
-      toast.success('Client désactivé')
+      toast.success(t('client_detail.deactivated'))
       void navigate('/clients')
     } catch {
-      toast.error('Erreur lors de la désactivation')
+      toast.error(t('client_detail.deactivate_error'))
     }
   }
 
@@ -110,7 +112,7 @@ export function ClientDetailPage() {
         </div>
         {!editing && (
           <Button variant="outline" size="sm" className="min-h-[44px]" onClick={startEdit}>
-            Modifier
+            {t('client_detail.edit')}
           </Button>
         )}
       </div>
@@ -119,7 +121,7 @@ export function ClientDetailPage() {
         <Card className="space-y-4 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label>Prénom</Label>
+              <Label>{t('common.first_name')}</Label>
               <Input
                 className="min-h-[44px]"
                 autoComplete="given-name"
@@ -128,7 +130,7 @@ export function ClientDetailPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Nom</Label>
+              <Label>{t('common.last_name')}</Label>
               <Input
                 className="min-h-[44px]"
                 autoComplete="family-name"
@@ -138,7 +140,7 @@ export function ClientDetailPage() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label>{t('common.email')}</Label>
             <Input
               className="min-h-[44px]"
               type="email"
@@ -148,7 +150,7 @@ export function ClientDetailPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>Téléphone</Label>
+            <Label>{t('common.phone')}</Label>
             <Input
               className="min-h-[44px]"
               type="tel"
@@ -159,9 +161,9 @@ export function ClientDetailPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>Adresse</Label>
+            <Label>{t('common.address')}</Label>
             <AddressAutocomplete
-              placeholder="Numéro et rue"
+              placeholder={t('common.street_placeholder')}
               className="min-h-[44px]"
               value={form.street}
               onChange={(v) => setForm({ ...form, street: v })}
@@ -169,7 +171,7 @@ export function ClientDetailPage() {
             />
             <div className="grid grid-cols-2 gap-3">
               <Input
-                placeholder="Code postal"
+                placeholder={t('common.postal_code')}
                 className="min-h-[44px]"
                 inputMode="numeric"
                 autoComplete="postal-code"
@@ -177,7 +179,7 @@ export function ClientDetailPage() {
                 onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
               />
               <Input
-                placeholder="Ville"
+                placeholder={t('common.city')}
                 className="min-h-[44px]"
                 autoComplete="address-level2"
                 value={form.city}
@@ -191,14 +193,14 @@ export function ClientDetailPage() {
               className="flex-1 min-h-[44px]"
               onClick={() => setEditing(false)}
             >
-              Annuler
+              {t('client_detail.cancel')}
             </Button>
             <Button
               className="flex-1 min-h-[44px]"
               onClick={() => void handleSave()}
               disabled={updateClient.isPending}
             >
-              {updateClient.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Enregistrer'}
+              {updateClient.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('client_detail.save')}
             </Button>
           </div>
         </Card>
@@ -220,7 +222,7 @@ export function ClientDetailPage() {
               <a
                 href={`sms:${client.phone}`}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                title="Envoyer un SMS"
+                title={t('client_detail.send_sms')}
               >
                 <MessageSquare className="h-4 w-4" />
               </a>
@@ -248,7 +250,7 @@ export function ClientDetailPage() {
 
       {projects?.data && projects.data.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-sm font-semibold">Chantiers ({projects.total})</h2>
+          <h2 className="text-sm font-semibold">{t('client_detail.projects', { count: projects.total })}</h2>
           <div className="space-y-2">
             {projects.data.map((p) => (
               <button
@@ -273,7 +275,7 @@ export function ClientDetailPage() {
         onClick={() => void handleDeactivate()}
         disabled={deactivate.isPending}
       >
-        Désactiver le client
+        {t('client_detail.deactivate')}
       </Button>
     </div>
   )
