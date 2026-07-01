@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { BottomNav } from './BottomNav'
+import { InstallBanner } from '@/components/common/InstallBanner'
 
 export function AppShell() {
   return (
@@ -9,6 +10,7 @@ export function AppShell() {
       <Sidebar className="hidden lg:flex" />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header className="lg:hidden" />
+        <InstallBanner />
         <main className="flex-1 overflow-hidden flex flex-col">
           <Outlet />
         </main>

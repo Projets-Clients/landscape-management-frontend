@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { LogOut, Monitor, Moon, Sun, User, Loader2 } from 'lucide-react'
+import { Download, LogOut, Monitor, Moon, Sun, User, Loader2, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,8 @@ import type { ColorKey } from '@/providers/ThemeProvider'
 import { apiRequest } from '@/lib/api-client'
 import { useOrganization, useUpdateOrganization } from '@/hooks/use-organization'
 import { useUpdateMe } from '@/hooks/use-update-me'
+import { usePwaInstall } from '@/hooks/use-pwa-install'
+import { InstallModal } from '@/components/common/InstallModal'
 
 export function SettingsPage() {
   const navigate = useNavigate()
@@ -21,6 +23,8 @@ export function SettingsPage() {
   const { username, role, userId, clearAuth } = useAuthStore()
   const isAdmin = role === 'ADMIN'
   const { theme, setTheme, color, setColor } = useTheme()
+  const { isInstalled } = usePwaInstall()
+  const [installOpen, setInstallOpen] = useState(false)
 
   const ROLE_LABELS: Record<string, string> = {
     ADMIN: t('settings.role_admin'),
@@ -263,6 +267,30 @@ export function SettingsPage() {
               </form>
             )}
           </Card>
+        </div>
+      )}
+
+      {!isInstalled && (
+        <>
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">{t('install.settings_section')}</p>
+            <Button
+              variant="outline"
+              className="w-full min-h-[48px] gap-2"
+              onClick={() => setInstallOpen(true)}
+            >
+              <Smartphone className="h-4 w-4" />
+              {t('install.settings_btn')}
+            </Button>
+          </div>
+          <InstallModal open={installOpen} onClose={() => setInstallOpen(false)} />
+        </>
+      )}
+
+      {isInstalled && (
+        <div className="flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 p-3 text-xs font-medium text-green-700 dark:border-green-900 dark:bg-green-950/30 dark:text-green-400">
+          <Download className="h-3.5 w-3.5" />
+          {t('install.installed_label')}
         </div>
       )}
 

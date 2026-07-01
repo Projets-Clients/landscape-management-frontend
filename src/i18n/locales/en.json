@@ -278,5 +278,29 @@
     "photo_deleted": "Photo deleted",
     "locked_notice": "This project is locked. Photos can no longer be modified.",
     "back_to_project": "Back to project"
+  },
+  "install": {
+    "banner_title": "Install the app",
+    "banner_desc": "Add Landscape to your home screen",
+    "install_btn": "Install",
+    "dismiss": "Later",
+    "modal_title": "Install Landscape",
+    "already_installed": "The app is already installed on this device.",
+    "android_native_title": "Tap the button below to install the app.",
+    "android_native_btn": "Install",
+    "ios_safari_step1": "Tap the Share icon",
+    "ios_safari_step2": "Scroll down and tap",
+    "ios_safari_step2_label": "Add to Home Screen",
+    "ios_safari_step3": "Tap",
+    "ios_safari_step3_label": "Add",
+    "ios_not_safari": "To install the app on iPhone or iPad, open this page in Safari (not Chrome or Firefox).",
+    "android_manual_step1": "Tap the menu",
+    "android_manual_step1b": "in the top right",
+    "android_manual_step2": "Select",
+    "android_manual_step2_label": "Add to Home Screen",
+    "desktop_instructions": "Click the install icon in the address bar, or open your browser menu and select 'Install Landscape'.",
+    "settings_section": "Application",
+    "settings_btn": "Install on this device",
+    "installed_label": "App installed on this device"
   }
 }

@@ -278,5 +278,29 @@
     "photo_deleted": "Foto gelöscht",
     "locked_notice": "Dieses Projekt ist gesperrt. Fotos können nicht mehr geändert werden.",
     "back_to_project": "Zurück zum Projekt"
+  },
+  "install": {
+    "banner_title": "App installieren",
+    "banner_desc": "Landscape zum Startbildschirm hinzufügen",
+    "install_btn": "Installieren",
+    "dismiss": "Später",
+    "modal_title": "Landscape installieren",
+    "already_installed": "Die App ist bereits auf diesem Gerät installiert.",
+    "android_native_title": "Tippe auf die Schaltfläche unten, um die App zu installieren.",
+    "android_native_btn": "Installieren",
+    "ios_safari_step1": "Tippe auf das Teilen-Symbol",
+    "ios_safari_step2": "Scrolle nach unten und tippe auf",
+    "ios_safari_step2_label": "Zum Home-Bildschirm",
+    "ios_safari_step3": "Tippe auf",
+    "ios_safari_step3_label": "Hinzufügen",
+    "ios_not_safari": "Um die App auf iPhone oder iPad zu installieren, öffne diese Seite in Safari (nicht in Chrome oder Firefox).",
+    "android_manual_step1": "Tippe auf das Menü",
+    "android_manual_step1b": "oben rechts",
+    "android_manual_step2": "Wähle",
+    "android_manual_step2_label": "Zum Startbildschirm hinzufügen",
+    "desktop_instructions": "Klicke auf das Installationssymbol in der Adressleiste oder öffne das Browsermenü und wähle «Landscape installieren».",
+    "settings_section": "Anwendung",
+    "settings_btn": "Auf diesem Gerät installieren",
+    "installed_label": "App auf diesem Gerät installiert"
   }
 }

@@ -278,5 +278,29 @@
     "photo_deleted": "Foto eliminata",
     "locked_notice": "Questo cantiere è bloccato. Le foto non possono più essere modificate.",
     "back_to_project": "Torna al cantiere"
+  },
+  "install": {
+    "banner_title": "Installa l'app",
+    "banner_desc": "Aggiungi Landscape alla schermata home",
+    "install_btn": "Installa",
+    "dismiss": "Più tardi",
+    "modal_title": "Installa Landscape",
+    "already_installed": "L'app è già installata su questo dispositivo.",
+    "android_native_title": "Premi il pulsante qui sotto per installare l'app.",
+    "android_native_btn": "Installa",
+    "ios_safari_step1": "Premi l'icona Condividi",
+    "ios_safari_step2": "Scorri e premi",
+    "ios_safari_step2_label": "Aggiungi alla schermata Home",
+    "ios_safari_step3": "Premi",
+    "ios_safari_step3_label": "Aggiungi",
+    "ios_not_safari": "Per installare l'app su iPhone o iPad, apri questa pagina in Safari (non in Chrome o Firefox).",
+    "android_manual_step1": "Premi il menu",
+    "android_manual_step1b": "in alto a destra",
+    "android_manual_step2": "Seleziona",
+    "android_manual_step2_label": "Aggiungi alla schermata Home",
+    "desktop_instructions": "Clicca sull'icona di installazione nella barra degli indirizzi, o apri il menu del browser e seleziona «Installa Landscape».",
+    "settings_section": "Applicazione",
+    "settings_btn": "Installa su questo dispositivo",
+    "installed_label": "App installata su questo dispositivo"
   }
 }

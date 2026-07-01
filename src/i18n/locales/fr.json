@@ -278,5 +278,29 @@
     "photo_deleted": "Photo supprimée",
     "locked_notice": "Ce chantier est verrouillé. Les photos ne peuvent plus être modifiées.",
     "back_to_project": "Retour au chantier"
+  },
+  "install": {
+    "banner_title": "Installer l'application",
+    "banner_desc": "Ajoutez Landscape sur votre écran d'accueil",
+    "install_btn": "Installer",
+    "dismiss": "Plus tard",
+    "modal_title": "Installer Landscape",
+    "already_installed": "L'application est déjà installée sur cet appareil.",
+    "android_native_title": "Appuyez sur le bouton ci-dessous pour installer l'application.",
+    "android_native_btn": "Installer",
+    "ios_safari_step1": "Appuyez sur l'icône Partager",
+    "ios_safari_step2": "Faites défiler et appuyez sur",
+    "ios_safari_step2_label": "Sur l'écran d'accueil",
+    "ios_safari_step3": "Appuyez sur",
+    "ios_safari_step3_label": "Ajouter",
+    "ios_not_safari": "Pour installer l'application sur iPhone ou iPad, ouvrez cette page dans Safari (pas Chrome ni Firefox).",
+    "android_manual_step1": "Appuyez sur le menu",
+    "android_manual_step1b": "en haut à droite",
+    "android_manual_step2": "Sélectionnez",
+    "android_manual_step2_label": "Ajouter à l'écran d'accueil",
+    "desktop_instructions": "Cliquez sur l'icône d'installation dans la barre d'adresse, ou ouvrez le menu de votre navigateur et sélectionnez « Installer Landscape ».",
+    "settings_section": "Application",
+    "settings_btn": "Installer sur cet appareil",
+    "installed_label": "Application installée sur cet appareil"
   }
 }
