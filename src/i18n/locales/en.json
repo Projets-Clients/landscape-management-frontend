@@ -129,7 +129,9 @@
     "end_date": "End date",
     "quote_amount": "Quote amount (€)",
     "inactive": "Inactive",
-    "add": "Add"
+    "add": "Add",
+    "update_available": "Update available",
+    "update_btn": "Reload"
   },
   "login": {
     "subtitle": "Site tracker",

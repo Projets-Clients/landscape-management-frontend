@@ -129,7 +129,9 @@
     "end_date": "Data fine",
     "quote_amount": "Importo preventivo (€)",
     "inactive": "Inattivo",
-    "add": "Aggiungi"
+    "add": "Aggiungi",
+    "update_available": "Aggiornamento disponibile",
+    "update_btn": "Ricarica"
   },
   "login": {
     "subtitle": "Monitoraggio cantiere",

@@ -129,7 +129,9 @@
     "end_date": "Enddatum",
     "quote_amount": "Angebotsbetrag (€)",
     "inactive": "Inaktiv",
-    "add": "Hinzufügen"
+    "add": "Hinzufügen",
+    "update_available": "Update verfügbar",
+    "update_btn": "Neu laden"
   },
   "login": {
     "subtitle": "Baustellenverfolgung",

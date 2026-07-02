@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { BottomNav } from './BottomNav'
 import { InstallBanner } from '@/components/common/InstallBanner'
+import { PwaUpdatePrompt } from '@/components/common/PwaUpdatePrompt'
 
 export function AppShell() {
   return (
@@ -11,6 +12,7 @@ export function AppShell() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header className="lg:hidden" />
         <InstallBanner />
+        <PwaUpdatePrompt />
         <main className="flex-1 min-h-0 overflow-hidden flex flex-col">
           <Outlet />
         </main>

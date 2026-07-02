@@ -129,7 +129,9 @@
     "end_date": "Date de fin",
     "quote_amount": "Montant devis (€)",
     "inactive": "Inactif",
-    "add": "Ajouter"
+    "add": "Ajouter",
+    "update_available": "Mise à jour disponible",
+    "update_btn": "Recharger"
   },
   "login": {
     "subtitle": "Suivi de chantier",

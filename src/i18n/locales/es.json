@@ -129,7 +129,9 @@
     "end_date": "Fecha fin",
     "quote_amount": "Importe presupuesto (€)",
     "inactive": "Inactivo",
-    "add": "Añadir"
+    "add": "Añadir",
+    "update_available": "Actualización disponible",
+    "update_btn": "Recargar"
   },
   "login": {
     "subtitle": "Seguimiento de obra",
