@@ -33,6 +33,7 @@ export function usePwaInstall() {
   const ua = navigator.userAgent
   const isIOS = /iPhone|iPad|iPod/.test(ua)
   const isAndroid = /Android/.test(ua)
+  const isMobile = isIOS || isAndroid
   // Safari strict (not Chrome/Firefox on iOS which also include "Safari")
   const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua)
   const canNativePrompt = !!deferredPrompt
@@ -46,5 +47,5 @@ export function usePwaInstall() {
     return outcome === 'accepted'
   }
 
-  return { isInstalled, isIOS, isAndroid, isSafari, canNativePrompt, triggerInstall }
+  return { isInstalled, isIOS, isAndroid, isMobile, isSafari, canNativePrompt, triggerInstall }
 }

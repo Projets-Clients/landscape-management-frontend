@@ -23,7 +23,7 @@ export function SettingsPage() {
   const { username, role, userId, clearAuth } = useAuthStore()
   const isAdmin = role === 'ADMIN'
   const { theme, setTheme, color, setColor } = useTheme()
-  const { isInstalled } = usePwaInstall()
+  const { isInstalled, isMobile } = usePwaInstall()
   const [installOpen, setInstallOpen] = useState(false)
 
   const ROLE_LABELS: Record<string, string> = {
@@ -270,7 +270,7 @@ export function SettingsPage() {
         </div>
       )}
 
-      {!isInstalled && (
+      {isMobile && !isInstalled && (
         <>
           <div className="space-y-2">
             <p className="text-sm font-semibold">{t('install.settings_section')}</p>
@@ -287,7 +287,7 @@ export function SettingsPage() {
         </>
       )}
 
-      {isInstalled && (
+      {isMobile && isInstalled && (
         <div className="flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 p-3 text-xs font-medium text-green-700 dark:border-green-900 dark:bg-green-950/30 dark:text-green-400">
           <Download className="h-3.5 w-3.5" />
           {t('install.installed_label')}

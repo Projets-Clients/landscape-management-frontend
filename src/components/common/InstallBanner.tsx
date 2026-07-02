@@ -8,11 +8,11 @@ const DISMISSED_KEY = 'landscape-install-dismissed'
 
 export function InstallBanner() {
   const { t } = useTranslation()
-  const { isInstalled } = usePwaInstall()
+  const { isInstalled, isMobile } = usePwaInstall()
   const [dismissed, setDismissed] = useState(() => !!localStorage.getItem(DISMISSED_KEY))
   const [modalOpen, setModalOpen] = useState(false)
 
-  if (isInstalled || dismissed) return null
+  if (!isMobile || isInstalled || dismissed) return null
 
   function dismiss() {
     localStorage.setItem(DISMISSED_KEY, '1')
