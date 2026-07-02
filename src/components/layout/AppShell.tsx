@@ -11,7 +11,7 @@ export function AppShell() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header className="lg:hidden" />
         <InstallBanner />
-        <main className="flex-1 overflow-hidden flex flex-col">
+        <main className="flex-1 min-h-0 overflow-hidden flex flex-col">
           <Outlet />
         </main>
         <BottomNav className="lg:hidden" />

@@ -2,14 +2,50 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Save, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useReport, useUpdateReport } from '@/hooks/use-report'
+import { useReport, useUpdateReport, useReportLines, useAddReportLine, useDeleteReportLine } from '@/hooks/use-report'
+import { useServices } from '@/hooks/use-services'
 import { useProject } from '@/hooks/use-projects'
 import { useAuthStore } from '@/store/auth.store'
+import type { ReportLine } from '@/types/api'
+
+function ReportLineCard({
+  line,
+  onDelete,
+  isLocked,
+}: {
+  line: ReportLine
+  onDelete: (id: string) => void
+  isLocked: boolean
+}) {
+  return (
+    <div className="flex items-start gap-2 rounded-xl border bg-card p-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium leading-snug">{line.snapshotTitle}</p>
+        {line.snapshotUnit && (
+          <p className="text-xs text-muted-foreground">{line.snapshotUnit}</p>
+        )}
+        {line.complement && (
+          <p className="text-xs text-muted-foreground mt-0.5">{line.complement}</p>
+        )}
+      </div>
+      {!isLocked && (
+        <button
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:bg-destructive/10"
+          onClick={() => onDelete(line.id)}
+          aria-label="Supprimer"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  )
+}
 
 export function ReportPage() {
   const { id } = useParams<{ id: string }>()
@@ -19,10 +55,20 @@ export function ReportPage() {
 
   const { data: project } = useProject(id ?? '')
   const { data: report, isLoading } = useReport(id ?? '')
+  const { data: lines = [], isLoading: linesLoading } = useReportLines(id ?? '')
+  const { data: services = [] } = useServices(true)
   const updateReport = useUpdateReport(id ?? '')
+  const addLine = useAddReportLine(id ?? '')
+  const deleteLine = useDeleteReportLine(id ?? '')
 
   const [comment, setComment] = useState('')
   const [dirty, setDirty] = useState(false)
+
+  // Add-line form state
+  const [addOpen, setAddOpen] = useState(false)
+  const [selectedServiceId, setSelectedServiceId] = useState<string>('__free__')
+  const [freeTitle, setFreeTitle] = useState('')
+  const [complement, setComplement] = useState('')
 
   useEffect(() => {
     if (report?.comment !== undefined) {
@@ -40,6 +86,35 @@ export function ReportPage() {
       toast.success(t('report.report_saved'))
     } catch {
       toast.error(t('report.save_error'))
+    }
+  }
+
+  async function handleAddLine() {
+    const isFree = selectedServiceId === '__free__'
+    if (isFree && !freeTitle.trim()) return
+
+    try {
+      await addLine.mutateAsync(
+        isFree
+          ? { title: freeTitle.trim(), complement: complement.trim() || undefined }
+          : { serviceId: selectedServiceId, complement: complement.trim() || undefined }
+      )
+      toast.success(t('report.line_added'))
+      setAddOpen(false)
+      setSelectedServiceId('__free__')
+      setFreeTitle('')
+      setComplement('')
+    } catch {
+      toast.error(t('report.line_add_error'))
+    }
+  }
+
+  async function handleDeleteLine(lineId: string) {
+    try {
+      await deleteLine.mutateAsync(lineId)
+      toast.success(t('report.line_deleted'))
+    } catch {
+      toast.error(t('report.line_delete_error'))
     }
   }
 
@@ -84,11 +159,112 @@ export function ReportPage() {
         </div>
       )}
 
-      {isLoading ? (
-        <Skeleton className="h-48 rounded-xl" />
-      ) : (
-        <div className="space-y-2">
-          <Label htmlFor="comment">{t('report.comment_label')}</Label>
+      {/* Service lines section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold">{t('report.lines_title')}</p>
+          {canEdit && !isLocked && !addOpen && (
+            <button
+              className="flex items-center gap-1 text-xs text-primary font-medium min-h-[36px] px-2 rounded-lg active:bg-primary/10"
+              onClick={() => setAddOpen(true)}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t('report.add_line')}
+            </button>
+          )}
+        </div>
+
+        {linesLoading ? (
+          <Skeleton className="h-12 rounded-xl" />
+        ) : lines.length === 0 && !addOpen ? (
+          <p className="text-xs text-muted-foreground py-1">{t('report.no_lines')}</p>
+        ) : (
+          lines.map((line) => (
+            <ReportLineCard
+              key={line.id}
+              line={line}
+              onDelete={(lid) => void handleDeleteLine(lid)}
+              isLocked={isLocked}
+            />
+          ))
+        )}
+
+        {addOpen && canEdit && !isLocked && (
+          <div className="rounded-xl border bg-card p-3 space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="line-service">{t('report.line_title_label')}</Label>
+              <select
+                id="line-service"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm min-h-[44px]"
+                value={selectedServiceId}
+                onChange={(e) => setSelectedServiceId(e.target.value)}
+              >
+                <option value="__free__">{t('report.line_free')}</option>
+                {services.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.title}{s.unit ? ` (${s.unit})` : ''}
+                  </option>
+                ))}
+              </select>
+              {selectedServiceId === '__free__' && (
+                <Input
+                  className="mt-1 min-h-[44px]"
+                  placeholder={t('report.line_title_placeholder')}
+                  value={freeTitle}
+                  onChange={(e) => setFreeTitle(e.target.value)}
+                />
+              )}
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="line-complement">{t('report.line_complement_label')}</Label>
+              <Input
+                id="line-complement"
+                placeholder={t('report.line_complement_placeholder')}
+                value={complement}
+                onChange={(e) => setComplement(e.target.value)}
+                className="min-h-[44px]"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 min-h-[44px]"
+                onClick={() => {
+                  setAddOpen(false)
+                  setSelectedServiceId('__free__')
+                  setFreeTitle('')
+                  setComplement('')
+                }}
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button
+                type="button"
+                className="flex-1 min-h-[44px]"
+                onClick={() => void handleAddLine()}
+                disabled={
+                  addLine.isPending ||
+                  (selectedServiceId === '__free__' && !freeTitle.trim())
+                }
+              >
+                {addLine.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  t('common.add')
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="border-t pt-4 space-y-2">
+        <Label htmlFor="comment">{t('report.comment_label')}</Label>
+
+        {isLoading ? (
+          <Skeleton className="h-48 rounded-xl" />
+        ) : (
           <Textarea
             id="comment"
             value={comment}
@@ -105,8 +281,8 @@ export function ReportPage() {
             className="min-h-[200px] text-sm"
             readOnly={!canEdit || isLocked}
           />
-        </div>
-      )}
+        )}
+      </div>
 
       {canEdit && !isLocked && (
         <Button

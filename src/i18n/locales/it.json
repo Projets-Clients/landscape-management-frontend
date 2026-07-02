@@ -5,7 +5,9 @@
     "projects": "Cantieri",
     "clients": "Clienti",
     "team": "Squadra",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "services": "Servizi",
+    "services_short": "Servizi"
   },
   "dashboard": {
     "greeting": "Ciao, {{username}}",
@@ -126,7 +128,8 @@
     "start_date": "Data inizio",
     "end_date": "Data fine",
     "quote_amount": "Importo preventivo (€)",
-    "inactive": "Inattivo"
+    "inactive": "Inattivo",
+    "add": "Aggiungi"
   },
   "login": {
     "subtitle": "Monitoraggio cantiere",
@@ -264,7 +267,19 @@
     "save": "Salva",
     "saved": "Salvato",
     "save_error": "Errore nel salvataggio",
-    "report_saved": "Rapporto salvato"
+    "report_saved": "Rapporto salvato",
+    "lines_title": "Servizi",
+    "add_line": "Aggiungi",
+    "line_free": "Inserimento libero",
+    "line_title_label": "Servizio",
+    "line_title_placeholder": "Nome del servizio…",
+    "line_complement_label": "Complemento",
+    "line_complement_placeholder": "Note, dettagli…",
+    "line_added": "Servizio aggiunto",
+    "line_deleted": "Servizio rimosso",
+    "line_add_error": "Errore durante l'aggiunta",
+    "line_delete_error": "Errore durante la rimozione",
+    "no_lines": "Nessun servizio"
   },
   "photos": {
     "title": "Foto",
@@ -302,5 +317,39 @@
     "settings_section": "Applicazione",
     "settings_btn": "Installa su questo dispositivo",
     "installed_label": "App installata su questo dispositivo"
+  },
+  "services": {
+    "title": "Catalogo servizi",
+    "add": "Aggiungi",
+    "edit": "Modifica",
+    "activate": "Attiva",
+    "deactivate": "Disattiva",
+    "delete": "Elimina",
+    "active_section": "Attivi",
+    "inactive_section": "Disattivati",
+    "no_services": "Nessun servizio",
+    "empty_desc": "Il tuo catalogo è vuoto.",
+    "seed_btn": "Importa servizi predefiniti",
+    "seed_success": "Servizi importati",
+    "seed_error": "Errore durante l'importazione",
+    "form_title_label": "Nome",
+    "form_title_placeholder": "Es.: Potatura siepe",
+    "form_description_label": "Descrizione (opzionale)",
+    "form_description_placeholder": "Descrizione…",
+    "form_unit_label": "Unità (opzionale)",
+    "form_unit_placeholder": "m², ml, forfait, ora…",
+    "form_add_title": "Nuovo servizio",
+    "form_edit_title": "Modifica servizio",
+    "created": "Servizio creato",
+    "updated": "Servizio aggiornato",
+    "deleted": "Servizio eliminato",
+    "deactivated": "Servizio disattivato",
+    "activated": "Servizio attivato",
+    "create_error": "Errore durante la creazione",
+    "update_error": "Errore durante l'aggiornamento",
+    "delete_error": "Errore durante l'eliminazione",
+    "confirm_delete": "Eliminare questo servizio?",
+    "view_inactive": "Mostra disattivati ({{count}})",
+    "view_active": "← Attivi ({{count}})"
   }
 }

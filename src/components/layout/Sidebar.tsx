@@ -6,6 +6,7 @@ import {
   UserCog,
   Leaf,
   Settings,
+  BookOpen,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
     { to: "/clients", icon: Users, labelKey: "nav.clients" },
     { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team" },
+    { to: "/prestations", icon: BookOpen, labelKey: "nav.services" },
     { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
   ],
   FOREMAN: [

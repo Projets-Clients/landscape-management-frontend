@@ -165,3 +165,31 @@ export interface LoginResponse {
   accessToken: string
   refreshToken: string
 }
+
+export type Trade = 'LANDSCAPER' | 'PLUMBER' | 'ELECTRICIAN' | 'PAINTER' | 'MASON' | 'ROOFER' | 'OTHER'
+
+export interface Service {
+  id: string
+  title: string
+  description: string | null
+  unit: string | null
+  defaultPrice: number | null
+  active: boolean
+  order: number
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ReportLine {
+  id: string
+  reportId: string
+  snapshotTitle: string
+  snapshotDescription: string | null
+  snapshotUnit: string | null
+  complement: string | null
+  order: number
+  serviceId: string | null
+  createdAt: string
+  updatedAt: string
+}

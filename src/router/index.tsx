@@ -16,6 +16,7 @@ import { ClientDetailPage } from '@/pages/clients/ClientDetailPage'
 import { CreateClientPage } from '@/pages/clients/CreateClientPage'
 import { UsersPage } from '@/pages/users/UsersPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { ServicesPage } from '@/pages/services/ServicesPage'
 import { SignPage } from '@/pages/public/SignPage'
 
 export const router = createBrowserRouter([
@@ -33,12 +34,13 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         children: [
-          // Pages with sticky header + footer (manage their own scroll)
+          // Pages with sticky header (manage their own scroll)
           { path: 'chantiers', element: <ProjectsPage /> },
           {
             element: <RoleRoute allowed={['ADMIN']} />,
             children: [
               { path: 'clients', element: <ClientsPage /> },
+              { path: 'prestations', element: <ServicesPage /> },
             ],
           },
           // All other pages scroll normally inside ScrollLayout

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/api-client'
 import { queryClient } from '@/lib/query-client'
-import type { Report } from '@/types/api'
+import type { Report, ReportLine } from '@/types/api'
 
 export function useReport(projectId: string) {
   return useQuery({
@@ -53,5 +53,36 @@ export function useSendReport(projectId: string) {
       }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['report', projectId] }),
+  })
+}
+
+export function useReportLines(projectId: string) {
+  return useQuery({
+    queryKey: ['report-lines', projectId],
+    queryFn: () => apiRequest<ReportLine[]>(`/projects/${projectId}/report/lines`),
+    enabled: Boolean(projectId),
+  })
+}
+
+export function useAddReportLine(projectId: string) {
+  return useMutation({
+    mutationFn: (data: { serviceId?: string; title?: string; complement?: string }) =>
+      apiRequest<ReportLine>(`/projects/${projectId}/report/lines`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['report-lines', projectId] }),
+  })
+}
+
+export function useDeleteReportLine(projectId: string) {
+  return useMutation({
+    mutationFn: (lineId: string) =>
+      apiRequest<void>(`/projects/${projectId}/report/lines/${lineId}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['report-lines', projectId] }),
   })
 }

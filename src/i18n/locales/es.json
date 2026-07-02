@@ -5,7 +5,9 @@
     "projects": "Proyectos",
     "clients": "Clientes",
     "team": "Equipo",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "services": "Servicios",
+    "services_short": "Servicios"
   },
   "dashboard": {
     "greeting": "Hola, {{username}}",
@@ -126,7 +128,8 @@
     "start_date": "Fecha inicio",
     "end_date": "Fecha fin",
     "quote_amount": "Importe presupuesto (€)",
-    "inactive": "Inactivo"
+    "inactive": "Inactivo",
+    "add": "Añadir"
   },
   "login": {
     "subtitle": "Seguimiento de obra",
@@ -264,7 +267,19 @@
     "save": "Guardar",
     "saved": "Guardado",
     "save_error": "Error al guardar",
-    "report_saved": "Informe guardado"
+    "report_saved": "Informe guardado",
+    "lines_title": "Servicios",
+    "add_line": "Añadir",
+    "line_free": "Entrada libre",
+    "line_title_label": "Servicio",
+    "line_title_placeholder": "Nombre del servicio…",
+    "line_complement_label": "Complemento",
+    "line_complement_placeholder": "Notas, detalles…",
+    "line_added": "Servicio añadido",
+    "line_deleted": "Servicio eliminado",
+    "line_add_error": "Error al añadir servicio",
+    "line_delete_error": "Error al eliminar servicio",
+    "no_lines": "Sin servicios"
   },
   "photos": {
     "title": "Fotos",
@@ -302,5 +317,39 @@
     "settings_section": "Aplicación",
     "settings_btn": "Instalar en este dispositivo",
     "installed_label": "Aplicación instalada en este dispositivo"
+  },
+  "services": {
+    "title": "Catálogo de servicios",
+    "add": "Añadir",
+    "edit": "Editar",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "delete": "Eliminar",
+    "active_section": "Activos",
+    "inactive_section": "Desactivados",
+    "no_services": "Sin servicios",
+    "empty_desc": "Tu catálogo está vacío.",
+    "seed_btn": "Importar servicios predeterminados",
+    "seed_success": "Servicios importados",
+    "seed_error": "Error al importar servicios",
+    "form_title_label": "Nombre",
+    "form_title_placeholder": "Ej.: Poda de seto",
+    "form_description_label": "Descripción (opcional)",
+    "form_description_placeholder": "Descripción…",
+    "form_unit_label": "Unidad (opcional)",
+    "form_unit_placeholder": "m², ml, tarifa plana, hora…",
+    "form_add_title": "Nuevo servicio",
+    "form_edit_title": "Editar servicio",
+    "created": "Servicio creado",
+    "updated": "Servicio actualizado",
+    "deleted": "Servicio eliminado",
+    "deactivated": "Servicio desactivado",
+    "activated": "Servicio activado",
+    "create_error": "Error al crear servicio",
+    "update_error": "Error al actualizar servicio",
+    "delete_error": "Error al eliminar servicio",
+    "confirm_delete": "¿Eliminar este servicio?",
+    "view_inactive": "Ver desactivados ({{count}})",
+    "view_active": "← Activos ({{count}})"
   }
 }

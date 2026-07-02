@@ -5,7 +5,9 @@
     "projects": "Chantiers",
     "clients": "Clients",
     "team": "Équipe",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "services": "Prestations",
+    "services_short": "Presta."
   },
   "dashboard": {
     "greeting": "Bonjour, {{username}}",
@@ -126,7 +128,8 @@
     "start_date": "Date de début",
     "end_date": "Date de fin",
     "quote_amount": "Montant devis (€)",
-    "inactive": "Inactif"
+    "inactive": "Inactif",
+    "add": "Ajouter"
   },
   "login": {
     "subtitle": "Suivi de chantier",
@@ -264,7 +267,19 @@
     "save": "Enregistrer",
     "saved": "Enregistré",
     "save_error": "Erreur lors de l'enregistrement",
-    "report_saved": "Rapport enregistré"
+    "report_saved": "Rapport enregistré",
+    "lines_title": "Prestations",
+    "add_line": "Ajouter",
+    "line_free": "Saisie libre",
+    "line_title_label": "Prestation",
+    "line_title_placeholder": "Intitulé de la prestation…",
+    "line_complement_label": "Complément",
+    "line_complement_placeholder": "Précisions, notes…",
+    "line_added": "Prestation ajoutée",
+    "line_deleted": "Prestation supprimée",
+    "line_add_error": "Erreur lors de l'ajout",
+    "line_delete_error": "Erreur lors de la suppression",
+    "no_lines": "Aucune prestation"
   },
   "photos": {
     "title": "Photos",
@@ -302,5 +317,39 @@
     "settings_section": "Application",
     "settings_btn": "Installer sur cet appareil",
     "installed_label": "Application installée sur cet appareil"
+  },
+  "services": {
+    "title": "Bibliothèque de prestations",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "delete": "Supprimer",
+    "active_section": "Actives",
+    "inactive_section": "Désactivées",
+    "no_services": "Aucune prestation",
+    "empty_desc": "Votre bibliothèque est vide.",
+    "seed_btn": "Importer les prestations par défaut",
+    "seed_success": "Prestations importées",
+    "seed_error": "Erreur lors de l'import",
+    "form_title_label": "Intitulé",
+    "form_title_placeholder": "Ex : Taille de haie",
+    "form_description_label": "Description (optionnelle)",
+    "form_description_placeholder": "Description…",
+    "form_unit_label": "Unité (optionnelle)",
+    "form_unit_placeholder": "m², ml, forfait, heure…",
+    "form_add_title": "Nouvelle prestation",
+    "form_edit_title": "Modifier la prestation",
+    "created": "Prestation créée",
+    "updated": "Prestation modifiée",
+    "deleted": "Prestation supprimée",
+    "deactivated": "Prestation désactivée",
+    "activated": "Prestation activée",
+    "create_error": "Erreur lors de la création",
+    "update_error": "Erreur lors de la modification",
+    "delete_error": "Erreur lors de la suppression",
+    "confirm_delete": "Supprimer cette prestation ?",
+    "view_inactive": "Voir les désactivées ({{count}})",
+    "view_active": "← Actives ({{count}})"
   }
 }

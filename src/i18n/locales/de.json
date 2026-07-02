@@ -5,7 +5,9 @@
     "projects": "Projekte",
     "clients": "Kunden",
     "team": "Team",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "services": "Leistungen",
+    "services_short": "Leistungen"
   },
   "dashboard": {
     "greeting": "Hallo, {{username}}",
@@ -126,7 +128,8 @@
     "start_date": "Startdatum",
     "end_date": "Enddatum",
     "quote_amount": "Angebotsbetrag (€)",
-    "inactive": "Inaktiv"
+    "inactive": "Inaktiv",
+    "add": "Hinzufügen"
   },
   "login": {
     "subtitle": "Baustellenverfolgung",
@@ -264,7 +267,19 @@
     "save": "Speichern",
     "saved": "Gespeichert",
     "save_error": "Speicherfehler",
-    "report_saved": "Bericht gespeichert"
+    "report_saved": "Bericht gespeichert",
+    "lines_title": "Leistungen",
+    "add_line": "Hinzufügen",
+    "line_free": "Freie Eingabe",
+    "line_title_label": "Leistung",
+    "line_title_placeholder": "Leistungsname…",
+    "line_complement_label": "Ergänzung",
+    "line_complement_placeholder": "Hinweise, Details…",
+    "line_added": "Leistung hinzugefügt",
+    "line_deleted": "Leistung entfernt",
+    "line_add_error": "Fehler beim Hinzufügen",
+    "line_delete_error": "Fehler beim Entfernen",
+    "no_lines": "Keine Leistungen"
   },
   "photos": {
     "title": "Fotos",
@@ -302,5 +317,39 @@
     "settings_section": "Anwendung",
     "settings_btn": "Auf diesem Gerät installieren",
     "installed_label": "App auf diesem Gerät installiert"
+  },
+  "services": {
+    "title": "Leistungskatalog",
+    "add": "Hinzufügen",
+    "edit": "Bearbeiten",
+    "activate": "Aktivieren",
+    "deactivate": "Deaktivieren",
+    "delete": "Löschen",
+    "active_section": "Aktiv",
+    "inactive_section": "Deaktiviert",
+    "no_services": "Keine Leistungen",
+    "empty_desc": "Ihr Katalog ist leer.",
+    "seed_btn": "Standardleistungen importieren",
+    "seed_success": "Leistungen importiert",
+    "seed_error": "Fehler beim Import",
+    "form_title_label": "Bezeichnung",
+    "form_title_placeholder": "z.B. Heckenschnitt",
+    "form_description_label": "Beschreibung (optional)",
+    "form_description_placeholder": "Beschreibung…",
+    "form_unit_label": "Einheit (optional)",
+    "form_unit_placeholder": "m², ml, Pauschale, Stunde…",
+    "form_add_title": "Neue Leistung",
+    "form_edit_title": "Leistung bearbeiten",
+    "created": "Leistung erstellt",
+    "updated": "Leistung aktualisiert",
+    "deleted": "Leistung gelöscht",
+    "deactivated": "Leistung deaktiviert",
+    "activated": "Leistung aktiviert",
+    "create_error": "Fehler beim Erstellen",
+    "update_error": "Fehler beim Aktualisieren",
+    "delete_error": "Fehler beim Löschen",
+    "confirm_delete": "Diese Leistung löschen?",
+    "view_inactive": "Deaktivierte anzeigen ({{count}})",
+    "view_active": "← Aktive ({{count}})"
   }
 }

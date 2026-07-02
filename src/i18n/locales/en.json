@@ -5,7 +5,9 @@
     "projects": "Projects",
     "clients": "Clients",
     "team": "Team",
-    "settings": "Settings"
+    "settings": "Settings",
+    "services": "Services",
+    "services_short": "Services"
   },
   "dashboard": {
     "greeting": "Hello, {{username}}",
@@ -126,7 +128,8 @@
     "start_date": "Start date",
     "end_date": "End date",
     "quote_amount": "Quote amount (€)",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "add": "Add"
   },
   "login": {
     "subtitle": "Site tracker",
@@ -264,7 +267,19 @@
     "save": "Save",
     "saved": "Saved",
     "save_error": "Save error",
-    "report_saved": "Report saved"
+    "report_saved": "Report saved",
+    "lines_title": "Services",
+    "add_line": "Add",
+    "line_free": "Free entry",
+    "line_title_label": "Service",
+    "line_title_placeholder": "Service name…",
+    "line_complement_label": "Complement",
+    "line_complement_placeholder": "Notes, details…",
+    "line_added": "Service added",
+    "line_deleted": "Service removed",
+    "line_add_error": "Error adding service",
+    "line_delete_error": "Error removing service",
+    "no_lines": "No services"
   },
   "photos": {
     "title": "Photos",
@@ -302,5 +317,39 @@
     "settings_section": "Application",
     "settings_btn": "Install on this device",
     "installed_label": "App installed on this device"
+  },
+  "services": {
+    "title": "Service library",
+    "add": "Add",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "delete": "Delete",
+    "active_section": "Active",
+    "inactive_section": "Inactive",
+    "no_services": "No services",
+    "empty_desc": "Your library is empty.",
+    "seed_btn": "Import default services",
+    "seed_success": "Services imported",
+    "seed_error": "Error importing services",
+    "form_title_label": "Name",
+    "form_title_placeholder": "e.g. Hedge trimming",
+    "form_description_label": "Description (optional)",
+    "form_description_placeholder": "Description…",
+    "form_unit_label": "Unit (optional)",
+    "form_unit_placeholder": "m², ml, flat rate, hour…",
+    "form_add_title": "New service",
+    "form_edit_title": "Edit service",
+    "created": "Service created",
+    "updated": "Service updated",
+    "deleted": "Service deleted",
+    "deactivated": "Service deactivated",
+    "activated": "Service activated",
+    "create_error": "Error creating service",
+    "update_error": "Error updating service",
+    "delete_error": "Error deleting service",
+    "confirm_delete": "Delete this service?",
+    "view_inactive": "Show deactivated ({{count}})",
+    "view_active": "← Active ({{count}})"
   }
 }
