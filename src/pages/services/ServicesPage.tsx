@@ -16,6 +16,7 @@ import {
   useActivateService,
   useSeedServices,
 } from "@/hooks/use-services";
+import { usePermissions } from "@/hooks/use-permissions";
 import type { Service } from "@/types/api";
 
 interface ServiceFormData {
@@ -107,12 +108,16 @@ function ServiceForm({
 
 function ServiceCard({
   service,
+  canUpdate,
+  canDelete,
   onEdit,
   onDeactivate,
   onActivate,
   onDelete,
 }: {
   service: Service;
+  canUpdate: boolean;
+  canDelete: boolean;
   onEdit: (s: Service) => void;
   onDeactivate: (id: string) => void;
   onActivate: (id: string) => void;
@@ -139,14 +144,16 @@ function ServiceCard({
           )}
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted"
-            onClick={() => onEdit(service)}
-            aria-label={t("services.edit")}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          {service.active ? (
+          {canUpdate && (
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted"
+              onClick={() => onEdit(service)}
+              aria-label={t("services.edit")}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          )}
+          {canUpdate && (service.active ? (
             <button
               className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted"
               onClick={() => onDeactivate(service.id)}
@@ -162,14 +169,16 @@ function ServiceCard({
             >
               <Eye className="h-3.5 w-3.5" />
             </button>
+          ))}
+          {canDelete && (
+            <button
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:bg-destructive/10"
+              onClick={() => onDelete(service.id)}
+              aria-label={t("services.delete")}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
           )}
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:bg-destructive/10"
-            onClick={() => onDelete(service.id)}
-            aria-label={t("services.delete")}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
         </div>
       </div>
     </div>
@@ -178,6 +187,7 @@ function ServiceCard({
 
 export function ServicesPage() {
   const { t } = useTranslation();
+  const { can } = usePermissions();
   const { data: services, isLoading } = useServices();
   const createService = useCreateService();
   const updateService = useUpdateService();
@@ -311,7 +321,7 @@ export function ServicesPage() {
             <span className="lg:hidden">{t("services.title_short")}</span>
             <span className="hidden lg:inline">{t("services.title")}</span>
           </h1>
-          {view === "active" ? (
+          {view === "active" && can('prestations', 'create') ? (
             <Button
               size="sm"
               className="min-h-[44px] gap-1.5"
@@ -320,7 +330,7 @@ export function ServicesPage() {
               <Plus className="h-3.5 w-3.5" />
               {t("services.add")}
             </Button>
-          ) : (
+          ) : view === "inactive" ? (
             <Button
               size="sm"
               variant="outline"
@@ -329,7 +339,7 @@ export function ServicesPage() {
             >
               {t("services.view_active", { count: activeServices.length })}
             </Button>
-          )}
+          ) : null}
         </div>
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -400,6 +410,8 @@ export function ServicesPage() {
               <ServiceCard
                 key={s.id}
                 service={s}
+                canUpdate={can('prestations', 'update')}
+                canDelete={can('prestations', 'delete')}
                 onEdit={(svc) => setModalState({ mode: "edit", service: svc })}
                 onDeactivate={(id) => void handleDeactivate(id)}
                 onActivate={(id) => void handleActivate(id)}

@@ -9,11 +9,13 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { Pagination } from '@/components/common/Pagination'
 import { useClients } from '@/hooks/use-clients'
 import type { ClientSort } from '@/hooks/use-clients'
+import { usePermissions } from '@/hooks/use-permissions'
 import { fullName } from '@/lib/utils'
 
 export function ClientsPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { can } = usePermissions()
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [sort, setSort] = useState<ClientSort>('name')
@@ -26,14 +28,16 @@ export function ClientsPage() {
       <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold">{t('clients.title')}</h1>
-          <Button
-            size="sm"
-            className="min-h-[44px]"
-            onClick={() => void navigate('/clients/nouveau')}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            {t('clients.new')}
-          </Button>
+          {can('clients', 'create') && (
+            <Button
+              size="sm"
+              className="min-h-[44px]"
+              onClick={() => void navigate('/clients/nouveau')}
+            >
+              <Plus className="mr-1 h-4 w-4" />
+              {t('clients.new')}
+            </Button>
+          )}
         </div>
 
         <div className="flex gap-2">

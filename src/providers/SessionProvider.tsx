@@ -30,11 +30,12 @@ export function SessionProvider() {
   const setAuth = useAuthStore((s) => s.setAuth)
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const setPreferences = useAuthStore((s) => s.setPreferences)
+  const setPermissions = useAuthStore((s) => s.setPermissions)
   const { setTheme, setColor } = useTheme()
   const { i18n } = useTranslation()
 
   useEffect(() => {
-    void sessionRefresh.then(async (data) => {
+    void sessionRefresh.then(async (data: { accessToken: string; refreshToken: string } | null) => {
       if (data) {
         setAuth(data.accessToken, sessionStorage.getItem('username') ?? '', data.refreshToken)
         try {
@@ -42,12 +43,16 @@ export function SessionProvider() {
             headers: { Authorization: `Bearer ${data.accessToken}` },
           })
           if (res.ok) {
-            const me = (await res.json()) as { language: string; theme: string; accentColor: string }
+            const me = (await res.json()) as {
+              language: string; theme: string; accentColor: string
+              customRole?: { permissions: Record<string, string[]> } | null
+            }
             setPreferences(me.language, me.theme, me.accentColor)
             setTheme(me.theme as 'system' | 'light' | 'dark')
             setColor(me.accentColor as ColorKey)
             localStorage.setItem('landscape-lang', me.language)
             void i18n.changeLanguage(me.language)
+            setPermissions(me.customRole?.permissions as never ?? null)
           }
         } catch {
           // ignore — local preferences remain active

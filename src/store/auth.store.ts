@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { UserRole } from '@/types/api'
+import type { UserRole, Permissions } from '@/types/api'
 
 const REFRESH_TOKEN_KEY = 'landscape-rt'
 
@@ -12,8 +12,10 @@ interface AuthState {
   language: string
   theme: string
   accentColor: string
+  permissions: Permissions | null
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
   setPreferences: (language: string, theme: string, accentColor: string) => void
+  setPermissions: (permissions: Permissions | null) => void
   clearAuth: () => void
 }
 
@@ -40,6 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   language: 'fr',
   theme: 'system',
   accentColor: 'green',
+  permissions: null,
 
   setAuth: (accessToken, username, refreshToken) => {
     const decoded = decodeJwtPayload(accessToken)
@@ -58,10 +61,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ language, theme, accentColor })
   },
 
+  setPermissions: (permissions) => {
+    set({ permissions })
+  },
+
   clearAuth: () => {
     sessionStorage.removeItem('username')
     localStorage.removeItem(REFRESH_TOKEN_KEY)
-    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null })
+    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null, permissions: null })
   },
 }))
 

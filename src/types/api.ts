@@ -1,4 +1,19 @@
-export type UserRole = 'ADMIN' | 'FOREMAN' | 'EMPLOYEE'
+export type UserRole = 'ADMIN' | 'MEMBER' | 'FOREMAN' | 'EMPLOYEE'
+
+export type PermModule = 'chantiers' | 'clients' | 'equipe' | 'prestations'
+export type PermAction = 'read' | 'create' | 'update' | 'delete'
+export type Permissions = Record<PermModule, PermAction[]>
+
+export interface Role {
+  id: string
+  name: string
+  organizationId: string
+  permissions: Permissions
+  isDefault: boolean
+  _count?: { users: number }
+  createdAt: string
+  updatedAt: string
+}
 
 export interface Organization {
   id: string
@@ -27,6 +42,8 @@ export interface User {
   firstName: string
   lastName: string
   role: UserRole
+  customRoleId: string | null
+  customRole?: Pick<Role, 'id' | 'name' | 'permissions'>
   active: boolean
   language: string
   theme: string

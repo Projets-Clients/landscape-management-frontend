@@ -13,15 +13,16 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { useProjects } from '@/hooks/use-projects'
 import { useAuthStore } from '@/store/auth.store'
+import { usePermissions } from '@/hooks/use-permissions'
 import { formatDate } from '@/lib/utils'
-import type { Project, UserRole } from '@/types/api'
+import type { Project, PermModule } from '@/types/api'
 
 interface ModuleDef {
   to: string
   icon: React.ElementType
   labelKey: string
   color: string
-  roles: UserRole[]
+  permModule: PermModule
 }
 
 const MODULES: ModuleDef[] = [
@@ -30,28 +31,28 @@ const MODULES: ModuleDef[] = [
     icon: HardHat,
     labelKey: 'nav.projects',
     color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    roles: ['ADMIN', 'FOREMAN', 'EMPLOYEE'],
+    permModule: 'chantiers',
   },
   {
     to: '/clients',
     icon: Users,
     labelKey: 'nav.clients',
     color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    roles: ['ADMIN'],
+    permModule: 'clients',
   },
   {
     to: '/utilisateurs',
     icon: UserCog,
     labelKey: 'nav.team',
     color: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-    roles: ['ADMIN'],
+    permModule: 'equipe',
   },
   {
     to: '/prestations',
     icon: BookOpen,
     labelKey: 'nav.services',
     color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-    roles: ['ADMIN'],
+    permModule: 'prestations',
   },
 ]
 
@@ -138,8 +139,8 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
 export function DashboardPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const role = useAuthStore((s) => s.role)
   const username = useAuthStore((s) => s.username)
+  const { can } = usePermissions()
 
   const inProgress = useProjects({ status: 'IN_PROGRESS', limit: 1 })
   const awaitingSig = useProjects({ status: 'AWAITING_SIGNATURE', limit: 1 })
@@ -147,7 +148,7 @@ export function DashboardPage() {
   const disputed = useProjects({ status: 'DISPUTED', limit: 1 })
   const recent = useProjects({ limit: 20 })
 
-  const visibleModules = MODULES.filter((m) => role && m.roles.includes(role))
+  const visibleModules = MODULES.filter((m) => can(m.permModule, 'read'))
 
   return (
     <div className="flex flex-col gap-6">

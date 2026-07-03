@@ -10,8 +10,54 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
 import { Avatar } from '@/components/common/Avatar'
 import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
+import { useRoles } from '@/hooks/use-roles'
 import { fullName } from '@/lib/utils'
-import type { User, UserRole } from '@/types/api'
+import { RolesTab } from './RolesTab'
+import type { User } from '@/types/api'
+
+function RoleSelect({
+  value,
+  customRoleId,
+  onChange,
+  disabled,
+}: {
+  value: string
+  customRoleId: string | null
+  onChange: (role: string, customRoleId: string | null) => void
+  disabled?: boolean
+}) {
+  const { t } = useTranslation()
+  const { data: roles } = useRoles()
+
+  const selectValue = value === 'ADMIN' ? 'ADMIN' : (customRoleId ?? '')
+
+  function handleChange(v: string) {
+    if (v === 'ADMIN') {
+      onChange('ADMIN', null)
+    } else {
+      onChange('MEMBER', v)
+    }
+  }
+
+  return (
+    <select
+      value={selectValue}
+      onChange={(e) => handleChange(e.target.value)}
+      disabled={disabled}
+      className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <option value="ADMIN">{t('users.role_admin')}</option>
+      {roles?.map((r) => (
+        <option key={r.id} value={r.id}>
+          {r.name}
+        </option>
+      ))}
+      {(!roles || roles.length === 0) && (
+        <option value="" disabled>{t('users.no_custom_roles')}</option>
+      )}
+    </select>
+  )
+}
 
 function UserRow({ user }: { user: User }) {
   const { t } = useTranslation()
@@ -21,11 +67,12 @@ function UserRow({ user }: { user: User }) {
     lastName: user.lastName,
     email: user.email ?? '',
     role: user.role,
+    customRoleId: user.customRoleId,
     password: '',
   })
   const update = useUpdateUser(user.id)
 
-  function set(key: string, value: string) {
+  function setField(key: string, value: unknown) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
@@ -39,7 +86,8 @@ function UserRow({ user }: { user: User }) {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         email: form.email.trim() || undefined,
-        role: form.role,
+        role: form.role as never,
+        customRoleId: form.customRoleId,
         ...(form.password ? { password: form.password } : {}),
       })
       setForm((f) => ({ ...f, password: '' }))
@@ -58,11 +106,7 @@ function UserRow({ user }: { user: User }) {
     }
   }
 
-  const ROLE_LABELS: Record<UserRole, string> = {
-    ADMIN: t('users.role_admin'),
-    FOREMAN: t('users.role_foreman'),
-    EMPLOYEE: t('users.role_employee'),
-  }
+  const roleLabel = user.customRole?.name ?? (user.role === 'ADMIN' ? t('users.role_admin') : user.role)
 
   return (
     <div className="divide-y last:divide-y-0">
@@ -81,7 +125,7 @@ function UserRow({ user }: { user: User }) {
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            {ROLE_LABELS[user.role]} · @{user.username}
+            {roleLabel} · @{user.username}
           </p>
         </div>
         {expanded ? (
@@ -99,7 +143,7 @@ function UserRow({ user }: { user: User }) {
               <Input
                 className="min-h-[44px]"
                 value={form.firstName}
-                onChange={(e) => set('firstName', e.target.value)}
+                onChange={(e) => setField('firstName', e.target.value)}
                 disabled={update.isPending}
               />
             </div>
@@ -108,7 +152,7 @@ function UserRow({ user }: { user: User }) {
               <Input
                 className="min-h-[44px]"
                 value={form.lastName}
-                onChange={(e) => set('lastName', e.target.value)}
+                onChange={(e) => setField('lastName', e.target.value)}
                 disabled={update.isPending}
               />
             </div>
@@ -119,22 +163,18 @@ function UserRow({ user }: { user: User }) {
               type="email"
               className="min-h-[44px]"
               value={form.email}
-              onChange={(e) => set('email', e.target.value)}
+              onChange={(e) => setField('email', e.target.value)}
               disabled={update.isPending}
             />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">{t('common.role')}</Label>
-            <select
+            <RoleSelect
               value={form.role}
-              onChange={(e) => set('role', e.target.value)}
+              customRoleId={form.customRoleId}
+              onChange={(role, customRoleId) => setForm((f) => ({ ...f, role, customRoleId }))}
               disabled={update.isPending}
-              className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="EMPLOYEE">{t('users.role_employee')}</option>
-              <option value="FOREMAN">{t('users.role_foreman')}</option>
-              <option value="ADMIN">{t('users.role_admin')}</option>
-            </select>
+            />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">{t('users.new_password')}</Label>
@@ -144,7 +184,7 @@ function UserRow({ user }: { user: User }) {
               className="min-h-[44px]"
               placeholder={t('users.password_placeholder')}
               value={form.password}
-              onChange={(e) => set('password', e.target.value)}
+              onChange={(e) => setField('password', e.target.value)}
               disabled={update.isPending}
             />
           </div>
@@ -179,10 +219,11 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
     lastName: '',
     email: '',
     password: '',
-    role: 'EMPLOYEE' as UserRole,
+    role: 'MEMBER',
+    customRoleId: null as string | null,
   })
 
-  function set(key: string, value: string) {
+  function setField(key: string, value: unknown) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
@@ -198,7 +239,8 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         password: form.password,
-        role: form.role,
+        role: form.role as never,
+        customRoleId: form.customRoleId,
         email: form.email.trim() || undefined,
       })
       toast.success(t('users.created'))
@@ -211,101 +253,43 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
   return (
     <Card className="p-4">
       <h2 className="mb-4 font-semibold">{t('users.new_user')}</h2>
-      <form
-        onSubmit={(e) => {
-          void handleSubmit(e)
-        }}
-        className="space-y-3"
-      >
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label htmlFor="cu-fn">{t('common.first_name')}</Label>
-            <Input
-              id="cu-fn"
-              className="min-h-[44px]"
-              value={form.firstName}
-              onChange={(e) => set('firstName', e.target.value)}
-              required
-            />
+            <Input id="cu-fn" className="min-h-[44px]" value={form.firstName} onChange={(e) => setField('firstName', e.target.value)} required />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="cu-ln">{t('common.last_name')}</Label>
-            <Input
-              id="cu-ln"
-              className="min-h-[44px]"
-              value={form.lastName}
-              onChange={(e) => set('lastName', e.target.value)}
-              required
-            />
+            <Input id="cu-ln" className="min-h-[44px]" value={form.lastName} onChange={(e) => setField('lastName', e.target.value)} required />
           </div>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="cu-uname">{t('common.identifier')}</Label>
-          <Input
-            id="cu-uname"
-            autoCapitalize="none"
-            autoComplete="off"
-            className="min-h-[44px]"
-            value={form.username}
-            onChange={(e) => set('username', e.target.value)}
-            required
-          />
+          <Input id="cu-uname" autoCapitalize="none" autoComplete="off" className="min-h-[44px]" value={form.username} onChange={(e) => setField('username', e.target.value)} required />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="cu-email">{t('common.email')}</Label>
-          <Input
-            id="cu-email"
-            type="email"
-            className="min-h-[44px]"
-            value={form.email}
-            onChange={(e) => set('email', e.target.value)}
-          />
+          <Input id="cu-email" type="email" className="min-h-[44px]" value={form.email} onChange={(e) => setField('email', e.target.value)} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="cu-pw">{t('common.password')}</Label>
-          <Input
-            id="cu-pw"
-            type="password"
-            autoComplete="new-password"
-            className="min-h-[44px]"
-            minLength={8}
-            value={form.password}
-            onChange={(e) => set('password', e.target.value)}
-            required
-          />
+          <Input id="cu-pw" type="password" autoComplete="new-password" className="min-h-[44px]" minLength={8} value={form.password} onChange={(e) => setField('password', e.target.value)} required />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cu-role">{t('common.role')}</Label>
-          <select
-            id="cu-role"
+          <Label>{t('common.role')}</Label>
+          <RoleSelect
             value={form.role}
-            onChange={(e) => set('role', e.target.value)}
-            className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <option value="EMPLOYEE">{t('users.role_employee')}</option>
-            <option value="FOREMAN">{t('users.role_foreman')}</option>
-            <option value="ADMIN">{t('users.role_admin')}</option>
-          </select>
+            customRoleId={form.customRoleId}
+            onChange={(role, customRoleId) => setForm((f) => ({ ...f, role, customRoleId }))}
+          />
         </div>
         <div className="flex gap-3 pt-1">
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-[44px] flex-1"
-            onClick={onClose}
-          >
+          <Button type="button" variant="outline" className="min-h-[44px] flex-1" onClick={onClose}>
             {t('common.cancel')}
           </Button>
-          <Button
-            type="submit"
-            className="min-h-[44px] flex-1"
-            disabled={createUser.isPending}
-          >
-            {createUser.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              t('common.new')
-            )}
+          <Button type="submit" className="min-h-[44px] flex-1" disabled={createUser.isPending}>
+            {createUser.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.new')}
           </Button>
         </div>
       </form>
@@ -313,62 +297,75 @@ function CreateUserForm({ onClose }: { onClose: () => void }) {
   )
 }
 
+type Tab = 'membres' | 'roles'
+
 export function UsersPage() {
   const { t } = useTranslation()
   const { data: users, isLoading } = useUsers()
   const [showCreate, setShowCreate] = useState(false)
+  const [tab, setTab] = useState<Tab>('membres')
 
   const active = users?.filter((u) => u.active) ?? []
   const inactive = users?.filter((u) => !u.active) ?? []
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="flex flex-col h-full space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t('users.title')}</h1>
-        <Button
-          size="sm"
-          className="min-h-[44px]"
-          onClick={() => setShowCreate((v) => !v)}
-        >
+        <Button size="sm" className="min-h-[44px]" onClick={() => setShowCreate((v) => !v)}>
           <Plus className="mr-1 h-4 w-4" />
           {t('common.new')}
         </Button>
       </div>
 
-      {showCreate && <CreateUserForm onClose={() => setShowCreate(false)} />}
+      {/* Onglets */}
+      <div className="flex gap-1 rounded-xl bg-muted p-1">
+        {(['membres', 'roles'] as Tab[]).map((t_) => (
+          <button
+            key={t_}
+            onClick={() => { setTab(t_); setShowCreate(false) }}
+            className={[
+              'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
+              tab === t_
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            ].join(' ')}
+          >
+            {t(`users.tab_${t_}`)}
+          </button>
+        ))}
+      </div>
 
-      {isLoading && (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-[64px] rounded-xl" />
-          ))}
-        </div>
+      {tab === 'membres' && (
+        <>
+          {showCreate && <CreateUserForm onClose={() => setShowCreate(false)} />}
+          {isLoading && (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => <Skeleton key={i} className="h-[64px] rounded-xl" />)}
+            </div>
+          )}
+          {!isLoading && users?.length === 0 && (
+            <EmptyState icon={UserCog} title={t('users.empty')} />
+          )}
+          {active.length > 0 && (
+            <div className="overflow-hidden rounded-xl border bg-card">
+              {active.map((user) => <UserRow key={user.id} user={user} />)}
+            </div>
+          )}
+          {inactive.length > 0 && (
+            <div className="space-y-1">
+              <p className="px-1 text-xs font-medium text-muted-foreground">
+                {t('users.inactive_accounts')}
+              </p>
+              <div className="overflow-hidden rounded-xl border bg-card opacity-60">
+                {inactive.map((user) => <UserRow key={user.id} user={user} />)}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {!isLoading && users?.length === 0 && (
-        <EmptyState icon={UserCog} title={t('users.empty')} />
-      )}
-
-      {active.length > 0 && (
-        <div className="overflow-hidden rounded-xl border bg-card">
-          {active.map((user) => (
-            <UserRow key={user.id} user={user} />
-          ))}
-        </div>
-      )}
-
-      {inactive.length > 0 && (
-        <div className="space-y-1">
-          <p className="px-1 text-xs font-medium text-muted-foreground">
-            {t('users.inactive_accounts')}
-          </p>
-          <div className="overflow-hidden rounded-xl border bg-card opacity-60">
-            {inactive.map((user) => (
-              <UserRow key={user.id} user={user} />
-            ))}
-          </div>
-        </div>
-      )}
+      {tab === 'roles' && <RolesTab showCreate={showCreate} onCloseCreate={() => setShowCreate(false)} />}
     </div>
   )
 }

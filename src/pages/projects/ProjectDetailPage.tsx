@@ -33,7 +33,7 @@ import { usePhotos } from "@/hooks/use-photos";
 import { useReport, useReportPdfUrl, useSendReport, useGenerateReport } from "@/hooks/use-report";
 import { useCreateSignatureRequest } from "@/hooks/use-signature";
 import { useUsers } from "@/hooks/use-users";
-import { useAuthStore } from "@/store/auth.store";
+import { usePermissions } from "@/hooks/use-permissions";
 import { formatDate, formatCurrency, fullName } from "@/lib/utils";
 import type { Photo, ProjectStatus } from "@/types/api";
 import { PhotoLightbox } from "@/components/common/PhotoLightbox";
@@ -45,19 +45,11 @@ const NEXT_STATUS: Partial<Record<ProjectStatus, ProjectStatus>> = {
   DISPUTED: "IN_PROGRESS",
 };
 
-function canTransition(status: ProjectStatus, role: string | null): boolean {
-  if (status === "DRAFT") return role === "ADMIN";
-  if (status === "PLANNED") return role === "ADMIN" || role === "FOREMAN";
-  if (status === "IN_PROGRESS") return role === "ADMIN" || role === "FOREMAN";
-  if (status === "DISPUTED") return role === "ADMIN";
-  return false;
-}
-
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const role = useAuthStore((s) => s.role);
+  const { can } = usePermissions();
   const [lightbox, setLightbox] = useState<{
     photos: Photo[];
     index: number;
@@ -78,7 +70,7 @@ export function ProjectDetailPage() {
     id ?? "",
     project?.status === "COMPLETED",
   );
-  const { data: allUsers } = useUsers({ enabled: role === "ADMIN" });
+  const { data: allUsers } = useUsers({ enabled: can('chantiers', 'update') });
 
   const updateStatus = useUpdateProjectStatus(id ?? "");
   const createSigRequest = useCreateSignatureRequest(id ?? "");
@@ -183,7 +175,7 @@ export function ProjectDetailPage() {
             {project.title}
           </h1>
         </div>
-        {role === "ADMIN" && !isLocked && (
+        {can('chantiers', 'update') && !isLocked && (
           <button
             aria-label={t('project.edit_aria')}
             className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-card active:bg-muted"
@@ -244,7 +236,7 @@ export function ProjectDetailPage() {
       )}
 
       {/* Action button */}
-      {canTransition(project.status, role) && (
+      {can('chantiers', 'update') && NEXT_STATUS[project.status] && (
         <Button
           className="w-full min-h-[48px] text-base"
           onClick={() => void handleTransition()}
@@ -259,7 +251,7 @@ export function ProjectDetailPage() {
 
       {/* Send signature link */}
       {project.status === "AWAITING_SIGNATURE" &&
-        (role === "ADMIN" || role === "FOREMAN") && (
+        can('chantiers', 'update') && (
           <Button
             variant="outline"
             className="w-full min-h-[48px] gap-2"
@@ -274,7 +266,7 @@ export function ProjectDetailPage() {
         )}
 
       {/* Generate report — COMPLETED but no PDF yet */}
-      {project.status === "COMPLETED" && pdfData && !pdfData.pdfUrl && role === "ADMIN" && (
+      {project.status === "COMPLETED" && pdfData && !pdfData.pdfUrl && can('chantiers', 'update') && (
         <Button
           variant="outline"
           className="w-full min-h-[48px] gap-2"
@@ -306,7 +298,7 @@ export function ProjectDetailPage() {
               <Download className="h-4 w-4" />
               {t('common.download')}
             </a>
-            {project.client.email && (role === "ADMIN" || role === "FOREMAN") && (
+            {project.client.email && can('chantiers', 'update') && (
               <Button
                 variant="outline"
                 className="flex-1 min-h-[48px] gap-2"
@@ -428,7 +420,7 @@ export function ProjectDetailPage() {
                   {user.role === "FOREMAN" ? t('project.role_foreman') : t('project.role_employee')}
                 </p>
               </div>
-              {role === "ADMIN" && !isLocked && (
+              {can('chantiers', 'update') && !isLocked && (
                 <button
                   className="text-xs text-red-600 min-h-[44px] px-2"
                   onClick={() => void handleUnassign(user.id)}
@@ -440,7 +432,7 @@ export function ProjectDetailPage() {
           ))}
         </Card>
 
-        {role === "ADMIN" && !isLocked && availableToAssign.length > 0 && (
+        {can('chantiers', 'update') && !isLocked && availableToAssign.length > 0 && (
           <Card className="divide-y">
             <p className="p-3 text-xs font-medium text-muted-foreground">
               {t('project.add_member')}
@@ -551,7 +543,7 @@ export function ProjectDetailPage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">{t('project.report')}</h2>
-          {(role === "ADMIN" || role === "FOREMAN") && !isLocked && (
+          {can('chantiers', 'update') && !isLocked && (
             <button
               className="flex items-center gap-1 text-xs text-primary font-medium min-h-[44px]"
               onClick={() => void navigate(`/chantiers/${id}/rapport`)}

@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth.store";
+import { usePermissions } from "@/hooks/use-permissions";
 import { useTheme, COLORS } from "@/providers/ThemeProvider";
 import type { ColorKey } from "@/providers/ThemeProvider";
 import { apiRequest } from "@/lib/api-client";
@@ -41,7 +42,7 @@ export function SettingsPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { username, role, userId, clearAuth } = useAuthStore();
-  const isAdmin = role === "ADMIN";
+  const { isAdmin } = usePermissions();
   const { theme, setTheme, color, setColor } = useTheme();
   const { isInstalled, isMobile } = usePwaInstall();
   const [installOpen, setInstallOpen] = useState(false);

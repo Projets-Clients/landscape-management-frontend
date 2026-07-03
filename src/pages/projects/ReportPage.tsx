@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useReport, useUpdateReport, useReportLines, useAddReportLine, useDeleteReportLine } from '@/hooks/use-report'
 import { useServices } from '@/hooks/use-services'
 import { useProject } from '@/hooks/use-projects'
-import { useAuthStore } from '@/store/auth.store'
+import { usePermissions } from '@/hooks/use-permissions'
 import type { ReportLine } from '@/types/api'
 
 function ReportLineCard({
@@ -51,7 +51,7 @@ export function ReportPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const role = useAuthStore((s) => s.role)
+  const { can } = usePermissions()
 
   const { data: project } = useProject(id ?? '')
   const { data: report, isLoading } = useReport(id ?? '')
@@ -76,7 +76,7 @@ export function ReportPage() {
     }
   }, [report?.comment])
 
-  const canEdit = role === 'ADMIN' || role === 'FOREMAN'
+  const canEdit = can('chantiers', 'update')
   const isLocked = project?.status === 'AWAITING_SIGNATURE' || project?.status === 'COMPLETED' || project?.status === 'DISPUTED'
 
   async function handleSave() {

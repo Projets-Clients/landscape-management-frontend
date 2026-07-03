@@ -9,7 +9,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import { EmptyState } from '@/components/common/EmptyState'
 import { Pagination } from '@/components/common/Pagination'
 import { useProjects } from '@/hooks/use-projects'
-import { useAuthStore } from '@/store/auth.store'
+import { usePermissions } from '@/hooks/use-permissions'
 import { formatDate } from '@/lib/utils'
 import type { Project, ProjectStatus } from '@/types/api'
 
@@ -57,7 +57,7 @@ export function ProjectsPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
-  const role = useAuthStore((s) => s.role)
+  const { can } = usePermissions()
 
   const statusParam = searchParams.get('status') as ProjectStatus | null
   const statusFilter = statusParam ?? undefined
@@ -84,7 +84,7 @@ export function ProjectsPage() {
       <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold">{t('projects.title')}</h1>
-          {role === 'ADMIN' && (
+          {can('chantiers', 'create') && (
             <Button
               size="sm"
               className="min-h-[44px]"
@@ -177,7 +177,7 @@ export function ProjectsPage() {
                   : t('projects.empty_desc')
             }
             action={
-              !query && role === 'ADMIN'
+              !query && can('chantiers', 'create')
                 ? { label: t('projects.create'), onClick: () => void navigate('/chantiers/nouveau') }
                 : undefined
             }

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { PhotoLightbox } from '@/components/common/PhotoLightbox'
 import { usePhotos, useUploadPhoto, useDeletePhoto } from '@/hooks/use-photos'
 import { useProject } from '@/hooks/use-projects'
-import { useAuthStore } from '@/store/auth.store'
+import { usePermissions } from '@/hooks/use-permissions'
 import type { Photo, PhotoType } from '@/types/api'
 
 function PhotoSection({
@@ -163,12 +163,12 @@ export function PhotosPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { data: project } = useProject(id ?? '')
-  const { role } = useAuthStore()
+  const { can } = usePermissions()
 
   if (!id) return null
 
   const locked = project ? LOCKED_STATUSES.includes(project.status) : false
-  const canDelete = !locked && (role === 'ADMIN' || role === 'FOREMAN')
+  const canDelete = !locked && can('chantiers', 'update')
 
   return (
     <div className="space-y-6 pb-8">
