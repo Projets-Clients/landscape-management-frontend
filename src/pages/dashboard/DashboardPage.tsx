@@ -5,12 +5,10 @@ import {
   FileSignature,
   CheckCircle,
   AlertTriangle,
-  Plus,
   Users,
   UserCog,
   BookOpen,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { useProjects } from '@/hooks/use-projects'
@@ -154,34 +152,9 @@ export function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold">{t('dashboard.greeting', { username })}</h1>
-          <p className="hidden text-sm text-muted-foreground sm:block">{t('dashboard.subtitle')}</p>
-        </div>
-        {role === 'ADMIN' && (
-          <div className="flex shrink-0 gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="min-h-[44px] min-w-[44px] gap-0.5 sm:gap-1"
-              onClick={() => void navigate('/clients/nouveau')}
-              title={t('dashboard.new_client')}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t('dashboard.new_client')}</span>
-            </Button>
-            <Button
-              size="sm"
-              className="min-h-[44px] min-w-[44px] gap-0.5 sm:gap-1"
-              onClick={() => void navigate('/chantiers/nouveau')}
-              title={t('dashboard.new_project')}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t('dashboard.new_project')}</span>
-            </Button>
-          </div>
-        )}
+      <div>
+        <h1 className="text-xl font-bold">{t('dashboard.greeting', { username })}</h1>
+        <p className="hidden text-sm text-muted-foreground sm:block">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Module tiles */}
