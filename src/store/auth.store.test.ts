@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useAuthStore } from './auth.store'
+import { makePermissions, FULL_PERMISSIONS } from '@/lib/permissions'
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -20,8 +21,9 @@ function makeJwt(payload: Record<string, unknown>): string {
 }
 
 const VALID_JWT_ADMIN = makeJwt({ sub: 'user-id-001', role: 'ADMIN' })
-const VALID_JWT_FOREMAN = makeJwt({ sub: 'user-id-002', role: 'FOREMAN' })
-const VALID_JWT_EMPLOYEE = makeJwt({ sub: 'user-id-003', role: 'EMPLOYEE' })
+const VALID_JWT_MEMBER = makeJwt({ sub: 'user-id-002', role: 'MEMBER', orgId: 'org-1' })
+const VALID_JWT_FOREMAN = makeJwt({ sub: 'user-id-003', role: 'FOREMAN' })
+const VALID_JWT_EMPLOYEE = makeJwt({ sub: 'user-id-004', role: 'EMPLOYEE' })
 
 // ── Reset entre chaque test ────────────────────────────────────────────────
 
@@ -32,6 +34,7 @@ beforeEach(() => {
     username: '',
     role: null,
     userId: null,
+    permissions: null,
   })
 })
 
@@ -78,7 +81,7 @@ describe('setAuth', () => {
     useAuthStore.getState().setAuth(VALID_JWT_FOREMAN, 'jean.dupont')
     const state = useAuthStore.getState()
     expect(state.role).toBe('FOREMAN')
-    expect(state.userId).toBe('user-id-002')
+    expect(state.userId).toBe('user-id-003')
     expect(state.username).toBe('jean.dupont')
   })
 })
@@ -150,9 +153,55 @@ describe('setAuth — décodage base64url (RFC 7515)', () => {
 
 // ── clearAuth ──────────────────────────────────────────────────────────────
 
+describe('setAuth — rôle MEMBER', () => {
+  it('décode le rôle MEMBER depuis le JWT', () => {
+    useAuthStore.getState().setAuth(VALID_JWT_MEMBER, 'jean.dupont')
+    expect(useAuthStore.getState().role).toBe('MEMBER')
+  })
+
+  it('décode le userId depuis le JWT MEMBER', () => {
+    useAuthStore.getState().setAuth(VALID_JWT_MEMBER, 'jean.dupont')
+    expect(useAuthStore.getState().userId).toBe('user-id-002')
+  })
+
+  it('décode l\'organizationId (orgId) depuis le JWT MEMBER', () => {
+    useAuthStore.getState().setAuth(VALID_JWT_MEMBER, 'jean.dupont')
+    expect(useAuthStore.getState().organizationId).toBe('org-1')
+  })
+
+  it('ne définit pas les permissions (celles-ci sont chargées via /users/me)', () => {
+    useAuthStore.getState().setAuth(VALID_JWT_MEMBER, 'jean.dupont')
+    expect(useAuthStore.getState().permissions).toBeNull()
+  })
+})
+
+// ── setPermissions ─────────────────────────────────────────────────────────
+
+describe('setPermissions', () => {
+  it('stocke les permissions dans le store', () => {
+    const perms = makePermissions({ chantiers: ['read', 'update'] })
+    useAuthStore.getState().setPermissions(perms)
+    expect(useAuthStore.getState().permissions).toEqual(perms)
+  })
+
+  it('accepte FULL_PERMISSIONS', () => {
+    useAuthStore.getState().setPermissions(FULL_PERMISSIONS)
+    expect(useAuthStore.getState().permissions).toEqual(FULL_PERMISSIONS)
+  })
+
+  it('accepte null (déconnexion ou utilisateur sans rôle)', () => {
+    useAuthStore.getState().setPermissions(makePermissions({ chantiers: ['read'] }))
+    useAuthStore.getState().setPermissions(null)
+    expect(useAuthStore.getState().permissions).toBeNull()
+  })
+})
+
+// ── clearAuth ──────────────────────────────────────────────────────────────
+
 describe('clearAuth', () => {
   beforeEach(() => {
     useAuthStore.getState().setAuth(VALID_JWT_ADMIN, 'admin')
+    useAuthStore.getState().setPermissions(FULL_PERMISSIONS)
   })
 
   it('remet accessToken à null', () => {
@@ -173,6 +222,11 @@ describe('clearAuth', () => {
   it('remet userId à null', () => {
     useAuthStore.getState().clearAuth()
     expect(useAuthStore.getState().userId).toBeNull()
+  })
+
+  it('remet permissions à null', () => {
+    useAuthStore.getState().clearAuth()
+    expect(useAuthStore.getState().permissions).toBeNull()
   })
 
   it('supprime username du sessionStorage', () => {

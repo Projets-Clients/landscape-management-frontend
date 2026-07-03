@@ -35,6 +35,7 @@ beforeEach(() => {
     username: "",
     role: null,
     userId: null,
+    permissions: null,
   });
 });
 
@@ -80,8 +81,24 @@ describe("RoleRoute", () => {
   });
 
   it("autorise tous les rôles quand la liste les contient tous", () => {
-    const all: UserRole[] = ["ADMIN", "FOREMAN", "EMPLOYEE"];
+    const all: UserRole[] = ["ADMIN", "MEMBER", "FOREMAN", "EMPLOYEE"];
     renderWithRole("EMPLOYEE", all);
+    expect(screen.getByText("Zone admin")).toBeInTheDocument();
+  });
+
+  it("autorise MEMBER quand MEMBER est dans la liste", () => {
+    renderWithRole("MEMBER", ["ADMIN", "MEMBER"]);
+    expect(screen.getByText("Zone admin")).toBeInTheDocument();
+  });
+
+  it("redirige MEMBER vers / sur une route ADMIN uniquement", () => {
+    renderWithRole("MEMBER", ["ADMIN"]);
+    expect(screen.getByText("Tableau")).toBeInTheDocument();
+    expect(screen.queryByText("Zone admin")).not.toBeInTheDocument();
+  });
+
+  it("autorise MEMBER quand seul MEMBER est dans la liste", () => {
+    renderWithRole("MEMBER", ["MEMBER"]);
     expect(screen.getByText("Zone admin")).toBeInTheDocument();
   });
 });
