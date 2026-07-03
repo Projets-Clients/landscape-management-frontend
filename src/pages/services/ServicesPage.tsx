@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, EyeOff, Eye, Loader2, BookOpen } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useState } from "react";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { Plus, Pencil, Trash2, EyeOff, Eye, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useServices,
   useCreateService,
@@ -14,13 +14,13 @@ import {
   useDeactivateService,
   useActivateService,
   useSeedServices,
-} from '@/hooks/use-services'
-import type { Service } from '@/types/api'
+} from "@/hooks/use-services";
+import type { Service } from "@/types/api";
 
 interface ServiceFormData {
-  title: string
-  description: string
-  unit: string
+  title: string;
+  description: string;
+  unit: string;
 }
 
 function ServiceForm({
@@ -29,51 +29,53 @@ function ServiceForm({
   onCancel,
   isPending,
 }: {
-  initial?: ServiceFormData
-  onSubmit: (data: ServiceFormData) => void
-  onCancel: () => void
-  isPending: boolean
+  initial?: ServiceFormData;
+  onSubmit: (data: ServiceFormData) => void;
+  onCancel: () => void;
+  isPending: boolean;
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const [form, setForm] = useState<ServiceFormData>(
-    initial ?? { title: '', description: '', unit: '' }
-  )
+    initial ?? { title: "", description: "", unit: "" },
+  );
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.title.trim()) return
-    onSubmit(form)
+    e.preventDefault();
+    if (!form.title.trim()) return;
+    onSubmit(form);
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="space-y-1">
-        <Label htmlFor="svc-title">{t('services.form_title_label')}</Label>
+        <Label htmlFor="svc-title">{t("services.form_title_label")}</Label>
         <Input
           id="svc-title"
           value={form.title}
           onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-          placeholder={t('services.form_title_placeholder')}
+          placeholder={t("services.form_title_placeholder")}
           autoFocus
           required
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="svc-unit">{t('services.form_unit_label')}</Label>
+        <Label htmlFor="svc-unit">{t("services.form_unit_label")}</Label>
         <Input
           id="svc-unit"
           value={form.unit}
           onChange={(e) => setForm((f) => ({ ...f, unit: e.target.value }))}
-          placeholder={t('services.form_unit_placeholder')}
+          placeholder={t("services.form_unit_placeholder")}
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="svc-desc">{t('services.form_description_label')}</Label>
+        <Label htmlFor="svc-desc">{t("services.form_description_label")}</Label>
         <Input
           id="svc-desc"
           value={form.description}
-          onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-          placeholder={t('services.form_description_placeholder')}
+          onChange={(e) =>
+            setForm((f) => ({ ...f, description: e.target.value }))
+          }
+          placeholder={t("services.form_description_placeholder")}
         />
       </div>
       <div className="flex gap-2 pt-1">
@@ -84,14 +86,22 @@ function ServiceForm({
           onClick={onCancel}
           disabled={isPending}
         >
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
-        <Button type="submit" className="flex-1 min-h-[44px]" disabled={isPending || !form.title.trim()}>
-          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.save')}
+        <Button
+          type="submit"
+          className="flex-1 min-h-[44px]"
+          disabled={isPending || !form.title.trim()}
+        >
+          {isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            t("common.save")
+          )}
         </Button>
       </div>
     </form>
-  )
+  );
 }
 
 function ServiceCard({
@@ -101,21 +111,23 @@ function ServiceCard({
   onActivate,
   onDelete,
 }: {
-  service: Service
-  onEdit: (s: Service) => void
-  onDeactivate: (id: string) => void
-  onActivate: (id: string) => void
-  onDelete: (id: string) => void
+  service: Service;
+  onEdit: (s: Service) => void;
+  onDeactivate: (id: string) => void;
+  onActivate: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div
-      className={`rounded-xl border bg-card p-3 space-y-1 ${!service.active ? 'opacity-60' : ''}`}
+      className={`rounded-xl border bg-card p-3 space-y-1 ${!service.active ? "opacity-60" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="font-medium text-sm leading-snug truncate">{service.title}</p>
+          <p className="font-medium text-sm leading-snug truncate">
+            {service.title}
+          </p>
           {service.unit && (
             <p className="text-xs text-muted-foreground">{service.unit}</p>
           )}
@@ -129,7 +141,7 @@ function ServiceCard({
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted"
             onClick={() => onEdit(service)}
-            aria-label={t('services.edit')}
+            aria-label={t("services.edit")}
           >
             <Pencil className="h-3.5 w-3.5" />
           </button>
@@ -137,7 +149,7 @@ function ServiceCard({
             <button
               className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted"
               onClick={() => onDeactivate(service.id)}
-              aria-label={t('services.deactivate')}
+              aria-label={t("services.deactivate")}
             >
               <EyeOff className="h-3.5 w-3.5" />
             </button>
@@ -145,7 +157,7 @@ function ServiceCard({
             <button
               className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted"
               onClick={() => onActivate(service.id)}
-              aria-label={t('services.activate')}
+              aria-label={t("services.activate")}
             >
               <Eye className="h-3.5 w-3.5" />
             </button>
@@ -153,142 +165,129 @@ function ServiceCard({
           <button
             className="flex h-8 w-8 items-center justify-center rounded-lg text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:bg-destructive/10"
             onClick={() => onDelete(service.id)}
-            aria-label={t('services.delete')}
+            aria-label={t("services.delete")}
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function ServicesPage() {
-  const { t } = useTranslation()
-  const { data: services, isLoading } = useServices()
-  const createService = useCreateService()
-  const updateService = useUpdateService()
-  const deleteService = useDeleteService()
-  const deactivateService = useDeactivateService()
-  const activateService = useActivateService()
-  const seedServices = useSeedServices()
+  const { t } = useTranslation();
+  const { data: services, isLoading } = useServices();
+  const createService = useCreateService();
+  const updateService = useUpdateService();
+  const deleteService = useDeleteService();
+  const deactivateService = useDeactivateService();
+  const activateService = useActivateService();
+  const seedServices = useSeedServices();
 
   const [modalState, setModalState] = useState<
-    { mode: 'create' } | { mode: 'edit'; service: Service } | null
-  >(null)
-  const [view, setView] = useState<'active' | 'inactive'>('active')
+    { mode: "create" } | { mode: "edit"; service: Service } | null
+  >(null);
+  const [view, setView] = useState<"active" | "inactive">("active");
 
-  const activeServices = services?.filter((s) => s.active) ?? []
-  const inactiveServices = services?.filter((s) => !s.active) ?? []
-  const visibleServices = view === 'active' ? activeServices : inactiveServices
+  const activeServices = services?.filter((s) => s.active) ?? [];
+  const inactiveServices = services?.filter((s) => !s.active) ?? [];
+  const visibleServices = view === "active" ? activeServices : inactiveServices;
 
   function closeModal() {
-    setModalState(null)
+    setModalState(null);
   }
 
   async function handleSubmit(data: ServiceFormData) {
     try {
-      if (modalState?.mode === 'edit') {
+      if (modalState?.mode === "edit") {
         await updateService.mutateAsync({
           id: modalState.service.id,
           title: data.title,
           description: data.description || undefined,
           unit: data.unit || undefined,
-        })
-        toast.success(t('services.updated'))
+        });
+        toast.success(t("services.updated"));
       } else {
         await createService.mutateAsync({
           title: data.title,
           description: data.description || undefined,
           unit: data.unit || undefined,
-        })
-        toast.success(t('services.created'))
+        });
+        toast.success(t("services.created"));
       }
-      closeModal()
+      closeModal();
     } catch {
       toast.error(
-        modalState?.mode === 'edit'
-          ? t('services.update_error')
-          : t('services.create_error')
-      )
+        modalState?.mode === "edit"
+          ? t("services.update_error")
+          : t("services.create_error"),
+      );
     }
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm(t('services.confirm_delete'))) return
+    if (!window.confirm(t("services.confirm_delete"))) return;
     try {
-      await deleteService.mutateAsync(id)
-      toast.success(t('services.deleted'))
+      await deleteService.mutateAsync(id);
+      toast.success(t("services.deleted"));
     } catch {
-      toast.error(t('services.delete_error'))
+      toast.error(t("services.delete_error"));
     }
   }
 
   async function handleDeactivate(id: string) {
     try {
-      await deactivateService.mutateAsync(id)
-      toast.success(t('services.deactivated'))
+      await deactivateService.mutateAsync(id);
+      toast.success(t("services.deactivated"));
     } catch {
-      toast.error(t('services.update_error'))
+      toast.error(t("services.update_error"));
     }
   }
 
   async function handleActivate(id: string) {
     try {
-      await activateService.mutateAsync(id)
-      toast.success(t('services.activated'))
+      await activateService.mutateAsync(id);
+      toast.success(t("services.activated"));
     } catch {
-      toast.error(t('services.update_error'))
+      toast.error(t("services.update_error"));
     }
   }
 
   async function handleSeed() {
     try {
-      await seedServices.mutateAsync()
-      toast.success(t('services.seed_success'))
+      await seedServices.mutateAsync();
+      toast.success(t("services.seed_success"));
     } catch {
-      toast.error(t('services.seed_error'))
+      toast.error(t("services.seed_error"));
     }
   }
 
-  const isPending = createService.isPending || updateService.isPending
+  const isPending = createService.isPending || updateService.isPending;
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden min-h-0">
-      {/* Sticky header */}
-      <div className="shrink-0 px-4 pt-4 pb-3 bg-background space-y-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <h1 className="text-xl font-bold">{t('services.title')}</h1>
-          </div>
-          {view === 'active' && (
-            <Button
-              size="sm"
-              className="min-h-[44px] gap-1.5"
-              onClick={() => setModalState({ mode: 'create' })}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {t('services.add')}
-            </Button>
-          )}
-        </div>
-        {view === 'active' ? (
-          inactiveServices.length > 0 && (
-            <button
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => setView('inactive')}
-            >
-              {t('services.view_inactive', { count: inactiveServices.length })}
-            </button>
-          )
-        ) : (
-          <button
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => setView('active')}
+      {/* Sticky header — hauteur fixe quelle que soit la vue */}
+      <div className="shrink-0 flex items-center justify-between px-4 pt-4 pb-3 bg-background">
+        <h1 className="text-xl font-bold">{t("services.title")}</h1>
+        {view === "active" ? (
+          <Button
+            size="sm"
+            className="min-h-[44px] gap-1.5"
+            onClick={() => setModalState({ mode: "create" })}
           >
-            {t('services.view_active', { count: activeServices.length })}
-          </button>
+            <Plus className="h-3.5 w-3.5" />
+            {t("services.add")}
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="min-h-[44px]"
+            onClick={() => setView("active")}
+          >
+            {t("services.view_active", { count: activeServices.length })}
+          </Button>
         )}
       </div>
 
@@ -302,7 +301,9 @@ export function ServicesPage() {
           </div>
         ) : services?.length === 0 ? (
           <div className="rounded-xl border border-dashed bg-card p-6 text-center space-y-3">
-            <p className="text-sm text-muted-foreground">{t('services.empty_desc')}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("services.empty_desc")}
+            </p>
             <Button
               variant="outline"
               className="min-h-[44px] w-full"
@@ -312,24 +313,36 @@ export function ServicesPage() {
               {seedServices.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : null}
-              {t('services.seed_btn')}
+              {t("services.seed_btn")}
             </Button>
           </div>
         ) : visibleServices.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-2">{t('services.no_services')}</p>
+          <p className="text-sm text-muted-foreground py-2">
+            {t("services.no_services")}
+          </p>
         ) : (
           <div className="space-y-2">
             {visibleServices.map((s) => (
               <ServiceCard
                 key={s.id}
                 service={s}
-                onEdit={(svc) => setModalState({ mode: 'edit', service: svc })}
+                onEdit={(svc) => setModalState({ mode: "edit", service: svc })}
                 onDeactivate={(id) => void handleDeactivate(id)}
                 onActivate={(id) => void handleActivate(id)}
                 onDelete={(id) => void handleDelete(id)}
               />
             ))}
           </div>
+        )}
+
+        {/* Lien vers les désactivées — en bas de la liste active, large zone de tap */}
+        {view === "active" && inactiveServices.length > 0 && !isLoading && (
+          <button
+            className="flex w-full items-center justify-center min-h-[48px] mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setView("inactive")}
+          >
+            {t("services.view_inactive", { count: inactiveServices.length })}
+          </button>
         )}
       </div>
 
@@ -342,17 +355,17 @@ export function ServicesPage() {
           />
           <div className="relative w-full max-w-md rounded-2xl bg-card p-5 shadow-xl space-y-4">
             <h2 className="font-semibold">
-              {modalState.mode === 'create'
-                ? t('services.form_add_title')
-                : t('services.form_edit_title')}
+              {modalState.mode === "create"
+                ? t("services.form_add_title")
+                : t("services.form_edit_title")}
             </h2>
             <ServiceForm
               initial={
-                modalState.mode === 'edit'
+                modalState.mode === "edit"
                   ? {
                       title: modalState.service.title,
-                      description: modalState.service.description ?? '',
-                      unit: modalState.service.unit ?? '',
+                      description: modalState.service.description ?? "",
+                      unit: modalState.service.unit ?? "",
                     }
                   : undefined
               }
@@ -364,5 +377,5 @@ export function ServicesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
