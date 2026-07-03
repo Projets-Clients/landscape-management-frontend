@@ -1,133 +1,176 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useTranslation } from 'react-i18next'
-import { Download, LayoutDashboard, LogOut, Monitor, Moon, Settings as SettingsIcon, Sun, User, Loader2, Smartphone } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { useAuthStore } from '@/store/auth.store'
-import { useTheme, COLORS } from '@/providers/ThemeProvider'
-import type { ColorKey } from '@/providers/ThemeProvider'
-import { apiRequest } from '@/lib/api-client'
-import { useOrganization, useUpdateOrganization } from '@/hooks/use-organization'
-import { NAV_SLOT_REGISTRY, DEFAULT_NAV_SLOTS, ALL_SLOT_KEYS, type NavSlotKey } from '@/lib/nav-slots'
-import { useUpdateMe } from '@/hooks/use-update-me'
-import { usePwaInstall } from '@/hooks/use-pwa-install'
-import { InstallModal } from '@/components/common/InstallModal'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import {
+  Download,
+  LayoutDashboard,
+  LogOut,
+  Monitor,
+  Moon,
+  Settings as SettingsIcon,
+  Sun,
+  User,
+  Loader2,
+  Smartphone,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useAuthStore } from "@/store/auth.store";
+import { useTheme, COLORS } from "@/providers/ThemeProvider";
+import type { ColorKey } from "@/providers/ThemeProvider";
+import { apiRequest } from "@/lib/api-client";
+import {
+  useOrganization,
+  useUpdateOrganization,
+} from "@/hooks/use-organization";
+import {
+  NAV_SLOT_REGISTRY,
+  DEFAULT_NAV_SLOTS,
+  ALL_SLOT_KEYS,
+  type NavSlotKey,
+} from "@/lib/nav-slots";
+import { useUpdateMe } from "@/hooks/use-update-me";
+import { usePwaInstall } from "@/hooks/use-pwa-install";
+import { InstallModal } from "@/components/common/InstallModal";
 
 export function SettingsPage() {
-  const navigate = useNavigate()
-  const { t, i18n } = useTranslation()
-  const { username, role, userId, clearAuth } = useAuthStore()
-  const isAdmin = role === 'ADMIN'
-  const { theme, setTheme, color, setColor } = useTheme()
-  const { isInstalled, isMobile } = usePwaInstall()
-  const [installOpen, setInstallOpen] = useState(false)
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const { username, role, userId, clearAuth } = useAuthStore();
+  const isAdmin = role === "ADMIN";
+  const { theme, setTheme, color, setColor } = useTheme();
+  const { isInstalled, isMobile } = usePwaInstall();
+  const [installOpen, setInstallOpen] = useState(false);
 
   const ROLE_LABELS: Record<string, string> = {
-    ADMIN: t('settings.role_admin'),
-    FOREMAN: t('settings.role_foreman'),
-    EMPLOYEE: t('settings.role_employee'),
-  }
+    ADMIN: t("settings.role_admin"),
+    FOREMAN: t("settings.role_foreman"),
+    EMPLOYEE: t("settings.role_employee"),
+  };
 
   // Username change
-  const [newUsername, setNewUsername] = useState(username)
-  const updateMe = useUpdateMe()
+  const [newUsername, setNewUsername] = useState(username);
+  const updateMe = useUpdateMe();
 
-  useEffect(() => { setNewUsername(username) }, [username])
+  useEffect(() => {
+    setNewUsername(username);
+  }, [username]);
 
   function handleUsernameSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const trimmed = newUsername.trim()
-    if (!trimmed || trimmed === username) return
-    void updateMe.mutateAsync({ username: trimmed })
+    e.preventDefault();
+    const trimmed = newUsername.trim();
+    if (!trimmed || trimmed === username) return;
+    void updateMe.mutateAsync({ username: trimmed });
   }
 
   // Org name + nav slots (admin only)
-  const { data: org, isLoading: orgLoading } = useOrganization()
-  const updateOrg = useUpdateOrganization()
-  const [orgName, setOrgName] = useState('')
-  const [navSlots, setNavSlots] = useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS)
+  const { data: org, isLoading: orgLoading } = useOrganization();
+  const updateOrg = useUpdateOrganization();
+  const [orgName, setOrgName] = useState("");
+  const [navSlots, setNavSlots] = useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS);
 
   useEffect(() => {
     if (org) {
-      setOrgName(org.name)
-      setNavSlots((org.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS)
+      setOrgName(org.name);
+      setNavSlots((org.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS);
     }
-  }, [org])
+  }, [org]);
 
   function handleOrgSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!orgName.trim()) return
-    void updateOrg.mutateAsync({ name: orgName.trim(), navSlots })
+    e.preventDefault();
+    if (!orgName.trim()) return;
+    void updateOrg.mutateAsync({ name: orgName.trim(), navSlots });
   }
 
   function handleNavSlotChange(index: number, value: NavSlotKey) {
-    setNavSlots((prev) => prev.map((s, i) => (i === index ? value : s)))
+    setNavSlots((prev) => prev.map((s, i) => (i === index ? value : s)));
   }
 
-  function handleThemeChange(newTheme: 'system' | 'light' | 'dark') {
-    setTheme(newTheme)
-    void apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify({ theme: newTheme }) })
+  function handleThemeChange(newTheme: "system" | "light" | "dark") {
+    setTheme(newTheme);
+    void apiRequest("/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({ theme: newTheme }),
+    });
   }
 
   function handleColorChange(newColor: ColorKey) {
-    setColor(newColor)
-    void apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify({ accentColor: newColor }) })
+    setColor(newColor);
+    void apiRequest("/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({ accentColor: newColor }),
+    });
   }
 
   function handleLanguageChange(lang: string) {
-    localStorage.setItem('landscape-lang', lang)
-    void i18n.changeLanguage(lang)
-    void apiRequest('/users/me', { method: 'PATCH', body: JSON.stringify({ language: lang }) }).then(() => {
-      toast.success(t('settings.language_updated'))
-    })
+    localStorage.setItem("landscape-lang", lang);
+    void i18n.changeLanguage(lang);
+    void apiRequest("/users/me", {
+      method: "PATCH",
+      body: JSON.stringify({ language: lang }),
+    }).then(() => {
+      toast.success(t("settings.language_updated"));
+    });
   }
 
   async function handleLogout() {
     try {
-      await apiRequest('/auth/logout', { method: 'POST' })
+      await apiRequest("/auth/logout", { method: "POST" });
     } catch {
       // ignore — clear locally regardless
     }
-    clearAuth()
-    void navigate('/login', { replace: true })
-    toast.success(t('settings.logged_out'))
+    clearAuth();
+    void navigate("/login", { replace: true });
+    toast.success(t("settings.logged_out"));
   }
 
   return (
     <div className="space-y-6 pb-4">
-      <h1 className="text-xl font-bold">{t('settings.title')}</h1>
+      <h1 className="text-xl font-bold">{t("settings.title")}</h1>
 
       {/* Avatar */}
       <div className="flex flex-col items-center gap-3 py-2">
-        <div className={[
-          'flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold',
-          userId ? 'bg-primary/10 text-primary' : 'bg-muted',
-        ].join(' ')}>
-          {userId ? username.charAt(0).toUpperCase() : <User className="h-7 w-7 text-muted-foreground" />}
+        <div
+          className={[
+            "flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold",
+            userId ? "bg-primary/10 text-primary" : "bg-muted",
+          ].join(" ")}
+        >
+          {userId ? (
+            username.charAt(0).toUpperCase()
+          ) : (
+            <User className="h-7 w-7 text-muted-foreground" />
+          )}
         </div>
         <div className="text-center">
           <p className="font-bold text-lg">{username}</p>
-          {role && <p className="text-sm text-muted-foreground">{ROLE_LABELS[role] ?? role}</p>}
+          {role && (
+            <p className="text-sm text-muted-foreground">
+              {ROLE_LABELS[role] ?? role}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Grille : Mon compte + Organisation côte à côte sur desktop */}
       <div className="space-y-4">
-
         {/* Mon compte */}
         <div className="space-y-2">
-          <p className="text-sm font-semibold">{t('settings.account_section')}</p>
+          <p className="text-sm font-semibold">
+            {t("settings.account_section")}
+          </p>
           <Card className="divide-y">
             {/* Pseudo */}
             <div className="p-4">
               <form onSubmit={handleUsernameSubmit} className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="username">{t('settings.username_label')}</Label>
+                  <Label htmlFor="username">
+                    {t("settings.username_label")}
+                  </Label>
                   <Input
                     id="username"
                     className="min-h-[44px]"
@@ -142,26 +185,32 @@ export function SettingsPage() {
                 <Button
                   type="submit"
                   className="w-full min-h-[44px]"
-                  disabled={updateMe.isPending || !newUsername.trim() || newUsername.trim() === username}
+                  disabled={
+                    updateMe.isPending ||
+                    !newUsername.trim() ||
+                    newUsername.trim() === username
+                  }
                 >
-                  {updateMe.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('settings.save')}
+                  {updateMe.isPending && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {t("settings.save")}
                 </Button>
               </form>
             </div>
             {/* Langue */}
             <div className="p-4 space-y-1.5">
-              <Label>{t('settings.language_section')}</Label>
+              <Label>{t("settings.language_section")}</Label>
               <select
                 value={i18n.language}
                 onChange={(e) => handleLanguageChange(e.target.value)}
                 className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="fr">🇫🇷 {t('settings.lang_fr')}</option>
-                <option value="en">🇬🇧 {t('settings.lang_en')}</option>
-                <option value="es">🇪🇸 {t('settings.lang_es')}</option>
-                <option value="it">🇮🇹 {t('settings.lang_it')}</option>
-                <option value="de">🇩🇪 {t('settings.lang_de')}</option>
+                <option value="fr">🇫🇷 {t("settings.lang_fr")}</option>
+                <option value="en">🇬🇧 {t("settings.lang_en")}</option>
+                <option value="es">🇪🇸 {t("settings.lang_es")}</option>
+                <option value="it">🇮🇹 {t("settings.lang_it")}</option>
+                <option value="de">🇩🇪 {t("settings.lang_de")}</option>
               </select>
             </div>
           </Card>
@@ -170,7 +219,7 @@ export function SettingsPage() {
         {/* Organisation (admin seulement) */}
         {isAdmin && (
           <div className="space-y-2">
-            <p className="text-sm font-semibold">{t('settings.org_section')}</p>
+            <p className="text-sm font-semibold">{t("settings.org_section")}</p>
             <Card className="p-4">
               {orgLoading ? (
                 <div className="flex justify-center py-8">
@@ -180,7 +229,9 @@ export function SettingsPage() {
                 <form onSubmit={handleOrgSubmit} className="space-y-4">
                   {/* Nom */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="orgName">{t('settings.org_name_label')}</Label>
+                    <Label htmlFor="orgName">
+                      {t("settings.org_name_label")}
+                    </Label>
                     <Input
                       id="orgName"
                       className="min-h-[44px]"
@@ -190,50 +241,97 @@ export function SettingsPage() {
                       maxLength={30}
                       required
                     />
-                    <p className={[
-                      'text-right text-xs tabular-nums transition-colors',
-                      orgName.length >= 30 ? 'text-destructive font-medium' :
-                      orgName.length >= 25 ? 'text-orange-500' :
-                      'text-muted-foreground',
-                    ].join(' ')}>
+                    <p
+                      className={[
+                        "text-right text-xs tabular-nums transition-colors",
+                        orgName.length >= 30
+                          ? "text-destructive font-medium"
+                          : orgName.length >= 25
+                            ? "text-orange-500"
+                            : "text-muted-foreground",
+                      ].join(" ")}
+                    >
                       {orgName.length}/30
                     </p>
                   </div>
                   {/* Navigation mobile */}
                   <div className="space-y-2">
-                    <Label>{t('settings.nav_section')}</Label>
-                    <div className="rounded-xl border overflow-hidden">
-                      {/* Aperçu de la barre */}
+                    <Label>{t("settings.nav_section")}</Label>
+                    {/* Mobile : 3 selects avec label flottant style MUI */}
+                    <div className="lg:hidden space-y-3">
+                      {navSlots.map((slot, i) => (
+                        <div key={i} className="relative">
+                          <span className="absolute -top-2 left-3 z-10 bg-card px-1 text-[10px] text-muted-foreground leading-none">
+                            {t("settings.nav_slot", { n: i + 1 })}
+                          </span>
+                          <select
+                            value={slot}
+                            onChange={(e) =>
+                              handleNavSlotChange(
+                                i,
+                                e.target.value as NavSlotKey,
+                              )
+                            }
+                            className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                          >
+                            {ALL_SLOT_KEYS.filter(
+                              (key) => key === slot || !navSlots.includes(key),
+                            ).map((key) => (
+                              <option key={key} value={key}>
+                                {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Desktop : simulation de la barre de nav */}
+                    <div className="hidden lg:block rounded-xl border overflow-hidden">
                       <div className="grid grid-cols-5 bg-background border-b">
                         <div className="flex flex-col items-center gap-0.5 py-2 opacity-35">
                           <LayoutDashboard className="h-5 w-5" />
-                          <span className="text-[10px]">{t('nav.dashboard_short')}</span>
+                          <span className="text-[10px]">
+                            {t("nav.dashboard_short")}
+                          </span>
                         </div>
                         {navSlots.map((slot, i) => {
-                          const Icon = NAV_SLOT_REGISTRY[slot].icon
+                          const Icon = NAV_SLOT_REGISTRY[slot].icon;
                           return (
-                            <div key={i} className="flex flex-col items-center gap-0.5 py-2 text-primary">
+                            <div
+                              key={i}
+                              className="flex flex-col items-center gap-0.5 py-2 text-primary"
+                            >
                               <Icon className="h-5 w-5" />
-                              <span className="text-[10px] font-medium">{t(NAV_SLOT_REGISTRY[slot].labelKey)}</span>
+                              <span className="text-[10px] font-medium">
+                                {t(NAV_SLOT_REGISTRY[slot].labelKey)}
+                              </span>
                             </div>
-                          )
+                          );
                         })}
                         <div className="flex flex-col items-center gap-0.5 py-2 opacity-35">
                           <SettingsIcon className="h-5 w-5" />
-                          <span className="text-[10px]">{t('nav.settings')}</span>
+                          <span className="text-[10px]">
+                            {t("nav.settings")}
+                          </span>
                         </div>
                       </div>
-                      {/* Selects alignés sous chaque slot */}
                       <div className="grid grid-cols-5 gap-1.5 p-2 bg-muted/40">
                         <div />
                         {navSlots.map((slot, i) => (
                           <select
                             key={i}
                             value={slot}
-                            onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
-                            className="h-8 w-full rounded-lg border bg-background px-1 text-xs outline-none focus:ring-2 focus:ring-ring"
+                            onChange={(e) =>
+                              handleNavSlotChange(
+                                i,
+                                e.target.value as NavSlotKey,
+                              )
+                            }
+                            className="h-7 w-auto min-w-[150px] max-w-full mx-auto block rounded-md border bg-background px-1 text-[10px] outline-none focus:ring-1 focus:ring-ring"
                           >
-                            {ALL_SLOT_KEYS.filter(key => key === slot || !navSlots.includes(key)).map((key) => (
+                            {ALL_SLOT_KEYS.filter(
+                              (key) => key === slot || !navSlots.includes(key),
+                            ).map((key) => (
                               <option key={key} value={key}>
                                 {t(NAV_SLOT_REGISTRY[key].nameKey)}
                               </option>
@@ -252,11 +350,14 @@ export function SettingsPage() {
                       updateOrg.isPending ||
                       !orgName.trim() ||
                       (orgName.trim() === org?.name &&
-                        JSON.stringify(navSlots) === JSON.stringify(org?.navSlots ?? DEFAULT_NAV_SLOTS))
+                        JSON.stringify(navSlots) ===
+                          JSON.stringify(org?.navSlots ?? DEFAULT_NAV_SLOTS))
                     }
                   >
-                    {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('settings.save')}
+                    {updateOrg.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {t("settings.save")}
                   </Button>
                 </form>
               )}
@@ -267,25 +368,41 @@ export function SettingsPage() {
 
       {/* Apparence : thème + couleur dans une seule card */}
       <div className="space-y-2">
-        <p className="text-sm font-semibold">{t('settings.appearance_section')}</p>
+        <p className="text-sm font-semibold">
+          {t("settings.appearance_section")}
+        </p>
         <Card className="divide-y">
           {/* Thème */}
           <div className="p-3">
             <div className="grid grid-cols-3 gap-1">
-              {([
-                { value: 'system', labelKey: 'settings.theme_system', icon: Monitor },
-                { value: 'light',  labelKey: 'settings.theme_light',  icon: Sun },
-                { value: 'dark',   labelKey: 'settings.theme_dark',   icon: Moon },
-              ] as const).map(({ value, labelKey, icon: Icon }) => (
+              {(
+                [
+                  {
+                    value: "system",
+                    labelKey: "settings.theme_system",
+                    icon: Monitor,
+                  },
+                  {
+                    value: "light",
+                    labelKey: "settings.theme_light",
+                    icon: Sun,
+                  },
+                  {
+                    value: "dark",
+                    labelKey: "settings.theme_dark",
+                    icon: Moon,
+                  },
+                ] as const
+              ).map(({ value, labelKey, icon: Icon }) => (
                 <button
                   key={value}
                   onClick={() => handleThemeChange(value)}
                   className={[
-                    'flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors',
+                    "flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors",
                     theme === value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted',
-                  ].join(' ')}
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted",
+                  ].join(" ")}
                 >
                   <Icon className="h-4 w-4" />
                   {t(labelKey)}
@@ -296,7 +413,12 @@ export function SettingsPage() {
           {/* Couleur */}
           <div className="p-3">
             <div className="grid grid-cols-4 gap-3">
-              {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { hex }]) => (
+              {(
+                Object.entries(COLORS) as [
+                  ColorKey,
+                  (typeof COLORS)[ColorKey],
+                ][]
+              ).map(([key, { hex }]) => (
                 <button
                   key={key}
                   title={t(`settings.color_${key}`)}
@@ -307,16 +429,28 @@ export function SettingsPage() {
                     className="flex h-9 w-9 items-center justify-center rounded-full ring-offset-background transition-all"
                     style={{
                       backgroundColor: hex,
-                      boxShadow: color === key ? `0 0 0 2px white, 0 0 0 4px ${hex}` : undefined,
+                      boxShadow:
+                        color === key
+                          ? `0 0 0 2px white, 0 0 0 4px ${hex}`
+                          : undefined,
                     }}
                   >
                     {color === key && (
                       <svg viewBox="0 0 12 12" className="h-3 w-3 fill-white">
-                        <path d="M1.5 6.5l3 3 6-6" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        <path
+                          d="M1.5 6.5l3 3 6-6"
+                          stroke="white"
+                          strokeWidth="1.5"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">{t(`settings.color_${key}`)}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {t(`settings.color_${key}`)}
+                  </span>
                 </button>
               ))}
             </div>
@@ -333,16 +467,19 @@ export function SettingsPage() {
             onClick={() => setInstallOpen(true)}
           >
             <Smartphone className="h-4 w-4" />
-            {t('install.settings_btn')}
+            {t("install.settings_btn")}
           </Button>
-          <InstallModal open={installOpen} onClose={() => setInstallOpen(false)} />
+          <InstallModal
+            open={installOpen}
+            onClose={() => setInstallOpen(false)}
+          />
         </>
       )}
 
       {isMobile && isInstalled && (
         <div className="flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 p-3 text-xs font-medium text-green-700 dark:border-green-900 dark:bg-green-950/30 dark:text-green-400">
           <Download className="h-3.5 w-3.5" />
-          {t('install.installed_label')}
+          {t("install.installed_label")}
         </div>
       )}
 
@@ -354,8 +491,8 @@ export function SettingsPage() {
         onClick={() => void handleLogout()}
       >
         <LogOut className="h-4 w-4" />
-        {t('settings.logout')}
+        {t("settings.logout")}
       </Button>
     </div>
-  )
+  );
 }
