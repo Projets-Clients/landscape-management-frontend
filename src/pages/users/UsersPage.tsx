@@ -13,7 +13,7 @@ import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
 import { useRoles } from '@/hooks/use-roles'
 import { fullName } from '@/lib/utils'
 import { RolesTab } from './RolesTab'
-import type { User } from '@/types/api'
+import type { User, UserRole } from '@/types/api'
 
 function RoleSelect({
   value,
