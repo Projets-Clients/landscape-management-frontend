@@ -255,8 +255,8 @@ export function SettingsPage() {
                     </p>
                   </div>
                   {/* Navigation mobile */}
-                  <div className="space-y-2">
-                    <Label>{t("settings.nav_section")}</Label>
+                  <div>
+                    <Label className="mb-5 block">{t("settings.nav_section")}</Label>
                     {/* Mobile : 3 selects avec label flottant style MUI */}
                     <div className="lg:hidden space-y-3">
                       {navSlots.map((slot, i) => (
