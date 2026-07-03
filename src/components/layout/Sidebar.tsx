@@ -21,25 +21,26 @@ interface NavItem {
   end?: boolean;
 }
 
+const FULL_NAV: NavItem[] = [
+  { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
+  { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+  { to: "/clients", icon: Users, labelKey: "nav.clients" },
+  { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team" },
+  { to: "/prestations", icon: BookOpen, labelKey: "nav.services" },
+  { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
+];
+
+const BASIC_NAV: NavItem[] = [
+  { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
+  { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+  { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
+];
+
 const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  ADMIN: [
-    { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
-    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
-    { to: "/clients", icon: Users, labelKey: "nav.clients" },
-    { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team" },
-    { to: "/prestations", icon: BookOpen, labelKey: "nav.services" },
-    { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
-  ],
-  FOREMAN: [
-    { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
-    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
-    { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
-  ],
-  EMPLOYEE: [
-    { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
-    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
-    { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
-  ],
+  ADMIN: FULL_NAV,
+  MEMBER: FULL_NAV,
+  FOREMAN: BASIC_NAV,
+  EMPLOYEE: BASIC_NAV,
 };
 
 interface SidebarProps {

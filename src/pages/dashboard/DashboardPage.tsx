@@ -56,7 +56,7 @@ const MODULES: ModuleDef[] = [
   },
 ]
 
-function ModuleTile({ to, icon: Icon, labelKey, color }: Omit<ModuleDef, 'roles'>) {
+function ModuleTile({ to, icon: Icon, labelKey, color }: Omit<ModuleDef, 'permModule'>) {
   const { t } = useTranslation()
   const navigate = useNavigate()
 

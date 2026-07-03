@@ -17,6 +17,7 @@ interface CreateUserInput {
   lastName: string
   password: string
   role: UserRole
+  customRoleId?: string | null
   email?: string
 }
 
@@ -36,6 +37,7 @@ interface UpdateUserInput {
   lastName?: string
   password?: string
   role?: UserRole
+  customRoleId?: string | null
   email?: string
   active?: boolean
 }

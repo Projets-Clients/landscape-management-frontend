@@ -23,7 +23,7 @@ function RoleSelect({
 }: {
   value: string
   customRoleId: string | null
-  onChange: (role: string, customRoleId: string | null) => void
+  onChange: (role: UserRole, customRoleId: string | null) => void
   disabled?: boolean
 }) {
   const { t } = useTranslation()

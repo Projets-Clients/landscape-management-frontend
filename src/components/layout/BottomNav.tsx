@@ -30,7 +30,7 @@ const FIXED_END: NavItem = {
   labelKey: "nav.settings",
 };
 
-const STATIC_NAV: Record<Exclude<UserRole, "ADMIN">, NavItem[]> = {
+const STATIC_NAV: Record<Exclude<UserRole, "ADMIN" | "MEMBER">, NavItem[]> = {
   FOREMAN: [
     FIXED_START,
     { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
@@ -85,11 +85,11 @@ export function BottomNav({ className }: BottomNavProps) {
   const role = useAuthStore((s) => s.role);
   const { t } = useTranslation();
 
-  if (role === "ADMIN") {
+  if (role === "ADMIN" || role === "MEMBER") {
     return <AdminBottomNav className={className} />;
   }
 
-  const items = role ? STATIC_NAV[role] : [];
+  const items = role ? STATIC_NAV[role as Exclude<UserRole, "ADMIN" | "MEMBER">] : [];
 
   return (
     <nav
