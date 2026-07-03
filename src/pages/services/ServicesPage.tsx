@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2, EyeOff, Eye, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, EyeOff, Eye, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -191,16 +191,43 @@ export function ServicesPage() {
   >(null);
   const [view, setView] = useState<"active" | "inactive">("active");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"az" | "za" | "recent">("az");
 
   const PER_PAGE = 15;
 
   const activeServices = services?.filter((s) => s.active) ?? [];
   const inactiveServices = services?.filter((s) => !s.active) ?? [];
   const visibleServices = view === "active" ? activeServices : inactiveServices;
-  const pageServices = visibleServices.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  const filteredServices = visibleServices
+    .filter((s) =>
+      s.title.toLowerCase().includes(search.toLowerCase()),
+    )
+    .sort((a, b) => {
+      if (sort === "az") return a.title.localeCompare(b.title);
+      if (sort === "za") return b.title.localeCompare(a.title);
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+  const pageServices = filteredServices.slice(
+    (page - 1) * PER_PAGE,
+    page * PER_PAGE,
+  );
 
   function switchView(next: "active" | "inactive") {
     setView(next);
+    setPage(1);
+    setSearch("");
+  }
+
+  function handleSearch(value: string) {
+    setSearch(value);
+    setPage(1);
+  }
+
+  function handleSort(value: "az" | "za" | "recent") {
+    setSort(value);
     setPage(1);
   }
 
@@ -277,28 +304,50 @@ export function ServicesPage() {
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden min-h-0">
-      {/* Sticky header — hauteur fixe quelle que soit la vue */}
-      <div className="shrink-0 flex items-center justify-between px-4 pt-4 pb-3 bg-background">
-        <h1 className="text-xl font-bold">{t("services.title")}</h1>
-        {view === "active" ? (
-          <Button
-            size="sm"
-            className="min-h-[44px] gap-1.5"
-            onClick={() => setModalState({ mode: "create" })}
+      {/* Sticky header — deux lignes comme ClientsPage */}
+      <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold">{t("services.title")}</h1>
+          {view === "active" ? (
+            <Button
+              size="sm"
+              className="min-h-[44px] gap-1.5"
+              onClick={() => setModalState({ mode: "create" })}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t("services.add")}
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              className="min-h-[44px]"
+              onClick={() => switchView("active")}
+            >
+              {t("services.view_active", { count: activeServices.length })}
+            </Button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              className="min-h-[44px] pl-9"
+              placeholder={t("services.search_placeholder")}
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+            />
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => handleSort(e.target.value as "az" | "za" | "recent")}
+            className="h-11 rounded-xl border bg-card px-3 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
           >
-            <Plus className="h-3.5 w-3.5" />
-            {t("services.add")}
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            className="min-h-[44px]"
-            onClick={() => switchView("active")}
-          >
-            {t("services.view_active", { count: activeServices.length })}
-          </Button>
-        )}
+            <option value="az">{t("services.sort_az")}</option>
+            <option value="za">{t("services.sort_za")}</option>
+            <option value="recent">{t("services.sort_recent")}</option>
+          </select>
+        </div>
       </div>
 
       {/* Scrollable list */}
@@ -330,6 +379,10 @@ export function ServicesPage() {
           <p className="text-sm text-muted-foreground py-2">
             {t("services.no_services")}
           </p>
+        ) : filteredServices.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-2">
+            {t("services.no_results")}
+          </p>
         ) : (
           <div className="space-y-2">
             {pageServices.map((s) => (
@@ -347,7 +400,7 @@ export function ServicesPage() {
 
         <Pagination
           page={page}
-          total={visibleServices.length}
+          total={filteredServices.length}
           limit={PER_PAGE}
           onChange={setPage}
         />

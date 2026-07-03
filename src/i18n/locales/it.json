@@ -352,6 +352,11 @@
     "delete_error": "Errore durante l'eliminazione",
     "confirm_delete": "Eliminare questo servizio?",
     "view_inactive": "Mostra disattivati ({{count}})",
-    "view_active": "← Attivi ({{count}})"
+    "view_active": "← Attivi ({{count}})",
+    "search_placeholder": "Cerca un servizio…",
+    "sort_az": "A → Z",
+    "sort_za": "Z → A",
+    "sort_recent": "Più recente",
+    "no_results": "Nessun risultato"
   }
 }

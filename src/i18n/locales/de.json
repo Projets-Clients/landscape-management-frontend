@@ -352,6 +352,11 @@
     "delete_error": "Fehler beim Löschen",
     "confirm_delete": "Diese Leistung löschen?",
     "view_inactive": "Deaktivierte anzeigen ({{count}})",
-    "view_active": "← Aktive ({{count}})"
+    "view_active": "← Aktive ({{count}})",
+    "search_placeholder": "Leistung suchen…",
+    "sort_az": "A → Z",
+    "sort_za": "Z → A",
+    "sort_recent": "Neueste",
+    "no_results": "Keine Ergebnisse"
   }
 }
