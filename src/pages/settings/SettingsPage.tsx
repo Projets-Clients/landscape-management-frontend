@@ -109,8 +109,8 @@ export function SettingsPage() {
     <div className="space-y-6 pb-4">
       <h1 className="text-xl font-bold">{t('settings.title')}</h1>
 
-      {/* Avatar + identité */}
-      <div className="flex flex-col items-center gap-3 py-4">
+      {/* Avatar */}
+      <div className="flex flex-col items-center gap-3 py-2">
         <div className={[
           'flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold',
           userId ? 'bg-primary/10 text-primary' : 'bg-muted',
@@ -123,225 +123,206 @@ export function SettingsPage() {
         </div>
       </div>
 
-      {/* Infos */}
-      <Card className="divide-y">
-        <div className="flex items-center justify-between p-4 min-h-[56px]">
-          <p className="text-sm text-muted-foreground">{t('settings.label_identifier')}</p>
-          <p className="text-sm font-medium">@{username}</p>
-        </div>
-        <div className="flex items-center justify-between p-4 min-h-[56px]">
-          <p className="text-sm text-muted-foreground">{t('settings.label_role')}</p>
-          <p className="text-sm font-medium">{role ? (ROLE_LABELS[role] ?? role) : '—'}</p>
-        </div>
-      </Card>
+      {/* Grille : Mon compte + Organisation côte à côte sur desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
 
-      {/* Changement de nom */}
-      <div className="space-y-2">
-        <p className="text-sm font-semibold">{t('settings.username_section')}</p>
-        <Card className="p-4">
-          <form onSubmit={handleUsernameSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="username">{t('settings.username_label')}</Label>
-              <Input
-                id="username"
-                className="min-h-[44px]"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                minLength={3}
-                maxLength={30}
-                pattern="^[a-zA-Z0-9_.\-]+$"
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full min-h-[48px]"
-              disabled={updateMe.isPending || !newUsername.trim() || newUsername.trim() === username}
-            >
-              {updateMe.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('settings.save')}
-            </Button>
-          </form>
-        </Card>
-      </div>
-
-      {/* Langue */}
-      <div className="space-y-2">
-        <p className="text-sm font-semibold">{t('settings.language_section')}</p>
-        <Card className="p-4">
-          <select
-            value={i18n.language}
-            onChange={(e) => handleLanguageChange(e.target.value)}
-            className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option value="fr">🇫🇷 {t('settings.lang_fr')}</option>
-            <option value="en">🇬🇧 {t('settings.lang_en')}</option>
-            <option value="es">🇪🇸 {t('settings.lang_es')}</option>
-            <option value="it">🇮🇹 {t('settings.lang_it')}</option>
-            <option value="de">🇩🇪 {t('settings.lang_de')}</option>
-          </select>
-        </Card>
-      </div>
-
-      {/* Couleur */}
-      <div className="space-y-2">
-        <p className="text-sm font-semibold">{t('settings.color_section')}</p>
-        <Card className="p-3">
-          <div className="grid grid-cols-4 gap-3">
-            {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { hex }]) => (
-              <button
-                key={key}
-                title={t(`settings.color_${key}`)}
-                onClick={() => handleColorChange(key)}
-                className="flex flex-col items-center gap-1.5"
-              >
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full ring-offset-background transition-all"
-                  style={{
-                    backgroundColor: hex,
-                    boxShadow: color === key ? `0 0 0 2px white, 0 0 0 4px ${hex}` : undefined,
-                  }}
-                >
-                  {color === key && (
-                    <svg viewBox="0 0 12 12" className="h-3 w-3 fill-white">
-                      <path d="M1.5 6.5l3 3 6-6" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </span>
-                <span className="text-[10px] text-muted-foreground">{t(`settings.color_${key}`)}</span>
-              </button>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      {/* Apparence */}
-      <div className="space-y-2">
-        <p className="text-sm font-semibold">{t('settings.appearance_section')}</p>
-        <Card className="p-1">
-          <div className="grid grid-cols-3 gap-1">
-            {([
-              { value: 'system', labelKey: 'settings.theme_system', icon: Monitor },
-              { value: 'light',  labelKey: 'settings.theme_light',  icon: Sun },
-              { value: 'dark',   labelKey: 'settings.theme_dark',   icon: Moon },
-            ] as const).map(({ value, labelKey, icon: Icon }) => (
-              <button
-                key={value}
-                onClick={() => handleThemeChange(value)}
-                className={[
-                  'flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors',
-                  theme === value
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-muted',
-                ].join(' ')}
-              >
-                <Icon className="h-4 w-4" />
-                {t(labelKey)}
-              </button>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      {/* Organisation (admin seulement) */}
-      {isAdmin && (
+        {/* Mon compte */}
         <div className="space-y-2">
-          <p className="text-sm font-semibold">{t('settings.org_section')}</p>
-          <Card className="p-4">
-            {orgLoading ? (
-              <div className="flex justify-center py-4">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : (
-              <form onSubmit={handleOrgSubmit} className="space-y-4">
+          <p className="text-sm font-semibold">{t('settings.account_section')}</p>
+          <Card className="divide-y">
+            {/* Pseudo */}
+            <div className="p-4">
+              <form onSubmit={handleUsernameSubmit} className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="orgName">{t('settings.org_name_label')}</Label>
+                  <Label htmlFor="username">{t('settings.username_label')}</Label>
                   <Input
-                    id="orgName"
+                    id="username"
                     className="min-h-[44px]"
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
-                    minLength={2}
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    minLength={3}
                     maxLength={30}
+                    pattern="^[a-zA-Z0-9_.\-]+$"
                     required
                   />
-                  <p className={[
-                    'text-right text-xs tabular-nums transition-colors',
-                    orgName.length >= 30 ? 'text-destructive font-medium' :
-                    orgName.length >= 25 ? 'text-orange-500' :
-                    'text-muted-foreground',
-                  ].join(' ')}>
-                    {orgName.length}/30
-                  </p>
                 </div>
                 <Button
                   type="submit"
-                  className="w-full min-h-[48px]"
-                  disabled={updateOrg.isPending || !orgName.trim() || orgName.trim() === org?.name}
+                  className="w-full min-h-[44px]"
+                  disabled={updateMe.isPending || !newUsername.trim() || newUsername.trim() === username}
                 >
-                  {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {updateMe.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('settings.save')}
                 </Button>
               </form>
-            )}
+            </div>
+            {/* Langue */}
+            <div className="p-4 space-y-1.5">
+              <Label>{t('settings.language_section')}</Label>
+              <select
+                value={i18n.language}
+                onChange={(e) => handleLanguageChange(e.target.value)}
+                className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="fr">🇫🇷 {t('settings.lang_fr')}</option>
+                <option value="en">🇬🇧 {t('settings.lang_en')}</option>
+                <option value="es">🇪🇸 {t('settings.lang_es')}</option>
+                <option value="it">🇮🇹 {t('settings.lang_it')}</option>
+                <option value="de">🇩🇪 {t('settings.lang_de')}</option>
+              </select>
+            </div>
           </Card>
         </div>
-      )}
 
-      {/* Navigation mobile (admin seulement) */}
-      {isAdmin && (
-        <div className="space-y-2">
-          <p className="text-sm font-semibold">{t('settings.nav_section')}</p>
-          <Card className="p-4">
-            {orgLoading ? (
-              <div className="flex justify-center py-4">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : (
-              <form onSubmit={handleNavSlotsSubmit} className="space-y-3">
-                {navSlots.map((slot, i) => (
-                  <div key={i} className="space-y-1">
-                    <Label>{t('settings.nav_slot', { n: i + 1 })}</Label>
-                    <select
-                      value={slot}
-                      onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
-                      className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      {ALL_SLOT_KEYS.map((key) => (
-                        <option key={key} value={key}>
-                          {t(NAV_SLOT_REGISTRY[key].nameKey)}
-                        </option>
-                      ))}
-                    </select>
+        {/* Organisation (admin seulement) */}
+        {isAdmin && (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">{t('settings.org_section')}</p>
+            <Card className="divide-y">
+              {orgLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <>
+                  {/* Nom org */}
+                  <div className="p-4">
+                    <form onSubmit={handleOrgSubmit} className="space-y-3">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="orgName">{t('settings.org_name_label')}</Label>
+                        <Input
+                          id="orgName"
+                          className="min-h-[44px]"
+                          value={orgName}
+                          onChange={(e) => setOrgName(e.target.value)}
+                          minLength={2}
+                          maxLength={30}
+                          required
+                        />
+                        <p className={[
+                          'text-right text-xs tabular-nums transition-colors',
+                          orgName.length >= 30 ? 'text-destructive font-medium' :
+                          orgName.length >= 25 ? 'text-orange-500' :
+                          'text-muted-foreground',
+                        ].join(' ')}>
+                          {orgName.length}/30
+                        </p>
+                      </div>
+                      <Button
+                        type="submit"
+                        className="w-full min-h-[44px]"
+                        disabled={updateOrg.isPending || !orgName.trim() || orgName.trim() === org?.name}
+                      >
+                        {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {t('settings.save')}
+                      </Button>
+                    </form>
                   </div>
-                ))}
-                <Button
-                  type="submit"
-                  className="w-full min-h-[48px]"
-                  disabled={updateOrg.isPending}
-                >
-                  {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('settings.save')}
-                </Button>
-              </form>
-            )}
-          </Card>
-        </div>
-      )}
+                  {/* Navigation mobile */}
+                  <div className="p-4">
+                    <form onSubmit={handleNavSlotsSubmit} className="space-y-3">
+                      <Label>{t('settings.nav_section')}</Label>
+                      {navSlots.map((slot, i) => (
+                        <select
+                          key={i}
+                          value={slot}
+                          onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
+                          className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          {ALL_SLOT_KEYS.map((key) => (
+                            <option key={key} value={key}>
+                              {t('settings.nav_slot', { n: i + 1 })} — {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                            </option>
+                          ))}
+                        </select>
+                      ))}
+                      <Button
+                        type="submit"
+                        className="w-full min-h-[44px]"
+                        disabled={updateOrg.isPending}
+                      >
+                        {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {t('settings.save')}
+                      </Button>
+                    </form>
+                  </div>
+                </>
+              )}
+            </Card>
+          </div>
+        )}
+      </div>
 
+      {/* Apparence : thème + couleur dans une seule card */}
+      <div className="space-y-2">
+        <p className="text-sm font-semibold">{t('settings.appearance_section')}</p>
+        <Card className="divide-y">
+          {/* Thème */}
+          <div className="p-3">
+            <div className="grid grid-cols-3 gap-1">
+              {([
+                { value: 'system', labelKey: 'settings.theme_system', icon: Monitor },
+                { value: 'light',  labelKey: 'settings.theme_light',  icon: Sun },
+                { value: 'dark',   labelKey: 'settings.theme_dark',   icon: Moon },
+              ] as const).map(({ value, labelKey, icon: Icon }) => (
+                <button
+                  key={value}
+                  onClick={() => handleThemeChange(value)}
+                  className={[
+                    'flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors',
+                    theme === value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-muted',
+                  ].join(' ')}
+                >
+                  <Icon className="h-4 w-4" />
+                  {t(labelKey)}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Couleur */}
+          <div className="p-3">
+            <div className="grid grid-cols-4 gap-3">
+              {(Object.entries(COLORS) as [ColorKey, typeof COLORS[ColorKey]][]).map(([key, { hex }]) => (
+                <button
+                  key={key}
+                  title={t(`settings.color_${key}`)}
+                  onClick={() => handleColorChange(key)}
+                  className="flex flex-col items-center gap-1.5"
+                >
+                  <span
+                    className="flex h-9 w-9 items-center justify-center rounded-full ring-offset-background transition-all"
+                    style={{
+                      backgroundColor: hex,
+                      boxShadow: color === key ? `0 0 0 2px white, 0 0 0 4px ${hex}` : undefined,
+                    }}
+                  >
+                    {color === key && (
+                      <svg viewBox="0 0 12 12" className="h-3 w-3 fill-white">
+                        <path d="M1.5 6.5l3 3 6-6" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{t(`settings.color_${key}`)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* PWA */}
       {isMobile && !isInstalled && (
         <>
-          <div className="space-y-2">
-            <p className="text-sm font-semibold">{t('install.settings_section')}</p>
-            <Button
-              variant="outline"
-              className="w-full min-h-[48px] gap-2"
-              onClick={() => setInstallOpen(true)}
-            >
-              <Smartphone className="h-4 w-4" />
-              {t('install.settings_btn')}
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            className="w-full min-h-[48px] gap-2"
+            onClick={() => setInstallOpen(true)}
+          >
+            <Smartphone className="h-4 w-4" />
+            {t('install.settings_btn')}
+          </Button>
           <InstallModal open={installOpen} onClose={() => setInstallOpen(false)} />
         </>
       )}

@@ -89,6 +89,7 @@
     "lang_de": "Deutsch",
     "org_section": "Organisation",
     "org_name_label": "Company name",
+    "account_section": "My account",
     "nav_section": "Mobile navigation",
     "nav_slot": "Shortcut {{n}}",
     "nav_updated": "Navigation updated",
