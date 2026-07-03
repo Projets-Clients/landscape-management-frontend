@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { Download, LogOut, Monitor, Moon, Sun, User, Loader2, Smartphone } from 'lucide-react'
+import { Download, LayoutDashboard, LogOut, Monitor, Moon, Settings as SettingsIcon, Sun, User, Loader2, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -202,20 +202,47 @@ export function SettingsPage() {
                   {/* Navigation mobile */}
                   <div className="space-y-2">
                     <Label>{t('settings.nav_section')}</Label>
-                    {navSlots.map((slot, i) => (
-                      <select
-                        key={i}
-                        value={slot}
-                        onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
-                        className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-                      >
-                        {ALL_SLOT_KEYS.filter(key => key === slot || !navSlots.includes(key)).map((key) => (
-                          <option key={key} value={key}>
-                            {t(NAV_SLOT_REGISTRY[key].nameKey)}
-                          </option>
+                    <div className="rounded-xl border overflow-hidden">
+                      {/* Aperçu de la barre */}
+                      <div className="grid grid-cols-5 bg-background border-b">
+                        <div className="flex flex-col items-center gap-0.5 py-2 opacity-35">
+                          <LayoutDashboard className="h-5 w-5" />
+                          <span className="text-[10px]">{t('nav.dashboard_short')}</span>
+                        </div>
+                        {navSlots.map((slot, i) => {
+                          const Icon = NAV_SLOT_REGISTRY[slot].icon
+                          return (
+                            <div key={i} className="flex flex-col items-center gap-0.5 py-2 text-primary">
+                              <Icon className="h-5 w-5" />
+                              <span className="text-[10px] font-medium">{t(NAV_SLOT_REGISTRY[slot].labelKey)}</span>
+                            </div>
+                          )
+                        })}
+                        <div className="flex flex-col items-center gap-0.5 py-2 opacity-35">
+                          <SettingsIcon className="h-5 w-5" />
+                          <span className="text-[10px]">{t('nav.settings')}</span>
+                        </div>
+                      </div>
+                      {/* Selects alignés sous chaque slot */}
+                      <div className="grid grid-cols-5 gap-1.5 p-2 bg-muted/40">
+                        <div />
+                        {navSlots.map((slot, i) => (
+                          <select
+                            key={i}
+                            value={slot}
+                            onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
+                            className="h-8 w-full rounded-lg border bg-background px-1 text-xs outline-none focus:ring-2 focus:ring-ring"
+                          >
+                            {ALL_SLOT_KEYS.filter(key => key === slot || !navSlots.includes(key)).map((key) => (
+                              <option key={key} value={key}>
+                                {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                              </option>
+                            ))}
+                          </select>
                         ))}
-                      </select>
-                    ))}
+                        <div />
+                      </div>
+                    </div>
                   </div>
                   {/* Un seul bouton pour tout sauvegarder */}
                   <Button
