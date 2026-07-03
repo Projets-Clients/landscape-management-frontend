@@ -21,7 +21,8 @@
     "new_client": "New client",
     "new_project": "New project",
     "no_projects": "No projects yet",
-    "expected_end": "Expected end: {{date}}"
+    "expected_end": "Expected end: {{date}}",
+    "modules": "Modules"
   },
   "projects": {
     "title": "Projects",

@@ -1,13 +1,78 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { HardHat, FileSignature, CheckCircle, AlertTriangle, Plus } from 'lucide-react'
+import {
+  HardHat,
+  FileSignature,
+  CheckCircle,
+  AlertTriangle,
+  Plus,
+  Users,
+  UserCog,
+  BookOpen,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { useProjects } from '@/hooks/use-projects'
 import { useAuthStore } from '@/store/auth.store'
 import { formatDate } from '@/lib/utils'
-import type { Project } from '@/types/api'
+import type { Project, UserRole } from '@/types/api'
+
+interface ModuleDef {
+  to: string
+  icon: React.ElementType
+  labelKey: string
+  color: string
+  roles: UserRole[]
+}
+
+const MODULES: ModuleDef[] = [
+  {
+    to: '/chantiers',
+    icon: HardHat,
+    labelKey: 'nav.projects',
+    color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    roles: ['ADMIN', 'FOREMAN', 'EMPLOYEE'],
+  },
+  {
+    to: '/clients',
+    icon: Users,
+    labelKey: 'nav.clients',
+    color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    roles: ['ADMIN'],
+  },
+  {
+    to: '/utilisateurs',
+    icon: UserCog,
+    labelKey: 'nav.team',
+    color: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+    roles: ['ADMIN'],
+  },
+  {
+    to: '/prestations',
+    icon: BookOpen,
+    labelKey: 'nav.services',
+    color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
+    roles: ['ADMIN'],
+  },
+]
+
+function ModuleTile({ to, icon: Icon, labelKey, color }: Omit<ModuleDef, 'roles'>) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+
+  return (
+    <button
+      onClick={() => void navigate(to)}
+      className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted"
+    >
+      <div className={`shrink-0 rounded-xl p-2.5 ${color}`}>
+        <Icon className="h-5 w-5" />
+      </div>
+      <p className="font-medium text-sm leading-snug">{t(labelKey)}</p>
+    </button>
+  )
+}
 
 function StatCard({
   icon: Icon,
@@ -55,15 +120,16 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
         <p className="truncate text-sm font-semibold">{project.title}</p>
         <p className="mt-0.5 truncate text-xs text-muted-foreground">
           {project.reference}
-          {project.client &&
-            ` · ${project.client.firstName} ${project.client.lastName}`}
+          {project.client && ` · ${project.client.firstName} ${project.client.lastName}`}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
           {project.expectedEndDate ? (
             <p className="text-xs text-muted-foreground">
               {t('dashboard.expected_end', { date: formatDate(project.expectedEndDate) })}
             </p>
-          ) : <span />}
+          ) : (
+            <span />
+          )}
           <StatusBadge status={project.status} />
         </div>
       </div>
@@ -83,8 +149,11 @@ export function DashboardPage() {
   const disputed = useProjects({ status: 'DISPUTED', limit: 1 })
   const recent = useProjects({ limit: 20 })
 
+  const visibleModules = MODULES.filter((m) => role && m.roles.includes(role))
+
   return (
-    <div className="flex h-full flex-col gap-6">
+    <div className="flex flex-col gap-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">{t('dashboard.greeting', { username })}</h1>
@@ -115,6 +184,21 @@ export function DashboardPage() {
         )}
       </div>
 
+      {/* Module tiles */}
+      {visibleModules.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            {t('dashboard.modules')}
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {visibleModules.map((m) => (
+              <ModuleTile key={m.to} to={m.to} icon={m.icon} labelKey={m.labelKey} color={m.color} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Stat cards */}
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
         <StatCard
           icon={HardHat}
@@ -150,7 +234,8 @@ export function DashboardPage() {
         />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col">
+      {/* Recent projects */}
+      <section className="flex min-h-0 flex-1 flex-col">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold">{t('dashboard.recent_projects')}</h2>
           <button
@@ -161,7 +246,7 @@ export function DashboardPage() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-3 pb-4">
+        <div className="space-y-3 pb-4">
           {recent.isLoading &&
             [1, 2, 3].map((i) => <Skeleton key={i} className="h-[72px] rounded-xl" />)}
 
@@ -179,7 +264,7 @@ export function DashboardPage() {
             </p>
           )}
         </div>
-      </div>
+      </section>
     </div>
   )
 }

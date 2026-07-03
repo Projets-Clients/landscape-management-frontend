@@ -21,7 +21,8 @@
     "new_client": "Nouveau client",
     "new_project": "Nouveau chantier",
     "no_projects": "Aucun chantier pour le moment",
-    "expected_end": "Fin prévue : {{date}}"
+    "expected_end": "Fin prévue : {{date}}",
+    "modules": "Modules"
   },
   "projects": {
     "title": "Chantiers",
