@@ -62,18 +62,11 @@ export function SettingsPage() {
   function handleOrgSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!orgName.trim()) return
-    void updateOrg.mutateAsync({ name: orgName.trim() })
+    void updateOrg.mutateAsync({ name: orgName.trim(), navSlots })
   }
 
   function handleNavSlotChange(index: number, value: NavSlotKey) {
     setNavSlots((prev) => prev.map((s, i) => (i === index ? value : s)))
-  }
-
-  function handleNavSlotsSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    void updateOrg.mutateAsync({ navSlots }).then(() => {
-      toast.success(t('settings.nav_updated'))
-    })
   }
 
   function handleThemeChange(newTheme: 'system' | 'light' | 'dark') {
@@ -124,7 +117,7 @@ export function SettingsPage() {
       </div>
 
       {/* Grille : Mon compte + Organisation côte à côte sur desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+      <div className="space-y-4">
 
         {/* Mon compte */}
         <div className="space-y-2">
@@ -178,75 +171,67 @@ export function SettingsPage() {
         {isAdmin && (
           <div className="space-y-2">
             <p className="text-sm font-semibold">{t('settings.org_section')}</p>
-            <Card className="divide-y">
+            <Card className="p-4">
               {orgLoading ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
               ) : (
-                <>
-                  {/* Nom org */}
-                  <div className="p-4">
-                    <form onSubmit={handleOrgSubmit} className="space-y-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="orgName">{t('settings.org_name_label')}</Label>
-                        <Input
-                          id="orgName"
-                          className="min-h-[44px]"
-                          value={orgName}
-                          onChange={(e) => setOrgName(e.target.value)}
-                          minLength={2}
-                          maxLength={30}
-                          required
-                        />
-                        <p className={[
-                          'text-right text-xs tabular-nums transition-colors',
-                          orgName.length >= 30 ? 'text-destructive font-medium' :
-                          orgName.length >= 25 ? 'text-orange-500' :
-                          'text-muted-foreground',
-                        ].join(' ')}>
-                          {orgName.length}/30
-                        </p>
-                      </div>
-                      <Button
-                        type="submit"
-                        className="w-full min-h-[44px]"
-                        disabled={updateOrg.isPending || !orgName.trim() || orgName.trim() === org?.name}
-                      >
-                        {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t('settings.save')}
-                      </Button>
-                    </form>
+                <form onSubmit={handleOrgSubmit} className="space-y-4">
+                  {/* Nom */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="orgName">{t('settings.org_name_label')}</Label>
+                    <Input
+                      id="orgName"
+                      className="min-h-[44px]"
+                      value={orgName}
+                      onChange={(e) => setOrgName(e.target.value)}
+                      minLength={2}
+                      maxLength={30}
+                      required
+                    />
+                    <p className={[
+                      'text-right text-xs tabular-nums transition-colors',
+                      orgName.length >= 30 ? 'text-destructive font-medium' :
+                      orgName.length >= 25 ? 'text-orange-500' :
+                      'text-muted-foreground',
+                    ].join(' ')}>
+                      {orgName.length}/30
+                    </p>
                   </div>
                   {/* Navigation mobile */}
-                  <div className="p-4">
-                    <form onSubmit={handleNavSlotsSubmit} className="space-y-3">
-                      <Label>{t('settings.nav_section')}</Label>
-                      {navSlots.map((slot, i) => (
-                        <select
-                          key={i}
-                          value={slot}
-                          onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
-                          className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-                        >
-                          {ALL_SLOT_KEYS.map((key) => (
-                            <option key={key} value={key}>
-                              {t('settings.nav_slot', { n: i + 1 })} — {t(NAV_SLOT_REGISTRY[key].nameKey)}
-                            </option>
-                          ))}
-                        </select>
-                      ))}
-                      <Button
-                        type="submit"
-                        className="w-full min-h-[44px]"
-                        disabled={updateOrg.isPending}
+                  <div className="space-y-2">
+                    <Label>{t('settings.nav_section')}</Label>
+                    {navSlots.map((slot, i) => (
+                      <select
+                        key={i}
+                        value={slot}
+                        onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
+                        className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                       >
-                        {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t('settings.save')}
-                      </Button>
-                    </form>
+                        {ALL_SLOT_KEYS.filter(key => key === slot || !navSlots.includes(key)).map((key) => (
+                          <option key={key} value={key}>
+                            {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                          </option>
+                        ))}
+                      </select>
+                    ))}
                   </div>
-                </>
+                  {/* Un seul bouton pour tout sauvegarder */}
+                  <Button
+                    type="submit"
+                    className="w-full min-h-[44px]"
+                    disabled={
+                      updateOrg.isPending ||
+                      !orgName.trim() ||
+                      (orgName.trim() === org?.name &&
+                        JSON.stringify(navSlots) === JSON.stringify(org?.navSlots ?? DEFAULT_NAV_SLOTS))
+                    }
+                  >
+                    {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {t('settings.save')}
+                  </Button>
+                </form>
               )}
             </Card>
           </div>
