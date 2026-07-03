@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination } from "@/components/common/Pagination";
 import {
   useServices,
   useCreateService,
@@ -189,10 +190,19 @@ export function ServicesPage() {
     { mode: "create" } | { mode: "edit"; service: Service } | null
   >(null);
   const [view, setView] = useState<"active" | "inactive">("active");
+  const [page, setPage] = useState(1);
+
+  const PER_PAGE = 15;
 
   const activeServices = services?.filter((s) => s.active) ?? [];
   const inactiveServices = services?.filter((s) => !s.active) ?? [];
   const visibleServices = view === "active" ? activeServices : inactiveServices;
+  const pageServices = visibleServices.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  function switchView(next: "active" | "inactive") {
+    setView(next);
+    setPage(1);
+  }
 
   function closeModal() {
     setModalState(null);
@@ -284,7 +294,7 @@ export function ServicesPage() {
             size="sm"
             variant="outline"
             className="min-h-[44px]"
-            onClick={() => setView("active")}
+            onClick={() => switchView("active")}
           >
             {t("services.view_active", { count: activeServices.length })}
           </Button>
@@ -322,7 +332,7 @@ export function ServicesPage() {
           </p>
         ) : (
           <div className="space-y-2">
-            {visibleServices.map((s) => (
+            {pageServices.map((s) => (
               <ServiceCard
                 key={s.id}
                 service={s}
@@ -335,16 +345,25 @@ export function ServicesPage() {
           </div>
         )}
 
-        {/* Lien vers les désactivées — en bas de la liste active, large zone de tap */}
-        {view === "active" && inactiveServices.length > 0 && !isLoading && (
+        <Pagination
+          page={page}
+          total={visibleServices.length}
+          limit={PER_PAGE}
+          onChange={setPage}
+        />
+      </div>
+
+      {/* Footer fixe — bouton désactivées toujours visible en bas */}
+      {view === "active" && inactiveServices.length > 0 && !isLoading && (
+        <div className="shrink-0 border-t bg-background pb-nav lg:pb-2">
           <button
-            className="flex w-full items-center justify-center min-h-[48px] mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => setView("inactive")}
+            className="flex w-full items-center justify-center min-h-[48px] text-sm text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => switchView("inactive")}
           >
             {t("services.view_inactive", { count: inactiveServices.length })}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Form modal */}
       {modalState && (
