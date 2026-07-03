@@ -322,6 +322,7 @@
   },
   "services": {
     "title": "Catálogo de servicios",
+    "title_short": "Servicios",
     "add": "Añadir",
     "edit": "Editar",
     "activate": "Activar",

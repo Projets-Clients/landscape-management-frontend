@@ -307,7 +307,10 @@ export function ServicesPage() {
       {/* Sticky header — deux lignes comme ClientsPage */}
       <div className="shrink-0 space-y-3 px-4 pt-4 pb-3 bg-background">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">{t("services.title")}</h1>
+          <h1 className="text-xl font-bold">
+            <span className="lg:hidden">{t("services.title_short")}</span>
+            <span className="hidden lg:inline">{t("services.title")}</span>
+          </h1>
           {view === "active" ? (
             <Button
               size="sm"
@@ -348,10 +351,18 @@ export function ServicesPage() {
             <option value="recent">{t("services.sort_recent")}</option>
           </select>
         </div>
+        {view === "active" && inactiveServices.length > 0 && !isLoading && (
+          <button
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+            onClick={() => switchView("inactive")}
+          >
+            {t("services.view_inactive", { count: inactiveServices.length })}
+          </button>
+        )}
       </div>
 
       {/* Scrollable list */}
-      <div className="flex-1 overflow-y-auto px-4 pb-nav lg:pb-4">
+      <div className="flex-1 overflow-y-auto px-4">
         {isLoading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (
@@ -398,6 +409,10 @@ export function ServicesPage() {
           </div>
         )}
 
+      </div>
+
+      {/* Pagination fixe en bas */}
+      <div className="shrink-0 px-4 pb-nav lg:pb-2 pt-1 bg-background">
         <Pagination
           page={page}
           total={filteredServices.length}
@@ -405,18 +420,6 @@ export function ServicesPage() {
           onChange={setPage}
         />
       </div>
-
-      {/* Footer fixe — bouton désactivées toujours visible en bas */}
-      {view === "active" && inactiveServices.length > 0 && !isLoading && (
-        <div className="shrink-0 border-t bg-background pb-nav lg:pb-2">
-          <button
-            className="flex w-full items-center justify-center min-h-[48px] text-sm text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => switchView("inactive")}
-          >
-            {t("services.view_inactive", { count: inactiveServices.length })}
-          </button>
-        </div>
-      )}
 
       {/* Form modal */}
       {modalState && (

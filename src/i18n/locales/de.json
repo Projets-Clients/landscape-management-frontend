@@ -322,6 +322,7 @@
   },
   "services": {
     "title": "Leistungskatalog",
+    "title_short": "Leistungen",
     "add": "Hinzufügen",
     "edit": "Bearbeiten",
     "activate": "Aktivieren",

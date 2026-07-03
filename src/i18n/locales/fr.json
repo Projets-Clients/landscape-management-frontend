@@ -322,6 +322,7 @@
   },
   "services": {
     "title": "Bibliothèque de prestations",
+    "title_short": "Prestations",
     "add": "Ajouter",
     "edit": "Modifier",
     "activate": "Activer",

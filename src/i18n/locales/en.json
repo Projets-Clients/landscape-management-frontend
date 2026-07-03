@@ -322,6 +322,7 @@
   },
   "services": {
     "title": "Service library",
+    "title_short": "Services",
     "add": "Add",
     "edit": "Edit",
     "activate": "Activate",
