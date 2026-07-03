@@ -4,6 +4,7 @@ export interface Organization {
   id: string
   name: string
   slug: string
+  navSlots: string[]
   active: boolean
   createdAt: string
   updatedAt: string

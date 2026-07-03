@@ -13,6 +13,7 @@ import { useTheme, COLORS } from '@/providers/ThemeProvider'
 import type { ColorKey } from '@/providers/ThemeProvider'
 import { apiRequest } from '@/lib/api-client'
 import { useOrganization, useUpdateOrganization } from '@/hooks/use-organization'
+import { NAV_SLOT_REGISTRY, DEFAULT_NAV_SLOTS, ALL_SLOT_KEYS, type NavSlotKey } from '@/lib/nav-slots'
 import { useUpdateMe } from '@/hooks/use-update-me'
 import { usePwaInstall } from '@/hooks/use-pwa-install'
 import { InstallModal } from '@/components/common/InstallModal'
@@ -45,17 +46,34 @@ export function SettingsPage() {
     void updateMe.mutateAsync({ username: trimmed })
   }
 
-  // Org name change (admin only)
+  // Org name + nav slots (admin only)
   const { data: org, isLoading: orgLoading } = useOrganization()
   const updateOrg = useUpdateOrganization()
   const [orgName, setOrgName] = useState('')
+  const [navSlots, setNavSlots] = useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS)
 
-  useEffect(() => { if (org) setOrgName(org.name) }, [org])
+  useEffect(() => {
+    if (org) {
+      setOrgName(org.name)
+      setNavSlots((org.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS)
+    }
+  }, [org])
 
   function handleOrgSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!orgName.trim()) return
     void updateOrg.mutateAsync({ name: orgName.trim() })
+  }
+
+  function handleNavSlotChange(index: number, value: NavSlotKey) {
+    setNavSlots((prev) => prev.map((s, i) => (i === index ? value : s)))
+  }
+
+  function handleNavSlotsSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    void updateOrg.mutateAsync({ navSlots }).then(() => {
+      toast.success(t('settings.nav_updated'))
+    })
   }
 
   function handleThemeChange(newTheme: 'system' | 'light' | 'dark') {
@@ -260,6 +278,47 @@ export function SettingsPage() {
                   type="submit"
                   className="w-full min-h-[48px]"
                   disabled={updateOrg.isPending || !orgName.trim() || orgName.trim() === org?.name}
+                >
+                  {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {t('settings.save')}
+                </Button>
+              </form>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Navigation mobile (admin seulement) */}
+      {isAdmin && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">{t('settings.nav_section')}</p>
+          <Card className="p-4">
+            {orgLoading ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <form onSubmit={handleNavSlotsSubmit} className="space-y-3">
+                {navSlots.map((slot, i) => (
+                  <div key={i} className="space-y-1">
+                    <Label>{t('settings.nav_slot', { n: i + 1 })}</Label>
+                    <select
+                      value={slot}
+                      onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
+                      className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      {ALL_SLOT_KEYS.map((key) => (
+                        <option key={key} value={key}>
+                          {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+                <Button
+                  type="submit"
+                  className="w-full min-h-[48px]"
+                  disabled={updateOrg.isPending}
                 >
                   {updateOrg.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('settings.save')}

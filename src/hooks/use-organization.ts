@@ -14,7 +14,7 @@ export function useOrganization() {
 export function useUpdateOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { name: string }) =>
+    mutationFn: (data: { name?: string; navSlots?: string[] }) =>
       apiRequest<Organization>('/organizations/me', {
         method: 'PATCH',
         body: JSON.stringify(data),
