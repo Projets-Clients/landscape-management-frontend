@@ -47,7 +47,7 @@ export function SessionProvider() {
           if (res.ok) {
             const me = (await res.json()) as {
               language: string; theme: string; accentColor: string; navSlots: string[]
-              customRole?: { permissions: Record<string, string[]> } | null
+              customRole?: { name: string; permissions: Record<string, string[]> } | null
             }
             setPreferences(me.language, me.theme, me.accentColor)
             setTheme(me.theme as 'system' | 'light' | 'dark')
