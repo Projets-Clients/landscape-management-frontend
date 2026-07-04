@@ -248,10 +248,6 @@ describe('RolesTab — suppression', () => {
     vi.mocked(useRoles).mockReturnValue({ data: [ROLE], isLoading: false } as any)
     render(<RolesTab showCreate={false} onCloseCreate={vi.fn()} />)
     await userEvent.click(screen.getByText('Chef de chantier'))
-    // ROLE._count.users = 2 → button disabled
-    const deleteBtn = screen.getAllByRole('button').find(
-      (b) => b.querySelector('svg') && (b as HTMLButtonElement).disabled !== false
-    )
     // Find the destructive delete button
     const allButtons = screen.getAllByRole('button')
     const deleteButton = allButtons.find((b) =>

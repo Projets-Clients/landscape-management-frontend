@@ -39,6 +39,8 @@ const SERVICE_ACTIVE: Service = {
   title: 'Tonte de pelouse',
   description: 'Tonte hebdomadaire',
   unit: 'm²',
+  defaultPrice: null,
+  order: 0,
   active: true,
   organizationId: 'org-1',
   createdAt: '2026-01-01T00:00:00Z',

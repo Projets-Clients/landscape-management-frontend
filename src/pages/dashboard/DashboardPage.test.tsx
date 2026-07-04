@@ -24,7 +24,7 @@ function emptyPaginated(): Paginated<Project> {
   return { data: [], total: 0, page: 1, limit: 1 }
 }
 
-function mockQueryResult(total = 0) {
+function mockQueryResult() {
   return { data: emptyPaginated(), isLoading: false }
 }
 
