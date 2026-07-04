@@ -32,6 +32,7 @@ export function SessionProvider() {
   const setPreferences = useAuthStore((s) => s.setPreferences)
   const setPermissions = useAuthStore((s) => s.setPermissions)
   const setNavSlots = useAuthStore((s) => s.setNavSlots)
+  const setCustomRoleName = useAuthStore((s) => s.setCustomRoleName)
   const { setTheme, setColor } = useTheme()
   const { i18n } = useTranslation()
 
@@ -54,6 +55,7 @@ export function SessionProvider() {
             localStorage.setItem('landscape-lang', me.language)
             void i18n.changeLanguage(me.language)
             setPermissions(me.customRole?.permissions as never ?? null)
+            setCustomRoleName(me.customRole?.name ?? null)
             setNavSlots(me.navSlots ?? [])
           }
         } catch {
@@ -64,7 +66,7 @@ export function SessionProvider() {
       }
       setReady(true)
     })
-  }, [setAuth, clearAuth, setTheme, setColor, i18n, setPreferences, setNavSlots])
+  }, [setAuth, clearAuth, setTheme, setColor, i18n, setPreferences, setNavSlots, setCustomRoleName])
 
   if (!ready) {
     return (

@@ -14,10 +14,12 @@ interface AuthState {
   accentColor: string
   navSlots: string[]
   permissions: Permissions | null
+  customRoleName: string | null
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
   setPreferences: (language: string, theme: string, accentColor: string) => void
   setPermissions: (permissions: Permissions | null) => void
   setNavSlots: (navSlots: string[]) => void
+  setCustomRoleName: (name: string | null) => void
   clearAuth: () => void
 }
 
@@ -46,6 +48,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   accentColor: 'green',
   navSlots: [],
   permissions: null,
+  customRoleName: null,
 
   setAuth: (accessToken, username, refreshToken) => {
     const decoded = decodeJwtPayload(accessToken)
@@ -72,10 +75,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ navSlots })
   },
 
+  setCustomRoleName: (name) => {
+    set({ customRoleName: name })
+  },
+
   clearAuth: () => {
     sessionStorage.removeItem('username')
     localStorage.removeItem(REFRESH_TOKEN_KEY)
-    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null, permissions: null, navSlots: [] })
+    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null, permissions: null, navSlots: [], customRoleName: null })
   },
 }))
 

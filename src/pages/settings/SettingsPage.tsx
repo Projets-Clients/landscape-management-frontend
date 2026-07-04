@@ -45,7 +45,7 @@ import { InstallModal } from "@/components/common/InstallModal";
 export function SettingsPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { username, role, userId, clearAuth } = useAuthStore();
+  const { username, role, userId, clearAuth, customRoleName } = useAuthStore();
   const setNavSlots = useAuthStore((s) => s.setNavSlots);
   const storeNavSlots = useAuthStore((s) => s.navSlots);
   const { isAdmin, can } = usePermissions();
@@ -212,7 +212,7 @@ export function SettingsPage() {
           <p className="font-bold text-lg">{username}</p>
           {role && (
             <p className="text-sm text-muted-foreground">
-              {ROLE_LABELS[role] ?? role}
+              {customRoleName ?? ROLE_LABELS[role] ?? role}
             </p>
           )}
         </div>

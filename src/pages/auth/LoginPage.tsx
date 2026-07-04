@@ -21,6 +21,7 @@ export function LoginPage() {
   const setPreferences = useAuthStore((s) => s.setPreferences)
   const setPermissions = useAuthStore((s) => s.setPermissions)
   const setNavSlots = useAuthStore((s) => s.setNavSlots)
+  const setCustomRoleName = useAuthStore((s) => s.setCustomRoleName)
   const { setTheme, setColor } = useTheme()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -54,6 +55,7 @@ export function LoginPage() {
           localStorage.setItem('landscape-lang', me.language)
           void i18n.changeLanguage(me.language)
           setPermissions(me.customRole?.permissions as never ?? null)
+          setCustomRoleName(me.customRole?.name ?? null)
           setNavSlots(me.navSlots ?? [])
         }
       } catch {
