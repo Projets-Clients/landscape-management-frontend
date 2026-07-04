@@ -158,9 +158,9 @@ export function DashboardPage() {
         <p className="hidden text-sm text-muted-foreground sm:block">{t('dashboard.subtitle')}</p>
       </div>
 
-      {/* Module tiles */}
+      {/* Module tiles — masqués sur desktop (sidebar disponible) */}
       {visibleModules.length > 0 && (
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 md:hidden">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             {t('dashboard.modules')}
           </h2>
