@@ -15,7 +15,9 @@ export class ApiError extends Error {
 let isRefreshing = false
 let refreshQueue: Array<(token: string | null) => void> = []
 
-async function refreshAccessToken(): Promise<{ accessToken: string; refreshToken: string } | null> {
+// null  → auth failure (401/403) → clearAuth
+// false → réseau/serveur → ne pas déconnecter
+async function refreshAccessToken(): Promise<{ accessToken: string; refreshToken: string } | null | false> {
   try {
     const storedToken = getStoredRefreshToken()
     const res = await fetch(`${API_URL}/auth/refresh`, {
@@ -24,10 +26,11 @@ async function refreshAccessToken(): Promise<{ accessToken: string; refreshToken
       headers: storedToken ? { 'Content-Type': 'application/json' } : {},
       body: storedToken ? JSON.stringify({ refreshToken: storedToken }) : undefined,
     })
-    if (!res.ok) return null
+    if (res.status === 401 || res.status === 403) return null
+    if (!res.ok) return false
     return (await res.json()) as { accessToken: string; refreshToken: string }
   } catch {
-    return null
+    return false
   }
 }
 
@@ -41,13 +44,17 @@ async function doRefresh(): Promise<string | null> {
   isRefreshing = false
 
   const { setAuth, clearAuth } = useAuthStore.getState()
-  const newAccessToken = result?.accessToken ?? null
-  if (result) {
+  let newAccessToken: string | null = null
+
+  if (result && result !== false) {
     const username = sessionStorage.getItem('username') ?? ''
     setAuth(result.accessToken, username, result.refreshToken)
-  } else {
+    newAccessToken = result.accessToken
+  } else if (result === null) {
+    // Échec auth explicite (401/403) → déconnexion
     clearAuth()
   }
+  // result === false → erreur réseau → on ne déconnecte pas
 
   refreshQueue.forEach((cb) => cb(newAccessToken))
   refreshQueue = []

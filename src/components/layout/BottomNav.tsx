@@ -58,7 +58,7 @@ function AdminBottomNav({ className }: { className?: string }) {
   const items: NavItem[] = [FIXED_START, ...middleItems, FIXED_END];
 
   return (
-    <nav className={cn("fixed bottom-0 left-0 right-0 flex border-t bg-card safe-area-bottom", className)}>
+    <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
       {items.map(({ to, icon: Icon, labelKey, end }) => (
         <NavLink
           key={to}
@@ -99,7 +99,7 @@ function MemberBottomNav({ className }: { className?: string }) {
   const items: NavItem[] = [FIXED_START, ...middleItems, FIXED_END];
 
   return (
-    <nav className={cn("fixed bottom-0 left-0 right-0 flex border-t bg-card safe-area-bottom", className)}>
+    <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
       {items.map(({ to, icon: Icon, labelKey, end }) => (
         <NavLink
           key={to}
@@ -141,7 +141,7 @@ export function BottomNav({ className }: BottomNavProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 flex border-t bg-card safe-area-bottom",
+        "fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom",
         className,
       )}
     >
