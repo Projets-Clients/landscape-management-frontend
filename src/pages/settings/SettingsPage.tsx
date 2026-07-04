@@ -90,7 +90,7 @@ export function SettingsPage() {
   function handleOrgSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!orgName.trim()) return;
-    void updateOrg.mutateAsync({ name: orgName.trim(), navSlots });
+    void updateOrg.mutateAsync({ name: orgName.trim(), navSlots: navSlotsLocal });
   }
 
   function handleNavSlotChange(index: number, value: NavSlotKey) {

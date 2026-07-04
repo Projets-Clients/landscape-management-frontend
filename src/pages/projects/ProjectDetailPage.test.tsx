@@ -79,6 +79,7 @@ const USER_FOREMAN: User = {
   role: 'FOREMAN',
   customRoleId: null,
   active: true,
+  navSlots: [],
   language: 'fr',
   theme: 'light',
   accentColor: '#000',
