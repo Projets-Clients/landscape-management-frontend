@@ -271,6 +271,7 @@
     "password_min_error": "La password deve contenere almeno 8 caratteri",
     "role_employee": "Dipendente",
     "role_foreman": "Caposquadra",
+    "role_member": "Membro",
     "role_admin": "Amministratore",
     "tab_membres": "Membri",
     "tab_roles": "Ruoli",

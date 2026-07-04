@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
+import { CanRoute } from './CanRoute'
 import { AppShell } from '@/components/layout/AppShell'
 import { ScrollLayout } from '@/components/layout/ScrollLayout'
 import { LoginPage } from '@/pages/auth/LoginPage'
@@ -37,9 +38,14 @@ export const router = createBrowserRouter([
           // Pages with sticky header (manage their own scroll)
           { path: 'chantiers', element: <ProjectsPage /> },
           {
-            element: <RoleRoute allowed={['ADMIN']} />,
+            element: <CanRoute module="clients" action="read" />,
             children: [
               { path: 'clients', element: <ClientsPage /> },
+            ],
+          },
+          {
+            element: <CanRoute module="prestations" action="read" />,
+            children: [
               { path: 'prestations', element: <ServicesPage /> },
             ],
           },
@@ -53,12 +59,22 @@ export const router = createBrowserRouter([
               { path: 'chantiers/:id/rapport', element: <ReportPage /> },
               { path: 'parametres', element: <SettingsPage /> },
               {
-                element: <RoleRoute allowed={['ADMIN']} />,
+                element: <CanRoute module="chantiers" action="create" />,
                 children: [
                   { path: 'chantiers/nouveau', element: <CreateProjectPage /> },
                   { path: 'chantiers/:id/modifier', element: <EditProjectPage /> },
+                ],
+              },
+              {
+                element: <CanRoute module="clients" action="read" />,
+                children: [
                   { path: 'clients/nouveau', element: <CreateClientPage /> },
                   { path: 'clients/:id', element: <ClientDetailPage /> },
+                ],
+              },
+              {
+                element: <RoleRoute allowed={['ADMIN']} />,
+                children: [
                   { path: 'utilisateurs', element: <UsersPage /> },
                 ],
               },

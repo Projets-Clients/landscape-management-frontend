@@ -271,6 +271,7 @@
     "password_min_error": "Password must be at least 8 characters",
     "role_employee": "Employee",
     "role_foreman": "Team leader",
+    "role_member": "Member",
     "role_admin": "Administrator",
     "tab_membres": "Members",
     "tab_roles": "Roles",
