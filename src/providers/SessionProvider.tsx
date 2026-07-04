@@ -31,6 +31,7 @@ export function SessionProvider() {
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const setPreferences = useAuthStore((s) => s.setPreferences)
   const setPermissions = useAuthStore((s) => s.setPermissions)
+  const setNavSlots = useAuthStore((s) => s.setNavSlots)
   const { setTheme, setColor } = useTheme()
   const { i18n } = useTranslation()
 
@@ -44,7 +45,7 @@ export function SessionProvider() {
           })
           if (res.ok) {
             const me = (await res.json()) as {
-              language: string; theme: string; accentColor: string
+              language: string; theme: string; accentColor: string; navSlots: string[]
               customRole?: { permissions: Record<string, string[]> } | null
             }
             setPreferences(me.language, me.theme, me.accentColor)
@@ -53,6 +54,7 @@ export function SessionProvider() {
             localStorage.setItem('landscape-lang', me.language)
             void i18n.changeLanguage(me.language)
             setPermissions(me.customRole?.permissions as never ?? null)
+            setNavSlots(me.navSlots ?? [])
           }
         } catch {
           // ignore — local preferences remain active
@@ -62,7 +64,7 @@ export function SessionProvider() {
       }
       setReady(true)
     })
-  }, [setAuth, clearAuth, setTheme, setColor, i18n, setPreferences])
+  }, [setAuth, clearAuth, setTheme, setColor, i18n, setPreferences, setNavSlots])
 
   if (!ready) {
     return (

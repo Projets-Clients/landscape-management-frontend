@@ -9,6 +9,7 @@ interface UpdateMePayload {
   language?: string
   theme?: string
   accentColor?: string
+  navSlots?: string[]
 }
 
 interface UpdateMeResponse {

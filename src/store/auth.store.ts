@@ -12,10 +12,12 @@ interface AuthState {
   language: string
   theme: string
   accentColor: string
+  navSlots: string[]
   permissions: Permissions | null
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
   setPreferences: (language: string, theme: string, accentColor: string) => void
   setPermissions: (permissions: Permissions | null) => void
+  setNavSlots: (navSlots: string[]) => void
   clearAuth: () => void
 }
 
@@ -42,6 +44,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   language: 'fr',
   theme: 'system',
   accentColor: 'green',
+  navSlots: [],
   permissions: null,
 
   setAuth: (accessToken, username, refreshToken) => {
@@ -65,10 +68,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ permissions })
   },
 
+  setNavSlots: (navSlots) => {
+    set({ navSlots })
+  },
+
   clearAuth: () => {
     sessionStorage.removeItem('username')
     localStorage.removeItem(REFRESH_TOKEN_KEY)
-    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null, permissions: null })
+    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null, permissions: null, navSlots: [] })
   },
 }))
 

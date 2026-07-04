@@ -6,8 +6,11 @@ import {
   Download,
   LayoutDashboard,
   LogOut,
+  Minus,
   Monitor,
   Moon,
+  Plus,
+  RotateCcw,
   Settings as SettingsIcon,
   Sun,
   User,
@@ -30,6 +33,7 @@ import {
 } from "@/hooks/use-organization";
 import {
   NAV_SLOT_REGISTRY,
+  SLOT_TO_PERM_MODULE,
   DEFAULT_NAV_SLOTS,
   ALL_SLOT_KEYS,
   type NavSlotKey,
@@ -42,7 +46,9 @@ export function SettingsPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { username, role, userId, clearAuth } = useAuthStore();
-  const { isAdmin } = usePermissions();
+  const setNavSlots = useAuthStore((s) => s.setNavSlots);
+  const storeNavSlots = useAuthStore((s) => s.navSlots);
+  const { isAdmin, can } = usePermissions();
   const { theme, setTheme, color, setColor } = useTheme();
   const { isInstalled, isMobile } = usePwaInstall();
   const [installOpen, setInstallOpen] = useState(false);
@@ -72,12 +78,12 @@ export function SettingsPage() {
   const { data: org, isLoading: orgLoading } = useOrganization();
   const updateOrg = useUpdateOrganization();
   const [orgName, setOrgName] = useState("");
-  const [navSlots, setNavSlots] = useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS);
+  const [navSlotsLocal, setNavSlotsLocal] = useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS);
 
   useEffect(() => {
     if (org) {
       setOrgName(org.name);
-      setNavSlots((org.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS);
+      setNavSlotsLocal((org.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS);
     }
   }, [org]);
 
@@ -88,7 +94,62 @@ export function SettingsPage() {
   }
 
   function handleNavSlotChange(index: number, value: NavSlotKey) {
-    setNavSlots((prev) => prev.map((s, i) => (i === index ? value : s)));
+    setNavSlotsLocal((prev) => prev.map((s, i) => (i === index ? value : s)));
+  }
+
+  // User nav slots (MEMBER only)
+  const accessibleSlots = ALL_SLOT_KEYS.filter((key) => can(SLOT_TO_PERM_MODULE[key], "read"));
+  const [userNav, setUserNav] = useState<NavSlotKey[]>([]);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [navSaving, setNavSaving] = useState(false);
+
+  useEffect(() => {
+    setUserNav(storeNavSlots as NavSlotKey[]);
+  }, [storeNavSlots]);
+
+  function handleUserSlotChange(index: number, value: NavSlotKey) {
+    setUserNav((prev) => prev.map((s, i) => (i === index ? value : s)));
+  }
+
+  function handleAddSlot() {
+    const available = accessibleSlots.filter((k) => !userNav.includes(k));
+    if (available.length > 0 && userNav.length < 3) {
+      setUserNav((prev) => [...prev, available[0]]);
+    }
+  }
+
+  function handleRemoveSlot(index: number) {
+    setUserNav((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleSaveUserNav() {
+    setNavSaving(true);
+    try {
+      await updateMe.mutateAsync({ navSlots: userNav });
+      setNavSlots(userNav);
+      toast.success(t("settings.nav_updated"));
+    } catch {
+      toast.error(t("settings.save"));
+    } finally {
+      setNavSaving(false);
+    }
+  }
+
+  async function handleResetUserNav() {
+    const orgDefaults = (org?.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS;
+    const reset = orgDefaults.filter((k) => accessibleSlots.includes(k));
+    setShowResetConfirm(false);
+    setNavSaving(true);
+    try {
+      await updateMe.mutateAsync({ navSlots: reset });
+      setUserNav(reset);
+      setNavSlots(reset);
+      toast.success(t("settings.nav_updated"));
+    } catch {
+      toast.error(t("settings.save"));
+    } finally {
+      setNavSaving(false);
+    }
   }
 
   function handleThemeChange(newTheme: "system" | "light" | "dark") {
@@ -260,7 +321,7 @@ export function SettingsPage() {
                     <Label className="mb-5 block">{t("settings.nav_section")}</Label>
                     {/* Mobile : 3 selects avec label flottant style MUI */}
                     <div className="lg:hidden space-y-3">
-                      {navSlots.map((slot, i) => (
+                      {navSlotsLocal.map((slot, i) => (
                         <div key={i} className="relative">
                           <span className="absolute -top-2 left-3 z-10 bg-card px-1 text-[10px] text-muted-foreground leading-none">
                             {t("settings.nav_slot", { n: i + 1 })}
@@ -276,7 +337,7 @@ export function SettingsPage() {
                             className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                           >
                             {ALL_SLOT_KEYS.filter(
-                              (key) => key === slot || !navSlots.includes(key),
+                              (key) => key === slot || !navSlotsLocal.includes(key),
                             ).map((key) => (
                               <option key={key} value={key}>
                                 {t(NAV_SLOT_REGISTRY[key].nameKey)}
@@ -295,7 +356,7 @@ export function SettingsPage() {
                             {t("nav.dashboard_short")}
                           </span>
                         </div>
-                        {navSlots.map((slot, i) => {
+                        {navSlotsLocal.map((slot, i) => {
                           const Icon = NAV_SLOT_REGISTRY[slot].icon;
                           return (
                             <div
@@ -318,7 +379,7 @@ export function SettingsPage() {
                       </div>
                       <div className="grid grid-cols-5 gap-1.5 p-2 bg-muted/40">
                         <div />
-                        {navSlots.map((slot, i) => (
+                        {navSlotsLocal.map((slot, i) => (
                           <select
                             key={i}
                             value={slot}
@@ -331,7 +392,7 @@ export function SettingsPage() {
                             className="h-7 w-auto min-w-[150px] max-w-full mx-auto block rounded-md border bg-background px-1 text-[10px] outline-none focus:ring-1 focus:ring-ring"
                           >
                             {ALL_SLOT_KEYS.filter(
-                              (key) => key === slot || !navSlots.includes(key),
+                              (key) => key === slot || !navSlotsLocal.includes(key),
                             ).map((key) => (
                               <option key={key} value={key}>
                                 {t(NAV_SLOT_REGISTRY[key].nameKey)}
@@ -351,7 +412,7 @@ export function SettingsPage() {
                       updateOrg.isPending ||
                       !orgName.trim() ||
                       (orgName.trim() === org?.name &&
-                        JSON.stringify(navSlots) ===
+                        JSON.stringify(navSlotsLocal) ===
                           JSON.stringify(org?.navSlots ?? DEFAULT_NAV_SLOTS))
                     }
                   >
@@ -361,6 +422,115 @@ export function SettingsPage() {
                     {t("settings.save")}
                   </Button>
                 </form>
+              )}
+            </Card>
+          </div>
+        )}
+
+        {/* Navigation mobile (MEMBER uniquement) */}
+        {role === "MEMBER" && (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">{t("settings.nav_section")}</p>
+            <Card className="p-4 space-y-4">
+              <p className="text-xs text-muted-foreground">{t("settings.nav_description")}</p>
+
+              {accessibleSlots.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{t("settings.nav_no_module")}</p>
+              ) : (
+                <>
+                  <div className="space-y-3">
+                    {userNav.map((slot, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <span className="absolute -top-2 left-3 z-10 bg-card px-1 text-[10px] text-muted-foreground leading-none">
+                            {t("settings.nav_slot", { n: i + 1 })}
+                          </span>
+                          <select
+                            value={slot}
+                            onChange={(e) => handleUserSlotChange(i, e.target.value as NavSlotKey)}
+                            className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                          >
+                            {accessibleSlots
+                              .filter((key) => key === slot || !userNav.includes(key))
+                              .map((key) => (
+                                <option key={key} value={key}>
+                                  {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSlot(i)}
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                          aria-label={t("settings.nav_remove_slot")}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {userNav.length < 3 && accessibleSlots.filter((k) => !userNav.includes(k)).length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleAddSlot}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+                    >
+                      <Plus className="h-4 w-4" />
+                      {t("settings.nav_add_slot")}
+                    </button>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5"
+                      onClick={() => setShowResetConfirm(true)}
+                      disabled={navSaving}
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      {t("settings.nav_reset_btn")}
+                    </Button>
+                    <Button
+                      type="button"
+                      className="flex-1 min-h-[44px]"
+                      onClick={() => void handleSaveUserNav()}
+                      disabled={navSaving || JSON.stringify(userNav) === JSON.stringify(storeNavSlots)}
+                    >
+                      {navSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("settings.save")}
+                    </Button>
+                  </div>
+
+                  {showResetConfirm && (
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 space-y-2 dark:border-orange-900 dark:bg-orange-950/30">
+                      <p className="text-sm font-medium">{t("settings.nav_reset_title")}</p>
+                      <p className="text-xs text-muted-foreground">{t("settings.nav_reset_body")}</p>
+                      <div className="flex gap-2 pt-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => setShowResetConfirm(false)}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => void handleResetUserNav()}
+                          disabled={navSaving}
+                        >
+                          {t("settings.nav_reset_confirm")}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </Card>
           </div>

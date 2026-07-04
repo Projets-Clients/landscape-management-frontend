@@ -1,6 +1,14 @@
 import { HardHat, Users, UserCog, BookOpen } from 'lucide-react'
+import type { PermModule } from '@/types/api'
 
 export type NavSlotKey = 'chantiers' | 'clients' | 'utilisateurs' | 'prestations'
+
+export const SLOT_TO_PERM_MODULE: Record<NavSlotKey, PermModule> = {
+  chantiers: 'chantiers',
+  clients: 'clients',
+  utilisateurs: 'equipe',
+  prestations: 'prestations',
+}
 
 export const DEFAULT_NAV_SLOTS: NavSlotKey[] = ['chantiers', 'clients', 'prestations']
 

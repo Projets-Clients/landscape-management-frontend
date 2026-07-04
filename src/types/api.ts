@@ -44,6 +44,7 @@ export interface User {
   role: UserRole
   customRoleId: string | null
   customRole?: Pick<Role, 'id' | 'name' | 'permissions'>
+  navSlots: string[]
   active: boolean
   language: string
   theme: string
