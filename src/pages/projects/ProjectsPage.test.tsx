@@ -184,12 +184,12 @@ describe('ProjectsPage — liste vide', () => {
 describe('ProjectsPage — useProjects', () => {
   it('est appelé avec status depuis le param URL', () => {
     renderProjects('/?status=PLANNED')
-    expect(vi.mocked(useProjects)).toHaveBeenCalledWith({ status: 'PLANNED', page: 1, limit: 20 })
+    expect(vi.mocked(useProjects)).toHaveBeenCalledWith({ status: 'PLANNED', page: 1, limit: 20, sort: 'recent' })
   })
 
   it('est appelé avec status=undefined quand pas de param', () => {
     renderProjects('/')
-    expect(vi.mocked(useProjects)).toHaveBeenCalledWith({ status: undefined, page: 1, limit: 20 })
+    expect(vi.mocked(useProjects)).toHaveBeenCalledWith({ status: undefined, page: 1, limit: 20, sort: 'recent' })
   })
 })
 

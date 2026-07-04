@@ -9,7 +9,7 @@ const EXPECTED: Record<ProjectStatus, { label: string; colorToken: string }> = {
   DRAFT:               { label: 'Brouillon',               colorToken: 'gray' },
   PLANNED:             { label: 'Planifié',                colorToken: 'blue' },
   IN_PROGRESS:         { label: 'En cours',                colorToken: 'amber' },
-  AWAITING_SIGNATURE:  { label: 'En attente de signature', colorToken: 'orange' },
+  AWAITING_SIGNATURE:  { label: 'Signature',               colorToken: 'orange' },
   COMPLETED:           { label: 'Terminé',                 colorToken: 'green' },
   DISPUTED:            { label: 'Litige',                  colorToken: 'red' },
 }
