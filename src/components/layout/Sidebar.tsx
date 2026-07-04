@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import { useOrganization } from "@/hooks/use-organization";
+import { usePermissions } from "@/hooks/use-permissions";
 import type { UserRole } from "@/types/api";
 
 interface NavItem {
@@ -19,14 +20,24 @@ interface NavItem {
   icon: React.ElementType;
   labelKey: string;
   end?: boolean;
+  permModule?: string;
+  permAction?: string;
 }
 
-const FULL_NAV: NavItem[] = [
+const ADMIN_NAV: NavItem[] = [
   { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
   { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
   { to: "/clients", icon: Users, labelKey: "nav.clients" },
   { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team" },
   { to: "/prestations", icon: BookOpen, labelKey: "nav.services" },
+  { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
+];
+
+const MEMBER_NAV: NavItem[] = [
+  { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
+  { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+  { to: "/clients", icon: Users, labelKey: "nav.clients", permModule: "clients", permAction: "read" },
+  { to: "/prestations", icon: BookOpen, labelKey: "nav.services", permModule: "prestations", permAction: "read" },
   { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
 ];
 
@@ -37,8 +48,8 @@ const BASIC_NAV: NavItem[] = [
 ];
 
 const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  ADMIN: FULL_NAV,
-  MEMBER: FULL_NAV,
+  ADMIN: ADMIN_NAV,
+  MEMBER: MEMBER_NAV,
   FOREMAN: BASIC_NAV,
   EMPLOYEE: BASIC_NAV,
 };
@@ -50,7 +61,13 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const role = useAuthStore((s) => s.role);
   const { t } = useTranslation();
-  const items = role ? NAV_BY_ROLE[role] : [];
+  const { can } = usePermissions();
+  const rawItems = role ? NAV_BY_ROLE[role] : [];
+  const items = rawItems.filter((item) =>
+    item.permModule && item.permAction
+      ? can(item.permModule as never, item.permAction as never)
+      : true,
+  );
   const { data: org } = useOrganization();
 
   return (
