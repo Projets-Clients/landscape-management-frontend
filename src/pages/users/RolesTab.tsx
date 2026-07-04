@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
+import { ApiError } from '@/lib/api-client'
 import { Trash2, ChevronDown, ChevronUp, Loader2, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -201,8 +202,9 @@ function CreateRoleForm({ onClose }: { onClose: () => void }) {
       await createRole.mutateAsync({ name: name.trim(), permissions })
       toast.success(t('users.role_created'))
       onClose()
-    } catch {
-      toast.error(t('users.role_create_error'))
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : t('users.role_create_error')
+      toast.error(msg)
     }
   }
 
