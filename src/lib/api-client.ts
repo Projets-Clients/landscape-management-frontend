@@ -46,7 +46,7 @@ async function doRefresh(): Promise<string | null> {
   const { setAuth, clearAuth } = useAuthStore.getState()
   let newAccessToken: string | null = null
 
-  if (result && result !== false) {
+  if (result !== null && result !== false) {
     const username = sessionStorage.getItem('username') ?? ''
     setAuth(result.accessToken, username, result.refreshToken)
     newAccessToken = result.accessToken
