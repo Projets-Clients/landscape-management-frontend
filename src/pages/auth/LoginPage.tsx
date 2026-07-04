@@ -8,12 +8,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { apiRequest, ApiError } from '@/lib/api-client'
 import { useAuthStore } from '@/store/auth.store'
+import { useTheme } from '@/providers/ThemeProvider'
+import type { ColorKey } from '@/providers/ThemeProvider'
 import type { LoginResponse } from '@/types/api'
+
+const API_URL = import.meta.env.VITE_API_URL
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const setAuth = useAuthStore((s) => s.setAuth)
+  const setPreferences = useAuthStore((s) => s.setPreferences)
+  const setPermissions = useAuthStore((s) => s.setPermissions)
+  const setNavSlots = useAuthStore((s) => s.setNavSlots)
+  const { setTheme, setColor } = useTheme()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -29,6 +37,29 @@ export function LoginPage() {
         body: JSON.stringify({ username: username.trim(), password }),
       })
       setAuth(data.accessToken, username.trim(), data.refreshToken)
+
+      // Applique immédiatement les préférences du compte qui vient de se connecter
+      try {
+        const res = await fetch(`${API_URL}/users/me`, {
+          headers: { Authorization: `Bearer ${data.accessToken}` },
+        })
+        if (res.ok) {
+          const me = (await res.json()) as {
+            language: string; theme: string; accentColor: string; navSlots: string[]
+            customRole?: { permissions: Record<string, string[]> } | null
+          }
+          setPreferences(me.language, me.theme, me.accentColor)
+          setTheme(me.theme as 'system' | 'light' | 'dark')
+          setColor(me.accentColor as ColorKey)
+          localStorage.setItem('landscape-lang', me.language)
+          void i18n.changeLanguage(me.language)
+          setPermissions(me.customRole?.permissions as never ?? null)
+          setNavSlots(me.navSlots ?? [])
+        }
+      } catch {
+        // ignore — les préférences par défaut restent actives
+      }
+
       void navigate('/', { replace: true })
     } catch (err) {
       const msg =
