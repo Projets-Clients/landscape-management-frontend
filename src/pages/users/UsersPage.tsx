@@ -63,6 +63,7 @@ function UserRow({ user }: { user: User }) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [form, setForm] = useState({
+    username: user.username,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email ?? '',
@@ -83,6 +84,7 @@ function UserRow({ user }: { user: User }) {
     }
     try {
       await update.mutateAsync({
+        username: form.username.trim(),
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         email: form.email.trim() || undefined,
@@ -156,6 +158,18 @@ function UserRow({ user }: { user: User }) {
                 disabled={update.isPending}
               />
             </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t('common.identifier')}</Label>
+            <Input
+              className="min-h-[44px]"
+              autoCapitalize="none"
+              autoComplete="off"
+              value={form.username}
+              onChange={(e) => setField('username', e.target.value)}
+              disabled={update.isPending}
+              required
+            />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">{t('common.email')}</Label>

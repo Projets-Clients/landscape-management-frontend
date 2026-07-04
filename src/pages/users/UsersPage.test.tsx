@@ -212,9 +212,26 @@ describe('UsersPage — expansion d\'un utilisateur', () => {
   it('cliquer sur un utilisateur ouvre le formulaire d\'édition', async () => {
     render(<UsersPage />)
     await userEvent.click(screen.getByText('Jean Dupont'))
-    // Les Label n'ont pas de htmlFor — on vérifie par valeur ou par texte label visible
-    expect(screen.getByDisplayValue('Jean')).toBeInTheDocument()  // prénom
-    expect(screen.getByDisplayValue('Dupont')).toBeInTheDocument() // nom
+    expect(screen.getByDisplayValue('Jean')).toBeInTheDocument()         // prénom
+    expect(screen.getByDisplayValue('Dupont')).toBeInTheDocument()       // nom
+    expect(screen.getByDisplayValue('jean.dupont')).toBeInTheDocument()  // username
+  })
+
+  it('le formulaire d\'édition contient le champ identifiant pré-rempli', async () => {
+    render(<UsersPage />)
+    await userEvent.click(screen.getByText('Jean Dupont'))
+    expect(screen.getByDisplayValue('jean.dupont')).toBeInTheDocument()
+  })
+
+  it('enregistrer inclut le username dans la mutation', async () => {
+    const mutateAsync = vi.fn().mockResolvedValue({})
+    vi.mocked(useUpdateUser).mockReturnValue({ mutateAsync, isPending: false } as never)
+    render(<UsersPage />)
+    await userEvent.click(screen.getByText('Jean Dupont'))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    expect(mutateAsync).toHaveBeenCalledWith(
+      expect.objectContaining({ username: 'jean.dupont' }),
+    )
   })
 
   it('affiche le bouton Enregistrer dans le panneau ouvert', async () => {

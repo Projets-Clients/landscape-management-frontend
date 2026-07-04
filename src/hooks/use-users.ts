@@ -33,6 +33,7 @@ export function useCreateUser() {
 }
 
 interface UpdateUserInput {
+  username?: string
   firstName?: string
   lastName?: string
   password?: string
