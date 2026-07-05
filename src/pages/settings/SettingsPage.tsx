@@ -489,7 +489,8 @@ export function SettingsPage() {
                 </p>
               ) : (
                 <>
-                  <div className="space-y-3">
+                  {/* Mobile */}
+                  <div className="lg:hidden space-y-3">
                     {userNav.map((slot, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <div className="relative flex-1">
@@ -499,17 +500,12 @@ export function SettingsPage() {
                           <select
                             value={slot}
                             onChange={(e) =>
-                              handleUserSlotChange(
-                                i,
-                                e.target.value as NavSlotKey,
-                              )
+                              handleUserSlotChange(i, e.target.value as NavSlotKey)
                             }
                             className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                           >
                             {accessibleSlots
-                              .filter(
-                                (key) => key === slot || !userNav.includes(key),
-                              )
+                              .filter((key) => key === slot || !userNav.includes(key))
                               .map((key) => (
                                 <option key={key} value={key}>
                                   {t(NAV_SLOT_REGISTRY[key].nameKey)}
@@ -527,20 +523,83 @@ export function SettingsPage() {
                         </button>
                       </div>
                     ))}
+                    {userNav.length < 4 &&
+                      accessibleSlots.filter((k) => !userNav.includes(k)).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleAddSlot}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+                        >
+                          <Plus className="h-4 w-4" />
+                          {t("settings.nav_add_slot")}
+                        </button>
+                      )}
                   </div>
 
-                  {userNav.length < 4 &&
-                    accessibleSlots.filter((k) => !userNav.includes(k)).length >
-                      0 && (
-                      <button
-                        type="button"
-                        onClick={handleAddSlot}
-                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
-                      >
-                        <Plus className="h-4 w-4" />
-                        {t("settings.nav_add_slot")}
-                      </button>
-                    )}
+                  {/* Desktop : simulation de la barre de nav */}
+                  <div className="hidden lg:block rounded-xl border overflow-hidden">
+                    <div
+                      className="bg-background border-b"
+                      style={{ display: 'grid', gridTemplateColumns: `repeat(${userNav.length + 1}, 1fr)` }}
+                    >
+                      <div className="flex flex-col items-center gap-0.5 py-2 opacity-35">
+                        <LayoutDashboard className="h-5 w-5" />
+                        <span className="text-[10px]">{t("nav.dashboard_short")}</span>
+                      </div>
+                      {userNav.map((slot, i) => {
+                        const Icon = NAV_SLOT_REGISTRY[slot].icon;
+                        return (
+                          <div key={i} className="flex flex-col items-center gap-0.5 py-2 text-primary">
+                            <Icon className="h-5 w-5" />
+                            <span className="text-[10px] font-medium">
+                              {t(NAV_SLOT_REGISTRY[slot].labelKey)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div
+                      className="gap-1.5 p-2 bg-muted/40"
+                      style={{ display: 'grid', gridTemplateColumns: `repeat(${userNav.length + 1}, 1fr)` }}
+                    >
+                      <div className="flex items-center justify-center">
+                        {userNav.length < 4 &&
+                          accessibleSlots.filter((k) => !userNav.includes(k)).length > 0 && (
+                            <button
+                              type="button"
+                              onClick={handleAddSlot}
+                              className="flex h-7 w-7 items-center justify-center rounded-md border border-dashed text-muted-foreground transition-colors hover:bg-muted"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          )}
+                      </div>
+                      {userNav.map((slot, i) => (
+                        <div key={i} className="flex flex-col items-center gap-1">
+                          <select
+                            value={slot}
+                            onChange={(e) => handleUserSlotChange(i, e.target.value as NavSlotKey)}
+                            className="h-7 w-auto min-w-[120px] max-w-full mx-auto block rounded-md border bg-background px-1 text-[10px] outline-none focus:ring-1 focus:ring-ring"
+                          >
+                            {accessibleSlots
+                              .filter((key) => key === slot || !userNav.includes(key))
+                              .map((key) => (
+                                <option key={key} value={key}>
+                                  {t(NAV_SLOT_REGISTRY[key].nameKey)}
+                                </option>
+                              ))}
+                          </select>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSlot(i)}
+                            className="text-[10px] text-muted-foreground hover:text-destructive"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
                   <div className="flex gap-2 min-h-[44px]">
                     <Button
