@@ -133,8 +133,8 @@ describe('ClientsPage — bouton Nouveau', () => {
     expect(screen.queryByRole('button', { name: 'Nouveau' })).not.toBeInTheDocument()
   })
 
-  it('absent pour FOREMAN', () => {
-    useAuthStore.setState({ role: 'FOREMAN', permissions: null, accessToken: 'tok', username: 'f', userId: 'u3' })
+  it('absent pour MEMBER sans permission clients:create', () => {
+    useAuthStore.setState({ role: 'MEMBER', permissions: { chantiers: [], clients: [], equipe: [], prestations: [] }, accessToken: 'tok', username: 'f', userId: 'u3' })
     renderClients()
     expect(screen.queryByRole('button', { name: 'Nouveau' })).not.toBeInTheDocument()
   })

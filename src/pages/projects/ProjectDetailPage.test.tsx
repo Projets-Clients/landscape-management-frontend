@@ -76,7 +76,7 @@ const USER_FOREMAN: User = {
   email: null,
   firstName: 'Jean',
   lastName: 'Dupont',
-  role: 'FOREMAN',
+  role: 'MEMBER',
   customRoleId: null,
   active: true,
   navSlots: [],
@@ -290,7 +290,7 @@ describe('ProjectDetailPage — équipe (RBAC)', () => {
     vi.mocked(useProject).mockReturnValue({
       data: {
         ...PROJECT_DRAFT,
-        assignments: [{ userId: 'u-foreman', user: { id: 'u-foreman', firstName: 'Jean', lastName: 'Dupont', role: 'FOREMAN' } }],
+        assignments: [{ userId: 'u-foreman', user: { id: 'u-foreman', firstName: 'Jean', lastName: 'Dupont', role: 'MEMBER' } }],
       },
       isLoading: false,
     } as any)
@@ -310,7 +310,7 @@ describe('ProjectDetailPage — équipe (RBAC)', () => {
     vi.mocked(useProject).mockReturnValue({
       data: {
         ...PROJECT_DRAFT,
-        assignments: [{ userId: 'u-foreman', user: { id: 'u-foreman', firstName: 'Jean', lastName: 'Dupont', role: 'FOREMAN' } }],
+        assignments: [{ userId: 'u-foreman', user: { id: 'u-foreman', firstName: 'Jean', lastName: 'Dupont', role: 'MEMBER' } }],
       },
       isLoading: false,
     } as any)

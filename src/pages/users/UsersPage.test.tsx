@@ -33,7 +33,7 @@ const USER_ACTIVE: User = {
   email: 'jean@test.com',
   firstName: 'Jean',
   lastName: 'Dupont',
-  role: 'FOREMAN',
+  role: 'MEMBER',
   customRoleId: null,
   active: true,
   navSlots: [],

@@ -73,6 +73,7 @@ export interface ProjectAssignment {
     firstName: string
     lastName: string
     role: UserRole
+    customRole?: { name: string } | null
   }
 }
 

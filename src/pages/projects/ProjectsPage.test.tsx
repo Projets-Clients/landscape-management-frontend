@@ -101,14 +101,8 @@ describe('ProjectsPage — bouton Nouveau', () => {
     expect(screen.getByRole('button', { name: /nouveau/i })).toBeInTheDocument()
   })
 
-  it('absent pour FOREMAN', () => {
-    useAuthStore.setState({ accessToken: 'tok', username: 'f', role: 'FOREMAN', userId: 'u2' })
-    renderProjects()
-    expect(screen.queryByRole('button', { name: /nouveau/i })).not.toBeInTheDocument()
-  })
-
-  it('absent pour EMPLOYEE', () => {
-    useAuthStore.setState({ accessToken: 'tok', username: 'e', role: 'EMPLOYEE', userId: 'u3' })
+  it('absent pour MEMBER sans permission create', () => {
+    useAuthStore.setState({ accessToken: 'tok', username: 'f', role: 'MEMBER', userId: 'u2', permissions: { chantiers: [], clients: [], equipe: [], prestations: [] } })
     renderProjects()
     expect(screen.queryByRole('button', { name: /nouveau/i })).not.toBeInTheDocument()
   })
