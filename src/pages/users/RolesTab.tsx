@@ -88,7 +88,7 @@ function PermissionMatrix({
   )
 }
 
-function RoleRow({ role }: { role: Role }) {
+function RoleRow({ role, isAdmin }: { role: Role; isAdmin: boolean }) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [name, setName] = useState(role.name)
@@ -123,8 +123,8 @@ function RoleRow({ role }: { role: Role }) {
   return (
     <div>
       <button
-        onClick={() => setExpanded((v) => !v)}
-        className="flex min-h-[56px] w-full items-center gap-3 p-4 text-left transition-colors active:bg-muted"
+        onClick={() => isAdmin && setExpanded((v) => !v)}
+        className={['flex min-h-[56px] w-full items-center gap-3 p-4 text-left transition-colors', isAdmin ? 'active:bg-muted' : 'cursor-default'].join(' ')}
       >
         <ShieldCheck className="h-4 w-4 shrink-0 text-muted-foreground" />
         <div className="min-w-0 flex-1">
@@ -133,11 +133,11 @@ function RoleRow({ role }: { role: Role }) {
             {t('users.role_users_count', { count: role._count?.users ?? 0 })}
           </p>
         </div>
-        {expanded ? (
+        {isAdmin && (expanded ? (
           <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" />
         ) : (
           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-        )}
+        ))}
       </button>
 
       {expanded && (
@@ -246,13 +246,13 @@ function CreateRoleForm({ onClose }: { onClose: () => void }) {
   )
 }
 
-export function RolesTab({ showCreate, onCloseCreate }: { showCreate: boolean; onCloseCreate: () => void }) {
+export function RolesTab({ showCreate, onCloseCreate, isAdmin }: { showCreate: boolean; onCloseCreate: () => void; isAdmin: boolean }) {
   const { t } = useTranslation()
   const { data: roles, isLoading } = useRoles()
 
   return (
     <div className="space-y-4">
-      {showCreate && <CreateRoleForm onClose={onCloseCreate} />}
+      {showCreate && isAdmin && <CreateRoleForm onClose={onCloseCreate} />}
 
       {isLoading && (
         <div className="space-y-2">
@@ -266,7 +266,7 @@ export function RolesTab({ showCreate, onCloseCreate }: { showCreate: boolean; o
 
       {roles && roles.length > 0 && (
         <div className="overflow-hidden rounded-xl border bg-card divide-y">
-          {roles.map((role) => <RoleRow key={role.id} role={role} />)}
+          {roles.map((role) => <RoleRow key={role.id} role={role} isAdmin={isAdmin} />)}
         </div>
       )}
     </div>

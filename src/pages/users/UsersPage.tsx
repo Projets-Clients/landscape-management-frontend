@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { Avatar } from '@/components/common/Avatar'
 import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
 import { useRoles } from '@/hooks/use-roles'
+import { usePermissions } from '@/hooks/use-permissions'
 import { fullName } from '@/lib/utils'
 import { RolesTab } from './RolesTab'
 import type { User, UserRole } from '@/types/api'
@@ -59,7 +60,7 @@ function RoleSelect({
   )
 }
 
-function UserRow({ user }: { user: User }) {
+function UserRow({ user, canUpdate }: { user: User; canUpdate: boolean }) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [form, setForm] = useState({
@@ -113,8 +114,8 @@ function UserRow({ user }: { user: User }) {
   return (
     <div className="divide-y last:divide-y-0">
       <button
-        onClick={() => setExpanded((v) => !v)}
-        className="flex min-h-[64px] w-full items-center gap-3 p-4 text-left transition-colors active:bg-muted"
+        onClick={() => canUpdate && setExpanded((v) => !v)}
+        className={['flex min-h-[64px] w-full items-center gap-3 p-4 text-left transition-colors', canUpdate ? 'active:bg-muted' : 'cursor-default'].join(' ')}
       >
         <Avatar id={user.id} firstName={user.firstName} lastName={user.lastName} />
         <div className="min-w-0 flex-1">
@@ -130,11 +131,11 @@ function UserRow({ user }: { user: User }) {
             {roleLabel} · @{user.username}
           </p>
         </div>
-        {expanded ? (
+        {canUpdate && (expanded ? (
           <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" />
         ) : (
           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-        )}
+        ))}
       </button>
 
       {expanded && (
@@ -315,9 +316,13 @@ type Tab = 'membres' | 'roles'
 
 export function UsersPage() {
   const { t } = useTranslation()
+  const { can, isAdmin } = usePermissions()
   const { data: users, isLoading } = useUsers()
   const [showCreate, setShowCreate] = useState(false)
   const [tab, setTab] = useState<Tab>('membres')
+
+  const canCreate = isAdmin || can('equipe', 'create')
+  const canUpdate = isAdmin || can('equipe', 'update')
 
   const active = users?.filter((u) => u.active) ?? []
   const inactive = users?.filter((u) => !u.active) ?? []
@@ -326,10 +331,12 @@ export function UsersPage() {
     <div className="flex flex-col space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t('users.title')}</h1>
-        <Button size="sm" className="min-h-[44px]" onClick={() => setShowCreate((v) => !v)}>
-          <Plus className="mr-1 h-4 w-4" />
-          {t('common.new')}
-        </Button>
+        {canCreate && (
+          <Button size="sm" className="min-h-[44px]" onClick={() => setShowCreate((v) => !v)}>
+            <Plus className="mr-1 h-4 w-4" />
+            {t('common.new')}
+          </Button>
+        )}
       </div>
 
       {/* Onglets */}
@@ -363,7 +370,7 @@ export function UsersPage() {
           )}
           {active.length > 0 && (
             <div className="overflow-hidden rounded-xl border bg-card">
-              {active.map((user) => <UserRow key={user.id} user={user} />)}
+              {active.map((user) => <UserRow key={user.id} user={user} canUpdate={canUpdate} />)}
             </div>
           )}
           {inactive.length > 0 && (
@@ -372,14 +379,14 @@ export function UsersPage() {
                 {t('users.inactive_accounts')}
               </p>
               <div className="overflow-hidden rounded-xl border bg-card opacity-60">
-                {inactive.map((user) => <UserRow key={user.id} user={user} />)}
+                {inactive.map((user) => <UserRow key={user.id} user={user} canUpdate={canUpdate} />)}
               </div>
             </div>
           )}
         </>
       )}
 
-      {tab === 'roles' && <RolesTab showCreate={showCreate} onCloseCreate={() => setShowCreate(false)} />}
+      {tab === 'roles' && <RolesTab showCreate={showCreate && isAdmin} onCloseCreate={() => setShowCreate(false)} isAdmin={isAdmin} />}
     </div>
   )
 }
