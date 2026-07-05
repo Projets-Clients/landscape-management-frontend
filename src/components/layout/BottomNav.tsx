@@ -8,7 +8,6 @@ import { usePermissions } from "@/hooks/use-permissions";
 import {
   NAV_SLOT_REGISTRY,
   SLOT_TO_PERM_MODULE,
-  DEFAULT_NAV_SLOTS,
   type NavSlotKey,
 } from "@/lib/nav-slots";
 
@@ -70,14 +69,9 @@ function AdminBottomNav({ className }: { className?: string }) {
 
 function MemberBottomNav({ className }: { className?: string }) {
   const userNavSlots = useAuthStore((s) => s.navSlots);
-  const { data: org } = useOrganization();
   const { can } = usePermissions();
 
-  const rawSlots = userNavSlots.length > 0
-    ? (userNavSlots as NavSlotKey[])
-    : ((org?.navSlots ?? DEFAULT_NAV_SLOTS) as NavSlotKey[]);
-
-  const middleItems: NavItem[] = rawSlots
+  const middleItems: NavItem[] = (userNavSlots as NavSlotKey[])
     .filter((key) => NAV_SLOT_REGISTRY[key as NavSlotKey] && can(SLOT_TO_PERM_MODULE[key as NavSlotKey], "read"))
     .map((key) => {
       const { to, icon, labelKey } = NAV_SLOT_REGISTRY[key as NavSlotKey];
