@@ -47,7 +47,7 @@ function ProjectCard({ project, onClick }: { project: Project; onClick: () => vo
       </div>
       <div className="flex items-center justify-between gap-2">
         <p className="truncate text-xs text-muted-foreground">{project.address}</p>
-        <StatusBadge status={project.status} />
+        <span className="shrink-0"><StatusBadge status={project.status} /></span>
       </div>
     </button>
   )
