@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   HardHat,
@@ -7,12 +7,14 @@ import {
   Leaf,
   Settings,
   BookOpen,
+  LogOut,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import { useOrganization } from "@/hooks/use-organization";
 import { usePermissions } from "@/hooks/use-permissions";
+import { apiRequest } from "@/lib/api-client";
 
 interface NavItem {
   to: string;
@@ -47,9 +49,11 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const role = useAuthStore((s) => s.role);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   const { t } = useTranslation();
   const { can } = usePermissions();
   const { data: org } = useOrganization();
+  const navigate = useNavigate();
 
   const rawItems = role === "ADMIN" ? ADMIN_NAV : MEMBER_NAV;
   const items = rawItems.filter((item) =>
@@ -58,8 +62,18 @@ export function Sidebar({ className }: SidebarProps) {
       : true,
   );
 
+  async function handleLogout() {
+    try {
+      await apiRequest('/auth/logout', { method: 'POST' })
+    } catch {
+      // ignore
+    }
+    clearAuth()
+    navigate('/login')
+  }
+
   return (
-    <aside className={cn("w-60 flex-col border-r bg-card", className)}>
+    <aside className={cn("flex w-60 flex-col border-r bg-card", className)}>
       <div className="flex h-14 items-center gap-2 border-b px-4">
         <Leaf className="h-5 w-5 text-primary shrink-0" />
         <div className="min-w-0">
@@ -73,7 +87,7 @@ export function Sidebar({ className }: SidebarProps) {
           )}
         </div>
       </div>
-      <nav className="flex flex-col gap-0.5 p-2">
+      <nav className="flex flex-1 flex-col gap-0.5 p-2">
         {items.map(({ to, icon: Icon, labelKey, end }) => (
           <NavLink
             key={to}
@@ -93,6 +107,15 @@ export function Sidebar({ className }: SidebarProps) {
           </NavLink>
         ))}
       </nav>
+      <div className="border-t p-2">
+        <button
+          onClick={() => void handleLogout()}
+          className="flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {t('settings.logout')}
+        </button>
+      </div>
     </aside>
   );
 }

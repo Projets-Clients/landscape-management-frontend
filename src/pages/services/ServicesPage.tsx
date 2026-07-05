@@ -17,6 +17,7 @@ import {
   useSeedServices,
 } from "@/hooks/use-services";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useAuthStore } from "@/store/auth.store";
 import type { Service } from "@/types/api";
 
 interface ServiceFormData {
@@ -188,6 +189,7 @@ function ServiceCard({
 export function ServicesPage() {
   const { t } = useTranslation();
   const { can } = usePermissions();
+  const isAdmin = useAuthStore((s) => s.role === 'ADMIN');
   const { data: services, isLoading } = useServices();
   const createService = useCreateService();
   const updateService = useUpdateService();
@@ -384,17 +386,19 @@ export function ServicesPage() {
             <p className="text-sm text-muted-foreground">
               {t("services.empty_desc")}
             </p>
-            <Button
-              variant="outline"
-              className="min-h-[44px] w-full"
-              onClick={() => void handleSeed()}
-              disabled={seedServices.isPending}
-            >
-              {seedServices.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              {t("services.seed_btn")}
-            </Button>
+            {isAdmin && (
+              <Button
+                variant="outline"
+                className="min-h-[44px] w-full"
+                onClick={() => void handleSeed()}
+                disabled={seedServices.isPending}
+              >
+                {seedServices.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {t("services.seed_btn")}
+              </Button>
+            )}
           </div>
         ) : visibleServices.length === 0 ? (
           <p className="text-sm text-muted-foreground py-2">
