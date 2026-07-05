@@ -61,14 +61,24 @@ export const router = createBrowserRouter([
                 element: <CanRoute module="chantiers" action="create" />,
                 children: [
                   { path: 'chantiers/nouveau', element: <CreateProjectPage /> },
+                ],
+              },
+              {
+                element: <CanRoute module="chantiers" action="update" />,
+                children: [
                   { path: 'chantiers/:id/modifier', element: <EditProjectPage /> },
                 ],
               },
               {
                 element: <CanRoute module="clients" action="read" />,
                 children: [
-                  { path: 'clients/nouveau', element: <CreateClientPage /> },
                   { path: 'clients/:id', element: <ClientDetailPage /> },
+                ],
+              },
+              {
+                element: <CanRoute module="clients" action="create" />,
+                children: [
+                  { path: 'clients/nouveau', element: <CreateClientPage /> },
                 ],
               },
               {
