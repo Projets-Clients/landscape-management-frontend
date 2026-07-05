@@ -73,7 +73,7 @@ export const router = createBrowserRouter([
                 ],
               },
               {
-                element: <RoleRoute allowed={['ADMIN']} />,
+                element: <CanRoute module="equipe" action="read" />,
                 children: [
                   { path: 'utilisateurs', element: <UsersPage /> },
                 ],
