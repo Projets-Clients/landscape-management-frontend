@@ -70,8 +70,8 @@ const PROJECT_DRAFT: Project & { client: { email: string }; assignments: []; sig
   updatedAt: '2026-01-01T00:00:00Z',
 }
 
-const USER_FOREMAN: User = {
-  id: 'u-foreman',
+const USER_MEMBER: User = {
+  id: 'u-member',
   username: 'jean.dupont',
   email: null,
   firstName: 'Jean',
@@ -320,7 +320,7 @@ describe('ProjectDetailPage — équipe (RBAC)', () => {
 
   it('affiche la section "Ajouter un membre" si ADMIN avec utilisateurs disponibles', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(useUsers).mockReturnValue({ data: [USER_FOREMAN] } as any)
+    vi.mocked(useUsers).mockReturnValue({ data: [USER_MEMBER] } as any)
     renderDetail()
     expect(screen.getByText('Ajouter un membre')).toBeInTheDocument()
     expect(screen.getByText('Jean Dupont')).toBeInTheDocument()
@@ -335,7 +335,7 @@ describe('ProjectDetailPage — équipe (RBAC)', () => {
       userId: 'u2',
     })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(useUsers).mockReturnValue({ data: [USER_FOREMAN] } as any)
+    vi.mocked(useUsers).mockReturnValue({ data: [USER_MEMBER] } as any)
     renderDetail()
     expect(screen.queryByText('Ajouter un membre')).not.toBeInTheDocument()
   })

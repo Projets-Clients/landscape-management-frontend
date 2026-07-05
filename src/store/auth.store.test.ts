@@ -20,10 +20,9 @@ function makeJwt(payload: Record<string, unknown>): string {
   return `${header}.${body}.fake-signature`
 }
 
-const VALID_JWT_ADMIN = makeJwt({ sub: 'user-id-001', role: 'ADMIN' })
+const VALID_JWT_ADMIN  = makeJwt({ sub: 'user-id-001', role: 'ADMIN' })
 const VALID_JWT_MEMBER = makeJwt({ sub: 'user-id-002', role: 'MEMBER', orgId: 'org-1' })
-const VALID_JWT_FOREMAN = makeJwt({ sub: 'user-id-003', role: 'FOREMAN' })
-const VALID_JWT_EMPLOYEE = makeJwt({ sub: 'user-id-004', role: 'EMPLOYEE' })
+const VALID_JWT_MEMBER2 = makeJwt({ sub: 'user-id-003', role: 'MEMBER' })
 
 // ── Reset entre chaque test ────────────────────────────────────────────────
 
@@ -56,14 +55,9 @@ describe('setAuth', () => {
     expect(useAuthStore.getState().role).toBe('ADMIN')
   })
 
-  it('décode le rôle FOREMAN depuis le JWT', () => {
-    useAuthStore.getState().setAuth(VALID_JWT_FOREMAN, 'jean.dupont')
-    expect(useAuthStore.getState().role).toBe('FOREMAN')
-  })
-
-  it('décode le rôle EMPLOYEE depuis le JWT', () => {
-    useAuthStore.getState().setAuth(VALID_JWT_EMPLOYEE, 'thomas.martin')
-    expect(useAuthStore.getState().role).toBe('EMPLOYEE')
+  it('décode le rôle MEMBER depuis le JWT', () => {
+    useAuthStore.getState().setAuth(VALID_JWT_MEMBER, 'jean.dupont')
+    expect(useAuthStore.getState().role).toBe('MEMBER')
   })
 
   it('décode le userId (sub) depuis le JWT', () => {
@@ -78,9 +72,9 @@ describe('setAuth', () => {
 
   it('met à jour le store lors d\'un second appel (re-login)', () => {
     useAuthStore.getState().setAuth(VALID_JWT_ADMIN, 'admin')
-    useAuthStore.getState().setAuth(VALID_JWT_FOREMAN, 'jean.dupont')
+    useAuthStore.getState().setAuth(VALID_JWT_MEMBER2, 'jean.dupont')
     const state = useAuthStore.getState()
-    expect(state.role).toBe('FOREMAN')
+    expect(state.role).toBe('MEMBER')
     expect(state.userId).toBe('user-id-003')
     expect(state.username).toBe('jean.dupont')
   })
@@ -143,10 +137,10 @@ describe('setAuth — décodage base64url (RFC 7515)', () => {
 
   it('gère un padding manquant (base64url sans =)', () => {
     // makeJwt retire les '=' — le décodage doit quand même fonctionner
-    const jwt = makeJwt({ sub: 'abc', role: 'EMPLOYEE' })
+    const jwt = makeJwt({ sub: 'abc', role: 'MEMBER' })
     expect(jwt.includes('=')).toBe(false)
     useAuthStore.getState().setAuth(jwt, 'user')
-    expect(useAuthStore.getState().role).toBe('EMPLOYEE')
+    expect(useAuthStore.getState().role).toBe('MEMBER')
     expect(useAuthStore.getState().userId).toBe('abc')
   })
 })
