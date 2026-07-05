@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'MEMBER' | 'FOREMAN' | 'EMPLOYEE'
+export type UserRole = 'ADMIN' | 'MEMBER'
 
 export type PermModule = 'chantiers' | 'clients' | 'equipe' | 'prestations'
 export type PermAction = 'read' | 'create' | 'update' | 'delete'

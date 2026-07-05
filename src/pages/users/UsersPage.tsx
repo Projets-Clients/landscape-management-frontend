@@ -108,13 +108,7 @@ function UserRow({ user }: { user: User }) {
     }
   }
 
-  const ROLE_LABELS: Record<string, string> = {
-    ADMIN: t('users.role_admin'),
-    FOREMAN: t('users.role_foreman'),
-    EMPLOYEE: t('users.role_employee'),
-    MEMBER: t('users.role_member'),
-  }
-  const roleLabel = user.customRole?.name ?? ROLE_LABELS[user.role] ?? user.role
+  const roleLabel = user.customRole?.name ?? (user.role === 'ADMIN' ? t('users.role_admin') : t('users.role_member'))
 
   return (
     <div className="divide-y last:divide-y-0">

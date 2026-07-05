@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, HardHat, Settings } from "lucide-react";
+import { LayoutDashboard, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
@@ -11,7 +11,6 @@ import {
   DEFAULT_NAV_SLOTS,
   type NavSlotKey,
 } from "@/lib/nav-slots";
-import type { UserRole } from "@/types/api";
 
 interface NavItem {
   to: string;
@@ -32,33 +31,10 @@ const FIXED_END: NavItem = {
   labelKey: "nav.settings",
 };
 
-const STATIC_NAV: Record<Exclude<UserRole, "ADMIN" | "MEMBER">, NavItem[]> = {
-  FOREMAN: [
-    FIXED_START,
-    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
-    FIXED_END,
-  ],
-  EMPLOYEE: [
-    FIXED_START,
-    { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
-    FIXED_END,
-  ],
-};
-
-function AdminBottomNav({ className }: { className?: string }) {
+function NavItems({ items }: { items: NavItem[] }) {
   const { t } = useTranslation();
-  const { data: org } = useOrganization();
-
-  const slots = (org?.navSlots ?? DEFAULT_NAV_SLOTS) as NavSlotKey[];
-  const middleItems: NavItem[] = slots
-    .map((key) => NAV_SLOT_REGISTRY[key])
-    .filter(Boolean)
-    .map(({ to, icon, labelKey }) => ({ to, icon, labelKey }));
-
-  const items: NavItem[] = [FIXED_START, ...middleItems, FIXED_END];
-
   return (
-    <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
+    <>
       {items.map(({ to, icon: Icon, labelKey, end }) => (
         <NavLink
           key={to}
@@ -75,12 +51,29 @@ function AdminBottomNav({ className }: { className?: string }) {
           <span className="leading-none">{t(labelKey)}</span>
         </NavLink>
       ))}
+    </>
+  );
+}
+
+function AdminBottomNav({ className }: { className?: string }) {
+  const { data: org } = useOrganization();
+
+  const slots = (org?.navSlots ?? DEFAULT_NAV_SLOTS) as NavSlotKey[];
+  const middleItems: NavItem[] = slots
+    .map((key) => NAV_SLOT_REGISTRY[key])
+    .filter(Boolean)
+    .map(({ to, icon, labelKey }) => ({ to, icon, labelKey }));
+
+  const items: NavItem[] = [FIXED_START, ...middleItems, FIXED_END];
+
+  return (
+    <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
+      <NavItems items={items} />
     </nav>
   );
 }
 
 function MemberBottomNav({ className }: { className?: string }) {
-  const { t } = useTranslation();
   const userNavSlots = useAuthStore((s) => s.navSlots);
   const { data: org } = useOrganization();
   const { can } = usePermissions();
@@ -100,22 +93,7 @@ function MemberBottomNav({ className }: { className?: string }) {
 
   return (
     <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
-      {items.map(({ to, icon: Icon, labelKey, end }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={end}
-          className={({ isActive }) =>
-            cn(
-              "flex flex-1 flex-col items-center gap-0.5 py-3 text-xs transition-colors min-h-[56px] justify-center",
-              isActive ? "text-primary" : "text-muted-foreground",
-            )
-          }
-        >
-          <Icon className="h-5 w-5" />
-          <span className="leading-none">{t(labelKey)}</span>
-        </NavLink>
-      ))}
+      <NavItems items={items} />
     </nav>
   );
 }
@@ -126,41 +104,7 @@ interface BottomNavProps {
 
 export function BottomNav({ className }: BottomNavProps) {
   const role = useAuthStore((s) => s.role);
-  const { t } = useTranslation();
 
-  if (role === "ADMIN") {
-    return <AdminBottomNav className={className} />;
-  }
-
-  if (role === "MEMBER") {
-    return <MemberBottomNav className={className} />;
-  }
-
-  const items = role ? STATIC_NAV[role as Exclude<UserRole, "ADMIN" | "MEMBER">] : [];
-
-  return (
-    <nav
-      className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom",
-        className,
-      )}
-    >
-      {items.map(({ to, icon: Icon, labelKey, end }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={end}
-          className={({ isActive }) =>
-            cn(
-              "flex flex-1 flex-col items-center gap-0.5 py-3 text-xs transition-colors min-h-[56px] justify-center",
-              isActive ? "text-primary" : "text-muted-foreground",
-            )
-          }
-        >
-          <Icon className="h-5 w-5" />
-          <span className="leading-none">{t(labelKey)}</span>
-        </NavLink>
-      ))}
-    </nav>
-  );
+  if (role === "ADMIN") return <AdminBottomNav className={className} />;
+  return <MemberBottomNav className={className} />;
 }

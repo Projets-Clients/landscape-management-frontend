@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import { useOrganization } from "@/hooks/use-organization";
 import { usePermissions } from "@/hooks/use-permissions";
-import type { UserRole } from "@/types/api";
 
 interface NavItem {
   to: string;
@@ -35,24 +34,12 @@ const ADMIN_NAV: NavItem[] = [
 
 const MEMBER_NAV: NavItem[] = [
   { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
-  { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
+  { to: "/chantiers", icon: HardHat, labelKey: "nav.projects", permModule: "chantiers", permAction: "read" },
   { to: "/clients", icon: Users, labelKey: "nav.clients", permModule: "clients", permAction: "read" },
+  { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team", permModule: "equipe", permAction: "read" },
   { to: "/prestations", icon: BookOpen, labelKey: "nav.services", permModule: "prestations", permAction: "read" },
   { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
 ];
-
-const BASIC_NAV: NavItem[] = [
-  { to: "/", icon: LayoutDashboard, labelKey: "nav.dashboard", end: true },
-  { to: "/chantiers", icon: HardHat, labelKey: "nav.projects" },
-  { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
-];
-
-const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  ADMIN: ADMIN_NAV,
-  MEMBER: MEMBER_NAV,
-  FOREMAN: BASIC_NAV,
-  EMPLOYEE: BASIC_NAV,
-};
 
 interface SidebarProps {
   className?: string;
@@ -62,13 +49,14 @@ export function Sidebar({ className }: SidebarProps) {
   const role = useAuthStore((s) => s.role);
   const { t } = useTranslation();
   const { can } = usePermissions();
-  const rawItems = role ? NAV_BY_ROLE[role] : [];
+  const { data: org } = useOrganization();
+
+  const rawItems = role === "ADMIN" ? ADMIN_NAV : MEMBER_NAV;
   const items = rawItems.filter((item) =>
     item.permModule && item.permAction
       ? can(item.permModule as never, item.permAction as never)
       : true,
   );
-  const { data: org } = useOrganization();
 
   return (
     <aside className={cn("w-60 flex-col border-r bg-card", className)}>

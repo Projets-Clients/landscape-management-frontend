@@ -1,6 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { PrivateRoute } from './PrivateRoute'
-import { RoleRoute } from './RoleRoute'
 import { CanRoute } from './CanRoute'
 import { AppShell } from '@/components/layout/AppShell'
 import { ScrollLayout } from '@/components/layout/ScrollLayout'

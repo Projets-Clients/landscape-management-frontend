@@ -55,8 +55,7 @@ export function SettingsPage() {
 
   const ROLE_LABELS: Record<string, string> = {
     ADMIN: t("settings.role_admin"),
-    FOREMAN: t("settings.role_foreman"),
-    EMPLOYEE: t("settings.role_employee"),
+    MEMBER: t("users.role_member"),
   };
 
   // Username change

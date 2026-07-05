@@ -417,7 +417,7 @@ export function ProjectDetailPage() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">{fullName(user)}</p>
                 <p className="text-xs text-muted-foreground capitalize">
-                  {user.role === "FOREMAN" ? t('project.role_foreman') : t('project.role_employee')}
+                  {user.customRole?.name ?? (user.role === 'ADMIN' ? t('users.role_admin') : t('users.role_member'))}
                 </p>
               </div>
               {can('chantiers', 'update') && !isLocked && (
