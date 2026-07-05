@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiRequest } from '@/lib/api-client'
 import { queryClient } from '@/lib/query-client'
+import { useAuthStore } from '@/store/auth.store'
 import type { User, UserRole } from '@/types/api'
 
 export function useUsers(options: { enabled?: boolean } = {}) {
@@ -50,6 +51,15 @@ export function useUpdateUser(id: string) {
         method: 'PATCH',
         body: JSON.stringify(dto),
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+    onSuccess: (updated, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+      if ('role' in variables || 'customRoleId' in variables) {
+        queryClient.invalidateQueries({ queryKey: ['roles'] })
+      }
+      const { userId, accessToken, setAuth } = useAuthStore.getState()
+      if (updated.id === userId && updated.username && accessToken) {
+        setAuth(accessToken, updated.username)
+      }
+    },
   })
 }
