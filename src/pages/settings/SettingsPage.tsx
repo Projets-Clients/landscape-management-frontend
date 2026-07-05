@@ -471,7 +471,7 @@ export function SettingsPage() {
                     ))}
                   </div>
 
-                  {userNav.length < 3 && accessibleSlots.filter((k) => !userNav.includes(k)).length > 0 && (
+                  {userNav.length < 4 && accessibleSlots.filter((k) => !userNav.includes(k)).length > 0 && (
                     <button
                       type="button"
                       onClick={handleAddSlot}
