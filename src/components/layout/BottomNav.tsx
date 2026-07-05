@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Settings } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
@@ -24,11 +24,6 @@ const FIXED_START: NavItem = {
   icon: LayoutDashboard,
   labelKey: "nav.dashboard_short",
   end: true,
-};
-const FIXED_END: NavItem = {
-  to: "/parametres",
-  icon: Settings,
-  labelKey: "nav.settings",
 };
 
 function NavItems({ items }: { items: NavItem[] }) {
@@ -64,7 +59,7 @@ function AdminBottomNav({ className }: { className?: string }) {
     .filter(Boolean)
     .map(({ to, icon, labelKey }) => ({ to, icon, labelKey }));
 
-  const items: NavItem[] = [FIXED_START, ...middleItems, FIXED_END];
+  const items: NavItem[] = [FIXED_START, ...middleItems];
 
   return (
     <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
@@ -89,7 +84,7 @@ function MemberBottomNav({ className }: { className?: string }) {
       return { to, icon, labelKey };
     });
 
-  const items: NavItem[] = [FIXED_START, ...middleItems, FIXED_END];
+  const items: NavItem[] = [FIXED_START, ...middleItems];
 
   return (
     <nav className={cn("fixed bottom-0 left-0 right-0 z-50 flex border-t bg-card safe-area-bottom", className)}>
