@@ -18,6 +18,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const setAuth = useAuthStore((s) => s.setAuth)
+  const setName = useAuthStore((s) => s.setName)
   const setPreferences = useAuthStore((s) => s.setPreferences)
   const setPermissions = useAuthStore((s) => s.setPermissions)
   const setNavSlots = useAuthStore((s) => s.setNavSlots)
@@ -46,9 +47,11 @@ export function LoginPage() {
         })
         if (res.ok) {
           const me = (await res.json()) as {
+            firstName: string; lastName: string
             language: string; theme: string; accentColor: string; navSlots: string[]
             customRole?: { name: string; permissions: Record<string, string[]> } | null
           }
+          setName(me.firstName ?? '', me.lastName ?? '')
           setPreferences(me.language, me.theme, me.accentColor)
           setTheme(me.theme as 'system' | 'light' | 'dark')
           setColor(me.accentColor as ColorKey)

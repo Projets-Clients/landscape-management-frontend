@@ -45,7 +45,7 @@ import { InstallModal } from "@/components/common/InstallModal";
 export function SettingsPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { username, role, userId, clearAuth, customRoleName } = useAuthStore();
+  const { username, firstName, lastName, role, userId, clearAuth, customRoleName } = useAuthStore();
   const setNavSlots = useAuthStore((s) => s.setNavSlots);
   const storeNavSlots = useAuthStore((s) => s.navSlots);
   const { isAdmin, can } = usePermissions();
@@ -58,19 +58,21 @@ export function SettingsPage() {
     MEMBER: t("users.role_member"),
   };
 
-  // Username change
-  const [newUsername, setNewUsername] = useState(username);
+  // Display name change
+  const [nameForm, setNameForm] = useState({ firstName, lastName });
   const updateMe = useUpdateMe();
 
   useEffect(() => {
-    setNewUsername(username);
-  }, [username]);
+    setNameForm({ firstName, lastName });
+  }, [firstName, lastName]);
 
-  function handleUsernameSubmit(e: React.FormEvent) {
+  function handleNameSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const trimmed = newUsername.trim();
-    if (!trimmed || trimmed === username) return;
-    void updateMe.mutateAsync({ username: trimmed });
+    const fn = nameForm.firstName.trim();
+    const ln = nameForm.lastName.trim();
+    if (!fn || !ln) return;
+    if (fn === firstName && ln === lastName) return;
+    void updateMe.mutateAsync({ firstName: fn, lastName: ln });
   }
 
   // Org name + nav slots (admin only)
@@ -202,13 +204,15 @@ export function SettingsPage() {
           ].join(" ")}
         >
           {userId ? (
-            username.charAt(0).toUpperCase()
+            (firstName || username).charAt(0).toUpperCase()
           ) : (
             <User className="h-7 w-7 text-muted-foreground" />
           )}
         </div>
         <div className="text-center">
-          <p className="font-bold text-lg">{username}</p>
+          <p className="font-bold text-lg">
+            {firstName ? `${firstName} ${lastName}`.trim() : username}
+          </p>
           {role && (
             <p className="text-sm text-muted-foreground">
               {customRoleName ?? ROLE_LABELS[role] ?? role}
@@ -225,31 +229,41 @@ export function SettingsPage() {
             {t("settings.account_section")}
           </p>
           <Card className="divide-y">
-            {/* Pseudo */}
+            {/* Prénom / Nom */}
             <div className="p-4">
-              <form onSubmit={handleUsernameSubmit} className="space-y-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="username">
-                    {t("settings.username_label")}
-                  </Label>
-                  <Input
-                    id="username"
-                    className="min-h-[44px]"
-                    value={newUsername}
-                    onChange={(e) => setNewUsername(e.target.value)}
-                    minLength={3}
-                    maxLength={30}
-                    pattern="^[a-zA-Z0-9_.\-]+$"
-                    required
-                  />
+              <p className="mb-3 text-sm font-medium">
+                {t("settings.display_name_section")}
+              </p>
+              <form onSubmit={handleNameSubmit} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="set-fn">{t("common.first_name")}</Label>
+                    <Input
+                      id="set-fn"
+                      className="min-h-[44px]"
+                      value={nameForm.firstName}
+                      onChange={(e) => setNameForm((f) => ({ ...f, firstName: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="set-ln">{t("common.last_name")}</Label>
+                    <Input
+                      id="set-ln"
+                      className="min-h-[44px]"
+                      value={nameForm.lastName}
+                      onChange={(e) => setNameForm((f) => ({ ...f, lastName: e.target.value }))}
+                      required
+                    />
+                  </div>
                 </div>
                 <Button
                   type="submit"
                   className="w-full min-h-[44px]"
                   disabled={
                     updateMe.isPending ||
-                    !newUsername.trim() ||
-                    newUsername.trim() === username
+                    (!nameForm.firstName.trim() || !nameForm.lastName.trim()) ||
+                    (nameForm.firstName.trim() === firstName && nameForm.lastName.trim() === lastName)
                   }
                 >
                   {updateMe.isPending && (
@@ -258,6 +272,15 @@ export function SettingsPage() {
                   {t("settings.save")}
                 </Button>
               </form>
+            </div>
+            {/* Identifiant de connexion — lecture seule */}
+            <div className="p-4 space-y-1.5">
+              <p className="text-xs font-medium text-muted-foreground">
+                {t("settings.identifier_label")}
+              </p>
+              <p className="rounded-md border bg-muted/40 px-3 py-2.5 text-sm font-mono">
+                {username}
+              </p>
             </div>
             {/* Langue */}
             <div className="p-4 space-y-1.5">

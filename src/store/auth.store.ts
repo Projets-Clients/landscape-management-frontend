@@ -6,6 +6,8 @@ const REFRESH_TOKEN_KEY = 'landscape-rt'
 interface AuthState {
   accessToken: string | null
   username: string
+  firstName: string
+  lastName: string
   role: UserRole | null
   userId: string | null
   organizationId: string | null
@@ -16,6 +18,7 @@ interface AuthState {
   permissions: Permissions | null
   customRoleName: string | null
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
+  setName: (firstName: string, lastName: string) => void
   setPreferences: (language: string, theme: string, accentColor: string) => void
   setPermissions: (permissions: Permissions | null) => void
   setNavSlots: (navSlots: string[]) => void
@@ -40,6 +43,8 @@ function decodeJwtPayload(
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   username: sessionStorage.getItem('username') ?? '',
+  firstName: sessionStorage.getItem('firstName') ?? '',
+  lastName: sessionStorage.getItem('lastName') ?? '',
   role: null,
   userId: null,
   organizationId: null,
@@ -63,6 +68,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     })
   },
 
+  setName: (firstName, lastName) => {
+    sessionStorage.setItem('firstName', firstName)
+    sessionStorage.setItem('lastName', lastName)
+    set({ firstName, lastName })
+  },
+
   setPreferences: (language, theme, accentColor) => {
     set({ language, theme, accentColor })
   },
@@ -81,8 +92,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   clearAuth: () => {
     sessionStorage.removeItem('username')
+    sessionStorage.removeItem('firstName')
+    sessionStorage.removeItem('lastName')
     localStorage.removeItem(REFRESH_TOKEN_KEY)
-    set({ accessToken: null, username: '', role: null, userId: null, organizationId: null, permissions: null, navSlots: [], customRoleName: null })
+    set({ accessToken: null, username: '', firstName: '', lastName: '', role: null, userId: null, organizationId: null, permissions: null, navSlots: [], customRoleName: null })
   },
 }))
 

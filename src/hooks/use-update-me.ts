@@ -5,7 +5,8 @@ import { apiRequest } from '@/lib/api-client'
 import { useAuthStore } from '@/store/auth.store'
 
 interface UpdateMePayload {
-  username?: string
+  firstName?: string
+  lastName?: string
   language?: string
   theme?: string
   accentColor?: string
@@ -15,12 +16,13 @@ interface UpdateMePayload {
 interface UpdateMeResponse {
   id: string
   username: string
+  firstName: string
+  lastName: string
 }
 
 export function useUpdateMe() {
   const { t } = useTranslation()
-  const setAuth = useAuthStore((s) => s.setAuth)
-  const accessToken = useAuthStore((s) => s.accessToken)
+  const setName = useAuthStore((s) => s.setName)
 
   return useMutation({
     mutationFn: (data: UpdateMePayload) =>
@@ -29,15 +31,13 @@ export function useUpdateMe() {
         body: JSON.stringify(data),
       }),
     onSuccess: (updated, variables) => {
-      if (variables.username && accessToken) {
-        setAuth(accessToken, updated.username)
-        toast.success(t('settings.username_updated'))
+      if (variables.firstName !== undefined || variables.lastName !== undefined) {
+        setName(updated.firstName, updated.lastName)
+        toast.success(t('settings.name_updated'))
       }
     },
-    onError: (_, variables) => {
-      if (variables.username) {
-        toast.error(t('settings.username_taken'))
-      }
+    onError: () => {
+      toast.error(t('settings.save_error'))
     },
   })
 }

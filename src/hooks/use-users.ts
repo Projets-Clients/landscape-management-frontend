@@ -56,9 +56,12 @@ export function useUpdateUser(id: string) {
       if ('role' in variables || 'customRoleId' in variables) {
         queryClient.invalidateQueries({ queryKey: ['roles'] })
       }
-      const { userId, accessToken, setAuth } = useAuthStore.getState()
-      if (updated.id === userId && updated.username && accessToken) {
-        setAuth(accessToken, updated.username)
+      const { userId, accessToken, setAuth, setName } = useAuthStore.getState()
+      if (updated.id === userId) {
+        if (updated.username && accessToken) setAuth(accessToken, updated.username)
+        if (updated.firstName !== undefined || updated.lastName !== undefined) {
+          setName(updated.firstName, updated.lastName)
+        }
       }
     },
   })

@@ -139,7 +139,7 @@ function ProjectRow({ project, onClick }: { project: Project; onClick: () => voi
 export function DashboardPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const username = useAuthStore((s) => s.username)
+  const firstName = useAuthStore((s) => s.firstName)
   const { can } = usePermissions()
 
   const inProgress = useProjects({ status: 'IN_PROGRESS', limit: 1 })
@@ -154,7 +154,7 @@ export function DashboardPage() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold">{t('dashboard.greeting', { username })}</h1>
+        <h1 className="text-xl font-bold">{t('dashboard.greeting', { firstName })}</h1>
         <p className="hidden text-sm text-muted-foreground sm:block">{t('dashboard.subtitle')}</p>
       </div>
 
