@@ -8,6 +8,7 @@ import { usePermissions } from "@/hooks/use-permissions";
 import {
   NAV_SLOT_REGISTRY,
   SLOT_TO_PERM_MODULE,
+  DEFAULT_NAV_SLOTS,
   type NavSlotKey,
 } from "@/lib/nav-slots";
 
