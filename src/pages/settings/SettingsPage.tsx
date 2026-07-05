@@ -44,7 +44,15 @@ import { InstallModal } from "@/components/common/InstallModal";
 export function SettingsPage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const { username, firstName, lastName, role, userId, clearAuth, customRoleName } = useAuthStore();
+  const {
+    username,
+    firstName,
+    lastName,
+    role,
+    userId,
+    clearAuth,
+    customRoleName,
+  } = useAuthStore();
   const setNavSlots = useAuthStore((s) => s.setNavSlots);
   const storeNavSlots = useAuthStore((s) => s.navSlots);
   const { isAdmin, can } = usePermissions();
@@ -63,7 +71,8 @@ export function SettingsPage() {
   const { data: org, isLoading: orgLoading } = useOrganization();
   const updateOrg = useUpdateOrganization();
   const [orgName, setOrgName] = useState("");
-  const [navSlotsLocal, setNavSlotsLocal] = useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS);
+  const [navSlotsLocal, setNavSlotsLocal] =
+    useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS);
 
   useEffect(() => {
     if (org) {
@@ -75,7 +84,10 @@ export function SettingsPage() {
   function handleOrgSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!orgName.trim()) return;
-    void updateOrg.mutateAsync({ name: orgName.trim(), navSlots: navSlotsLocal });
+    void updateOrg.mutateAsync({
+      name: orgName.trim(),
+      navSlots: navSlotsLocal,
+    });
   }
 
   function handleNavSlotChange(index: number, value: NavSlotKey) {
@@ -96,7 +108,9 @@ export function SettingsPage() {
   }
 
   // User nav slots (MEMBER only)
-  const accessibleSlots = ALL_SLOT_KEYS.filter((key) => can(SLOT_TO_PERM_MODULE[key], "read"));
+  const accessibleSlots = ALL_SLOT_KEYS.filter((key) =>
+    can(SLOT_TO_PERM_MODULE[key], "read"),
+  );
   const [userNav, setUserNav] = useState<NavSlotKey[]>([]);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [navSaving, setNavSaving] = useState(false);
@@ -293,7 +307,9 @@ export function SettingsPage() {
                   </div>
                   {/* Navigation mobile */}
                   <div>
-                    <Label className="mb-5 block">{t("settings.nav_section")}</Label>
+                    <Label className="mb-5 block">
+                      {t("settings.nav_section")}
+                    </Label>
                     {/* Mobile : selects avec label flottant + boutons +/- */}
                     <div className="lg:hidden space-y-3">
                       {navSlotsLocal.map((slot, i) => (
@@ -304,11 +320,17 @@ export function SettingsPage() {
                             </span>
                             <select
                               value={slot}
-                              onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
+                              onChange={(e) =>
+                                handleNavSlotChange(
+                                  i,
+                                  e.target.value as NavSlotKey,
+                                )
+                              }
                               className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                             >
                               {ALL_SLOT_KEYS.filter(
-                                (key) => key === slot || !navSlotsLocal.includes(key),
+                                (key) =>
+                                  key === slot || !navSlotsLocal.includes(key),
                               ).map((key) => (
                                 <option key={key} value={key}>
                                   {t(NAV_SLOT_REGISTRY[key].nameKey)}
@@ -327,31 +349,41 @@ export function SettingsPage() {
                           )}
                         </div>
                       ))}
-                      {navSlotsLocal.length < 4 && ALL_SLOT_KEYS.filter((k) => !navSlotsLocal.includes(k)).length > 0 && (
-                        <button
-                          type="button"
-                          onClick={handleAddOrgSlot}
-                          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
-                        >
-                          <Plus className="h-4 w-4" />
-                          {t("settings.nav_add_slot")}
-                        </button>
-                      )}
+                      {navSlotsLocal.length < 4 &&
+                        ALL_SLOT_KEYS.filter((k) => !navSlotsLocal.includes(k))
+                          .length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleAddOrgSlot}
+                            className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+                          >
+                            <Plus className="h-4 w-4" />
+                            {t("settings.nav_add_slot")}
+                          </button>
+                        )}
                     </div>
                     {/* Desktop : simulation de la barre de nav (grille dynamique) */}
                     <div className="hidden lg:block rounded-xl border overflow-hidden">
                       <div
                         className="bg-background border-b"
-                        style={{ display: 'grid', gridTemplateColumns: `repeat(${navSlotsLocal.length + 1}, 1fr)` }}
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: `repeat(${navSlotsLocal.length + 1}, 1fr)`,
+                        }}
                       >
                         <div className="flex flex-col items-center gap-0.5 py-2 opacity-35">
                           <LayoutDashboard className="h-5 w-5" />
-                          <span className="text-[10px]">{t("nav.dashboard_short")}</span>
+                          <span className="text-[10px]">
+                            {t("nav.dashboard_short")}
+                          </span>
                         </div>
                         {navSlotsLocal.map((slot, i) => {
                           const Icon = NAV_SLOT_REGISTRY[slot].icon;
                           return (
-                            <div key={i} className="flex flex-col items-center gap-0.5 py-2 text-primary">
+                            <div
+                              key={i}
+                              className="flex flex-col items-center gap-0.5 py-2 text-primary"
+                            >
                               <Icon className="h-5 w-5" />
                               <span className="text-[10px] font-medium">
                                 {t(NAV_SLOT_REGISTRY[slot].labelKey)}
@@ -362,28 +394,43 @@ export function SettingsPage() {
                       </div>
                       <div
                         className="gap-1.5 p-2 bg-muted/40"
-                        style={{ display: 'grid', gridTemplateColumns: `repeat(${navSlotsLocal.length + 1}, 1fr)` }}
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: `repeat(${navSlotsLocal.length + 1}, 1fr)`,
+                        }}
                       >
                         <div className="flex items-center justify-center">
-                          {navSlotsLocal.length < 4 && ALL_SLOT_KEYS.filter((k) => !navSlotsLocal.includes(k)).length > 0 && (
-                            <button
-                              type="button"
-                              onClick={handleAddOrgSlot}
-                              className="flex h-7 w-7 items-center justify-center rounded-md border border-dashed text-muted-foreground transition-colors hover:bg-muted"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </button>
-                          )}
+                          {navSlotsLocal.length < 4 &&
+                            ALL_SLOT_KEYS.filter(
+                              (k) => !navSlotsLocal.includes(k),
+                            ).length > 0 && (
+                              <button
+                                type="button"
+                                onClick={handleAddOrgSlot}
+                                className="flex h-7 w-7 items-center justify-center rounded-md border border-dashed text-muted-foreground transition-colors hover:bg-muted"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            )}
                         </div>
                         {navSlotsLocal.map((slot, i) => (
-                          <div key={i} className="flex flex-col items-center gap-1">
+                          <div
+                            key={i}
+                            className="flex flex-col items-center gap-1"
+                          >
                             <select
                               value={slot}
-                              onChange={(e) => handleNavSlotChange(i, e.target.value as NavSlotKey)}
+                              onChange={(e) =>
+                                handleNavSlotChange(
+                                  i,
+                                  e.target.value as NavSlotKey,
+                                )
+                              }
                               className="h-7 w-auto min-w-[120px] max-w-full mx-auto block rounded-md border bg-background px-1 text-[10px] outline-none focus:ring-1 focus:ring-ring"
                             >
                               {ALL_SLOT_KEYS.filter(
-                                (key) => key === slot || !navSlotsLocal.includes(key),
+                                (key) =>
+                                  key === slot || !navSlotsLocal.includes(key),
                               ).map((key) => (
                                 <option key={key} value={key}>
                                   {t(NAV_SLOT_REGISTRY[key].nameKey)}
@@ -432,10 +479,14 @@ export function SettingsPage() {
           <div className="space-y-2">
             <p className="text-sm font-semibold">{t("settings.nav_section")}</p>
             <Card className="p-4 space-y-4">
-              <p className="text-xs text-muted-foreground">{t("settings.nav_description")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("settings.nav_description")}
+              </p>
 
               {accessibleSlots.length === 0 ? (
-                <p className="text-sm text-muted-foreground">{t("settings.nav_no_module")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("settings.nav_no_module")}
+                </p>
               ) : (
                 <>
                   <div className="space-y-3">
@@ -447,11 +498,18 @@ export function SettingsPage() {
                           </span>
                           <select
                             value={slot}
-                            onChange={(e) => handleUserSlotChange(i, e.target.value as NavSlotKey)}
+                            onChange={(e) =>
+                              handleUserSlotChange(
+                                i,
+                                e.target.value as NavSlotKey,
+                              )
+                            }
                             className="h-11 w-full rounded-xl border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
                           >
                             {accessibleSlots
-                              .filter((key) => key === slot || !userNav.includes(key))
+                              .filter(
+                                (key) => key === slot || !userNav.includes(key),
+                              )
                               .map((key) => (
                                 <option key={key} value={key}>
                                   {t(NAV_SLOT_REGISTRY[key].nameKey)}
@@ -471,23 +529,25 @@ export function SettingsPage() {
                     ))}
                   </div>
 
-                  {userNav.length < 4 && accessibleSlots.filter((k) => !userNav.includes(k)).length > 0 && (
-                    <button
-                      type="button"
-                      onClick={handleAddSlot}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
-                    >
-                      <Plus className="h-4 w-4" />
-                      {t("settings.nav_add_slot")}
-                    </button>
-                  )}
+                  {userNav.length < 4 &&
+                    accessibleSlots.filter((k) => !userNav.includes(k)).length >
+                      0 && (
+                      <button
+                        type="button"
+                        onClick={handleAddSlot}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+                      >
+                        <Plus className="h-4 w-4" />
+                        {t("settings.nav_add_slot")}
+                      </button>
+                    )}
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 min-h-[44px]">
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="gap-1.5"
+                      className="flex-1 min-h-[44px] gap-1.5"
                       onClick={() => setShowResetConfirm(true)}
                       disabled={navSaving}
                     >
@@ -498,16 +558,28 @@ export function SettingsPage() {
                       type="button"
                       className="flex-1 min-h-[44px]"
                       onClick={() => void handleSaveUserNav()}
-                      disabled={navSaving || JSON.stringify(userNav) === JSON.stringify(storeNavSlots)}
+                      disabled={
+                        navSaving ||
+                        JSON.stringify(userNav) ===
+                          JSON.stringify(storeNavSlots)
+                      }
                     >
-                      {navSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("settings.save")}
+                      {navSaving ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        t("settings.save")
+                      )}
                     </Button>
                   </div>
 
                   {showResetConfirm && (
                     <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 space-y-2 dark:border-orange-900 dark:bg-orange-950/30">
-                      <p className="text-sm font-medium">{t("settings.nav_reset_title")}</p>
-                      <p className="text-xs text-muted-foreground">{t("settings.nav_reset_body")}</p>
+                      <p className="text-sm font-medium">
+                        {t("settings.nav_reset_title")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t("settings.nav_reset_body")}
+                      </p>
                       <div className="flex gap-2 pt-1">
                         <Button
                           type="button"
