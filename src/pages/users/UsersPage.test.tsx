@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
 import { useRoles } from '@/hooks/use-roles'
+import { useAuthStore } from '@/store/auth.store'
 import { UsersPage } from './UsersPage'
 import type { User } from '@/types/api'
 
@@ -61,6 +62,7 @@ function mockMutation(overrides = {}) {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  useAuthStore.setState({ accessToken: 'tok', username: 'admin', role: 'ADMIN', userId: 'u0', permissions: null })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   vi.mocked(useUsers).mockReturnValue({ data: [], isLoading: false } as any)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,15 +84,21 @@ describe('UsersPage — rendu', () => {
     expect(screen.getByRole('button', { name: /nouveau/i })).toBeInTheDocument()
   })
 
-  it('affiche les onglets Membres et Rôles', () => {
+  it('ADMIN : affiche les onglets Membres et Rôles', () => {
     render(<UsersPage />)
     expect(screen.getByRole('button', { name: 'Membres' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Rôles' })).toBeInTheDocument()
   })
 
+  it('MEMBER : n\'affiche pas l\'onglet Rôles', () => {
+    useAuthStore.setState({ accessToken: 'tok', username: 'member', role: 'MEMBER', userId: 'u1', permissions: { chantiers: [], clients: [], equipe: ['read'], prestations: [] } })
+    render(<UsersPage />)
+    expect(screen.queryByRole('button', { name: 'Rôles' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Membres' })).not.toBeInTheDocument()
+  })
+
   it('l\'onglet Membres est actif par défaut', () => {
     render(<UsersPage />)
-    // The active tab has bg-background class
     const membresTab = screen.getByRole('button', { name: 'Membres' })
     expect(membresTab.className).toContain('bg-background')
   })
