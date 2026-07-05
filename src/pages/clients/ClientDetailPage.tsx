@@ -13,6 +13,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import { AddressAutocomplete } from '@/components/common/AddressAutocomplete'
 import { useClient, useUpdateClient, useDeactivateClient } from '@/hooks/use-clients'
 import { useProjects } from '@/hooks/use-projects'
+import { usePermissions } from '@/hooks/use-permissions'
 import { fullName, formatDate, buildAddress, parseAddress } from '@/lib/utils'
 
 export function ClientDetailPage() {
@@ -21,6 +22,7 @@ export function ClientDetailPage() {
   const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
 
+  const { can } = usePermissions()
   const { data: client, isLoading } = useClient(id ?? '')
   const { data: projects } = useProjects({ clientId: id })
   const updateClient = useUpdateClient(id ?? '')
@@ -110,7 +112,7 @@ export function ClientDetailPage() {
           </button>
           <h1 className="text-lg font-bold">{fullName(client)}</h1>
         </div>
-        {!editing && (
+        {!editing && can('clients', 'update') && (
           <Button variant="outline" size="sm" className="min-h-[44px]" onClick={startEdit}>
             {t('client_detail.edit')}
           </Button>
@@ -269,14 +271,16 @@ export function ClientDetailPage() {
         </div>
       )}
 
-      <Button
-        variant="destructive"
-        className="w-full min-h-[44px]"
-        onClick={() => void handleDeactivate()}
-        disabled={deactivate.isPending}
-      >
-        {t('client_detail.deactivate')}
-      </Button>
+      {can('clients', 'delete') && (
+        <Button
+          variant="destructive"
+          className="w-full min-h-[44px]"
+          onClick={() => void handleDeactivate()}
+          disabled={deactivate.isPending}
+        >
+          {t('client_detail.deactivate')}
+        </Button>
+      )}
     </div>
   )
 }
