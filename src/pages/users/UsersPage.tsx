@@ -339,23 +339,25 @@ export function UsersPage() {
         )}
       </div>
 
-      {/* Onglets */}
-      <div className="flex gap-1 rounded-xl bg-muted p-1">
-        {(['membres', 'roles'] as Tab[]).map((t_) => (
-          <button
-            key={t_}
-            onClick={() => { setTab(t_); setShowCreate(false) }}
-            className={[
-              'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
-              tab === t_
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground',
-            ].join(' ')}
-          >
-            {t(`users.tab_${t_}`)}
-          </button>
-        ))}
-      </div>
+      {/* Onglets — tab Rôles visible uniquement pour l'admin */}
+      {isAdmin && (
+        <div className="flex gap-1 rounded-xl bg-muted p-1">
+          {(['membres', 'roles'] as Tab[]).map((t_) => (
+            <button
+              key={t_}
+              onClick={() => { setTab(t_); setShowCreate(false) }}
+              className={[
+                'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
+                tab === t_
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              ].join(' ')}
+            >
+              {t(`users.tab_${t_}`)}
+            </button>
+          ))}
+        </div>
+      )}
 
       {tab === 'membres' && (
         <>
