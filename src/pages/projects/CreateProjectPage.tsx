@@ -202,7 +202,7 @@ export function CreateProjectPage() {
             className="min-h-[44px]"
             value={form.reference}
             onChange={(e) => set('reference', e.target.value)}
-            placeholder="Ex : CH-2026-001"
+            placeholder={t('create_project.reference_placeholder')}
             required
           />
         </div>
@@ -214,7 +214,7 @@ export function CreateProjectPage() {
             className="min-h-[44px]"
             value={form.title}
             onChange={(e) => set('title', e.target.value)}
-            placeholder="Ex : Aménagement terrasse"
+            placeholder={t('create_project.title_placeholder')}
             required
           />
         </div>

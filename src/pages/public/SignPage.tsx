@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { Leaf, CheckCircle, XCircle, Loader2, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -115,7 +116,14 @@ function SignatureCanvas({
   )
 }
 
+const SUPPORTED_LANGS = ['fr', 'en', 'es', 'it', 'de']
+
 export function SignPage() {
+  const { i18n } = useTranslation()
+  const browserLang = navigator.language.slice(0, 2)
+  const lang = SUPPORTED_LANGS.includes(browserLang) ? browserLang : 'fr'
+  const t = i18n.getFixedT(lang)
+
   const { token } = useParams<{ token: string }>()
   const { data, isLoading, error } = usePublicReport(token ?? '')
   const sign = useSign(token ?? '')
@@ -141,11 +149,11 @@ export function SignPage() {
     e.preventDefault()
     const canvas = canvasRef.current
     if (!canvas || !hasSignature) {
-      toast.error('Veuillez signer le document')
+      toast.error(t('sign.error_sign_required'))
       return
     }
     if (!signerName.trim()) {
-      toast.error('Veuillez indiquer votre nom')
+      toast.error(t('sign.error_name_required'))
       return
     }
     const dataUrl = canvas.toDataURL('image/png')
@@ -156,7 +164,7 @@ export function SignPage() {
       await sign.mutateAsync({ signerName: signerName.trim(), validationCompleted, validationConform, signatureImage })
       setSigned(true)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Erreur lors de la signature')
+      toast.error(err instanceof Error ? err.message : t('sign.error_sign_failed'))
     }
   }
 
@@ -167,10 +175,8 @@ export function SignPage() {
           <CheckCircle className="h-8 w-8 text-green-600" />
         </div>
         <div>
-          <h1 className="text-xl font-bold">Signature enregistrée</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Merci. Le rapport signé vous sera envoyé par email.
-          </p>
+          <h1 className="text-xl font-bold">{t('sign.success_title')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('sign.success_desc')}</p>
         </div>
         {data?.pdfUrl ? (
           <a
@@ -179,12 +185,10 @@ export function SignPage() {
             rel="noopener noreferrer"
             className="flex min-h-[48px] items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground"
           >
-            Télécharger le rapport PDF
+            {t('sign.pdf_ready')}
           </a>
         ) : (
-          <p className="text-xs text-muted-foreground">
-            Le rapport PDF est en cours de génération, vous le recevrez par email.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('sign.pdf_generating')}</p>
         )}
       </div>
     )
@@ -197,10 +201,8 @@ export function SignPage() {
           <XCircle className="h-8 w-8 text-orange-600" />
         </div>
         <div>
-          <h1 className="text-xl font-bold">Refus enregistré</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Votre refus a bien été transmis. L'entreprise prendra contact avec vous.
-          </p>
+          <h1 className="text-xl font-bold">{t('sign.refused_title')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('sign.refused_desc')}</p>
         </div>
       </div>
     )
@@ -219,10 +221,8 @@ export function SignPage() {
   if (error || !data) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-6 text-center">
-        <p className="font-semibold">Lien invalide ou expiré</p>
-        <p className="text-sm text-muted-foreground">
-          Ce lien de signature n'est plus valide. Contactez votre prestataire.
-        </p>
+        <p className="font-semibold">{t('sign.invalid_title')}</p>
+        <p className="text-sm text-muted-foreground">{t('sign.invalid_desc')}</p>
       </div>
     )
   }
@@ -234,10 +234,8 @@ export function SignPage() {
           <XCircle className="h-8 w-8 text-orange-600" />
         </div>
         <div>
-          <h1 className="text-xl font-bold">Document refusé</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Vous avez refusé de signer ce rapport. L'entreprise va prendre contact avec vous.
-          </p>
+          <h1 className="text-xl font-bold">{t('sign.already_refused_title')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('sign.already_refused_desc')}</p>
           {data.refusalComment && (
             <p className="mt-3 rounded-lg bg-muted p-3 text-left text-sm italic text-muted-foreground">
               « {data.refusalComment} »
@@ -255,10 +253,8 @@ export function SignPage() {
           <CheckCircle className="h-8 w-8 text-green-600" />
         </div>
         <div>
-          <h1 className="text-xl font-bold">Document déjà signé</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Ce rapport a déjà été signé. Merci pour votre confiance.
-          </p>
+          <h1 className="text-xl font-bold">{t('sign.already_signed_title')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('sign.already_signed_desc')}</p>
         </div>
         {data.pdfUrl && (
           <a
@@ -267,7 +263,7 @@ export function SignPage() {
             rel="noopener noreferrer"
             className="flex min-h-[48px] items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground"
           >
-            Télécharger le rapport PDF
+            {t('sign.pdf_ready')}
           </a>
         )}
       </div>
@@ -297,7 +293,7 @@ export function SignPage() {
       </div>
 
       <div className="rounded-xl bg-muted/50 p-4">
-        <p className="mb-1 text-xs text-muted-foreground">Destinataire</p>
+        <p className="mb-1 text-xs text-muted-foreground">{t('sign.recipient')}</p>
         <p className="font-semibold">
           {client.firstName} {client.lastName}
         </p>
@@ -310,10 +306,10 @@ export function SignPage() {
 
       {(beforePhotos.length > 0 || afterPhotos.length > 0) && (
         <div className="space-y-3">
-          <h2 className="font-semibold">Photos des travaux</h2>
+          <h2 className="font-semibold">{t('sign.photos_section')}</h2>
           {beforePhotos.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">AVANT</p>
+              <p className="text-xs font-medium text-muted-foreground">{t('sign.photos_before')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {beforePhotos.map((p) => (
                   <img key={p.id} src={p.signedUrl ?? ''} alt="Avant" className="aspect-square rounded-lg object-cover" />
@@ -323,7 +319,7 @@ export function SignPage() {
           )}
           {afterPhotos.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground">APRÈS</p>
+              <p className="text-xs font-medium text-muted-foreground">{t('sign.photos_after')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {afterPhotos.map((p) => (
                   <img key={p.id} src={p.signedUrl ?? ''} alt="Après" className="aspect-square rounded-lg object-cover" />
@@ -336,7 +332,7 @@ export function SignPage() {
 
       {report?.comment && (
         <div className="space-y-2">
-          <h2 className="font-semibold">Rapport d'intervention</h2>
+          <h2 className="font-semibold">{t('sign.report_section')}</h2>
           <div className="rounded-xl bg-muted/50 p-4">
             <p className="whitespace-pre-wrap text-sm">{report.comment}</p>
           </div>
@@ -344,7 +340,7 @@ export function SignPage() {
       )}
 
       <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-5 rounded-xl border bg-card p-4">
-        <h2 className="font-semibold">Validation et signature</h2>
+        <h2 className="font-semibold">{t('sign.form_title')}</h2>
 
         <label className="flex min-h-[44px] cursor-pointer items-start gap-3">
           <input
@@ -353,7 +349,7 @@ export function SignPage() {
             checked={validationCompleted}
             onChange={(e) => setValidationCompleted(e.target.checked)}
           />
-          <span className="text-sm">Je confirme que les travaux décrits ont bien été réalisés.</span>
+          <span className="text-sm">{t('sign.checkbox_completed')}</span>
         </label>
 
         <label className="flex min-h-[44px] cursor-pointer items-start gap-3">
@@ -363,11 +359,11 @@ export function SignPage() {
             checked={validationConform}
             onChange={(e) => setValidationConform(e.target.checked)}
           />
-          <span className="text-sm">Je confirme que les travaux sont conformes au devis initial.</span>
+          <span className="text-sm">{t('sign.checkbox_conform')}</span>
         </label>
 
         <div className="space-y-2">
-          <Label htmlFor="signerName">Nom du signataire</Label>
+          <Label htmlFor="signerName">{t('sign.signer_name')}</Label>
           <Input
             id="signerName"
             className="min-h-[44px]"
@@ -378,13 +374,13 @@ export function SignPage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Signature</Label>
+          <Label>{t('sign.signature_label')}</Label>
           <SignatureCanvas canvasRef={canvasRef} onHasStrokes={setHasSignature} />
         </div>
 
         <Button type="submit" className="w-full min-h-[52px] text-base" disabled={sign.isPending || refuse.isPending}>
           {sign.isPending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
-          Signer et valider
+          {t('sign.submit_btn')}
         </Button>
 
         <div className="pt-2">
@@ -394,15 +390,15 @@ export function SignPage() {
               onClick={() => setShowRefuseForm(true)}
               className="w-full text-sm text-muted-foreground underline-offset-4 hover:underline min-h-[44px]"
             >
-              Refuser les travaux
+              {t('sign.refuse_btn')}
             </button>
           ) : (
             <div className="space-y-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-              <p className="text-sm font-medium text-destructive">Motif du refus</p>
+              <p className="text-sm font-medium text-destructive">{t('sign.refuse_title')}</p>
               <textarea
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 rows={4}
-                placeholder="Décrivez ce qui ne vous convient pas..."
+                placeholder={t('sign.refuse_placeholder')}
                 value={refuseComment}
                 onChange={(e) => setRefuseComment(e.target.value)}
               />
@@ -414,7 +410,7 @@ export function SignPage() {
                   onClick={() => { setShowRefuseForm(false); setRefuseComment('') }}
                   disabled={refuse.isPending}
                 >
-                  Annuler
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   type="button"
@@ -426,11 +422,11 @@ export function SignPage() {
                       await refuse.mutateAsync({ comment: refuseComment.trim() })
                       setRefused(true)
                     } catch (err) {
-                      toast.error(err instanceof Error ? err.message : 'Erreur')
+                      toast.error(err instanceof Error ? err.message : t('sign.error_refuse_failed'))
                     }
                   }}
                 >
-                  {refuse.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Confirmer le refus'}
+                  {refuse.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('sign.refuse_confirm')}
                 </Button>
               </div>
             </div>

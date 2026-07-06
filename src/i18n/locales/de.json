@@ -219,7 +219,9 @@
     "success": "Projekt erstellt",
     "error": "Erstellungsfehler",
     "notes_placeholder": "Notizen für das Team…",
-    "label_reference": "Referenz"
+    "label_reference": "Referenz",
+    "reference_placeholder": "Bsp.: BA-2026-001",
+    "title_placeholder": "Bsp.: Terrassengestaltung"
   },
   "edit_project": {
     "title": "Projekt bearbeiten",
@@ -400,5 +402,38 @@
     "sort_za": "Z → A",
     "sort_recent": "Neueste",
     "no_results": "Keine Ergebnisse"
+  },
+  "sign": {
+    "error_sign_required": "Bitte unterschreiben Sie das Dokument",
+    "error_name_required": "Bitte geben Sie Ihren Namen an",
+    "error_sign_failed": "Fehler bei der Unterschrift",
+    "error_refuse_failed": "Fehler bei der Ablehnung",
+    "invalid_title": "Ungültiger oder abgelaufener Link",
+    "invalid_desc": "Dieser Unterschrift-Link ist nicht mehr gültig. Kontaktieren Sie Ihren Dienstleister.",
+    "already_signed_title": "Dokument bereits unterzeichnet",
+    "already_signed_desc": "Dieser Bericht wurde bereits unterzeichnet. Danke für Ihr Vertrauen.",
+    "already_refused_title": "Dokument abgelehnt",
+    "already_refused_desc": "Sie haben die Unterzeichnung dieses Berichts verweigert. Das Unternehmen wird sich mit Ihnen in Verbindung setzen.",
+    "success_title": "Unterschrift gespeichert",
+    "success_desc": "Danke. Der unterzeichnete Bericht wird Ihnen per E-Mail zugesandt.",
+    "pdf_ready": "PDF-Bericht herunterladen",
+    "pdf_generating": "Der PDF-Bericht wird erstellt, Sie erhalten ihn per E-Mail.",
+    "refused_title": "Ablehnung gespeichert",
+    "refused_desc": "Ihre Ablehnung wurde übermittelt. Das Unternehmen wird sich mit Ihnen in Verbindung setzen.",
+    "recipient": "Empfänger",
+    "photos_section": "Fotos der Arbeiten",
+    "photos_before": "VORHER",
+    "photos_after": "NACHHER",
+    "report_section": "Interventionsbericht",
+    "form_title": "Validierung und Unterschrift",
+    "checkbox_completed": "Ich bestätige, dass die beschriebenen Arbeiten durchgeführt wurden.",
+    "checkbox_conform": "Ich bestätige, dass die Arbeiten dem ursprünglichen Angebot entsprechen.",
+    "signer_name": "Name des Unterzeichners",
+    "signature_label": "Unterschrift",
+    "submit_btn": "Unterzeichnen und bestätigen",
+    "refuse_btn": "Arbeiten ablehnen",
+    "refuse_title": "Grund der Ablehnung",
+    "refuse_placeholder": "Beschreiben Sie, was Sie nicht zufriedenstellt...",
+    "refuse_confirm": "Ablehnung bestätigen"
   }
 }

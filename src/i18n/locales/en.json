@@ -219,7 +219,9 @@
     "success": "Project created",
     "error": "Creation error",
     "notes_placeholder": "Notes for the team…",
-    "label_reference": "Reference"
+    "label_reference": "Reference",
+    "reference_placeholder": "E.g.: WS-2026-001",
+    "title_placeholder": "E.g.: Terrace development"
   },
   "edit_project": {
     "title": "Edit project",
@@ -400,5 +402,38 @@
     "sort_za": "Z → A",
     "sort_recent": "Most recent",
     "no_results": "No results"
+  },
+  "sign": {
+    "error_sign_required": "Please sign the document",
+    "error_name_required": "Please enter your name",
+    "error_sign_failed": "Error during signature",
+    "error_refuse_failed": "Error during refusal",
+    "invalid_title": "Invalid or expired link",
+    "invalid_desc": "This signature link is no longer valid. Contact your service provider.",
+    "already_signed_title": "Document already signed",
+    "already_signed_desc": "This report has already been signed. Thank you for your trust.",
+    "already_refused_title": "Document refused",
+    "already_refused_desc": "You have refused to sign this report. The company will contact you.",
+    "success_title": "Signature recorded",
+    "success_desc": "Thank you. The signed report will be sent to you by email.",
+    "pdf_ready": "Download the PDF report",
+    "pdf_generating": "The PDF report is being generated, you will receive it by email.",
+    "refused_title": "Refusal recorded",
+    "refused_desc": "Your refusal has been transmitted. The company will contact you.",
+    "recipient": "Recipient",
+    "photos_section": "Work photos",
+    "photos_before": "BEFORE",
+    "photos_after": "AFTER",
+    "report_section": "Intervention report",
+    "form_title": "Validation and signature",
+    "checkbox_completed": "I confirm that the described work has been completed.",
+    "checkbox_conform": "I confirm that the work is in accordance with the initial quote.",
+    "signer_name": "Signer's name",
+    "signature_label": "Signature",
+    "submit_btn": "Sign and validate",
+    "refuse_btn": "Refuse the work",
+    "refuse_title": "Reason for refusal",
+    "refuse_placeholder": "Describe what does not satisfy you...",
+    "refuse_confirm": "Confirm refusal"
   }
 }

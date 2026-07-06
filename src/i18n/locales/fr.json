@@ -219,7 +219,9 @@
     "success": "Chantier créé",
     "error": "Erreur lors de la création",
     "notes_placeholder": "Notes pour l'équipe…",
-    "label_reference": "Référence"
+    "label_reference": "Référence",
+    "reference_placeholder": "Ex : CH-2026-001",
+    "title_placeholder": "Ex : Aménagement terrasse"
   },
   "edit_project": {
     "title": "Modifier le chantier",
@@ -400,5 +402,38 @@
     "sort_za": "Z → A",
     "sort_recent": "Plus récent",
     "no_results": "Aucun résultat"
+  },
+  "sign": {
+    "error_sign_required": "Veuillez signer le document",
+    "error_name_required": "Veuillez indiquer votre nom",
+    "error_sign_failed": "Erreur lors de la signature",
+    "error_refuse_failed": "Erreur lors du refus",
+    "invalid_title": "Lien invalide ou expiré",
+    "invalid_desc": "Ce lien de signature n'est plus valide. Contactez votre prestataire.",
+    "already_signed_title": "Document déjà signé",
+    "already_signed_desc": "Ce rapport a déjà été signé. Merci pour votre confiance.",
+    "already_refused_title": "Document refusé",
+    "already_refused_desc": "Vous avez refusé de signer ce rapport. L'entreprise va prendre contact avec vous.",
+    "success_title": "Signature enregistrée",
+    "success_desc": "Merci. Le rapport signé vous sera envoyé par email.",
+    "pdf_ready": "Télécharger le rapport PDF",
+    "pdf_generating": "Le rapport PDF est en cours de génération, vous le recevrez par email.",
+    "refused_title": "Refus enregistré",
+    "refused_desc": "Votre refus a bien été transmis. L'entreprise prendra contact avec vous.",
+    "recipient": "Destinataire",
+    "photos_section": "Photos des travaux",
+    "photos_before": "AVANT",
+    "photos_after": "APRÈS",
+    "report_section": "Rapport d'intervention",
+    "form_title": "Validation et signature",
+    "checkbox_completed": "Je confirme que les travaux décrits ont bien été réalisés.",
+    "checkbox_conform": "Je confirme que les travaux sont conformes au devis initial.",
+    "signer_name": "Nom du signataire",
+    "signature_label": "Signature",
+    "submit_btn": "Signer et valider",
+    "refuse_btn": "Refuser les travaux",
+    "refuse_title": "Motif du refus",
+    "refuse_placeholder": "Décrivez ce qui ne vous convient pas...",
+    "refuse_confirm": "Confirmer le refus"
   }
 }
