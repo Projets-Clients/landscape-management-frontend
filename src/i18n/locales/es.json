@@ -113,7 +113,8 @@
     "color_orange": "Naranja",
     "color_rose": "Rosa",
     "color_amber": "Ámbar",
-    "color_slate": "Pizarra"
+    "color_slate": "Pizarra",
+    "org_language_label": "Idioma de los documentos (PDF, emails cliente)"
   },
   "common": {
     "back": "Volver",

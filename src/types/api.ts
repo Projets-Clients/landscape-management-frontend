@@ -20,6 +20,7 @@ export interface Organization {
   name: string
   slug: string
   navSlots: string[]
+  language: string
   active: boolean
   createdAt: string
   updatedAt: string

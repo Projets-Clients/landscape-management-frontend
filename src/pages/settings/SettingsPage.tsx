@@ -71,12 +71,14 @@ export function SettingsPage() {
   const { data: org, isLoading: orgLoading } = useOrganization();
   const updateOrg = useUpdateOrganization();
   const [orgName, setOrgName] = useState("");
+  const [orgLanguage, setOrgLanguage] = useState("fr");
   const [navSlotsLocal, setNavSlotsLocal] =
     useState<NavSlotKey[]>(DEFAULT_NAV_SLOTS);
 
   useEffect(() => {
     if (org) {
       setOrgName(org.name);
+      setOrgLanguage(org.language ?? "fr");
       setNavSlotsLocal((org.navSlots as NavSlotKey[]) ?? DEFAULT_NAV_SLOTS);
     }
   }, [org]);
@@ -86,6 +88,7 @@ export function SettingsPage() {
     if (!orgName.trim()) return;
     void updateOrg.mutateAsync({
       name: orgName.trim(),
+      language: orgLanguage,
       navSlots: navSlotsLocal,
     });
   }
@@ -304,6 +307,24 @@ export function SettingsPage() {
                     >
                       {orgName.length}/30
                     </p>
+                  </div>
+                  {/* Langue des documents */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="orgLanguage">
+                      {t("settings.org_language_label")}
+                    </Label>
+                    <select
+                      id="orgLanguage"
+                      value={orgLanguage}
+                      onChange={(e) => setOrgLanguage(e.target.value)}
+                      className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <option value="fr">{t("settings.lang_fr")}</option>
+                      <option value="en">{t("settings.lang_en")}</option>
+                      <option value="es">{t("settings.lang_es")}</option>
+                      <option value="it">{t("settings.lang_it")}</option>
+                      <option value="de">{t("settings.lang_de")}</option>
+                    </select>
                   </div>
                   {/* Navigation mobile */}
                   <div>

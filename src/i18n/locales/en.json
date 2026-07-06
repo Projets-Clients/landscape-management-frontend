@@ -113,7 +113,8 @@
     "color_orange": "Orange",
     "color_rose": "Rose",
     "color_amber": "Amber",
-    "color_slate": "Slate"
+    "color_slate": "Slate",
+    "org_language_label": "Document language (PDF, client emails)"
   },
   "common": {
     "back": "Back",

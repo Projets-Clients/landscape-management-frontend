@@ -113,7 +113,8 @@
     "color_orange": "Orange",
     "color_rose": "Rosa",
     "color_amber": "Bernstein",
-    "color_slate": "Schiefer"
+    "color_slate": "Schiefer",
+    "org_language_label": "Dokumentensprache (PDF, Kunden-E-Mails)"
   },
   "common": {
     "back": "Zurück",
