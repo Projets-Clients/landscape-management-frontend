@@ -45,6 +45,8 @@ beforeEach(() => {
   useAuthStore.setState({
     accessToken: 'tok',
     username: 'admin',
+    firstName: 'Admin',
+    lastName: '',
     role: 'ADMIN',
     userId: 'u1',
     permissions: null,
@@ -54,9 +56,9 @@ beforeEach(() => {
 // ── Rendu de base ──────────────────────────────────────────────────────────
 
 describe('DashboardPage — rendu', () => {
-  it('affiche la salutation avec le username', () => {
+  it('affiche la salutation avec le prénom', () => {
     renderDashboard()
-    expect(screen.getByText('Bonjour, admin')).toBeInTheDocument()
+    expect(screen.getByText('Bonjour, Admin')).toBeInTheDocument()
   })
 
   it('affiche la section Modules', () => {
@@ -74,7 +76,7 @@ describe('DashboardPage — rendu', () => {
 
 describe('DashboardPage — tuiles ADMIN', () => {
   it('affiche les 4 tuiles pour un ADMIN', () => {
-    useAuthStore.setState({ role: 'ADMIN', permissions: null, accessToken: 'tok', username: 'admin', userId: 'u1' })
+    useAuthStore.setState({ role: 'ADMIN', permissions: null, accessToken: 'tok', username: 'admin', firstName: 'Admin', lastName: '', userId: 'u1' })
     renderDashboard()
     expect(screen.getByRole('button', { name: /chantiers/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /clients/i })).toBeInTheDocument()
@@ -90,6 +92,8 @@ describe('DashboardPage — MEMBER sans permissions', () => {
     useAuthStore.setState({
       accessToken: 'tok',
       username: 'user',
+      firstName: 'Marie',
+      lastName: 'Dupont',
       role: 'MEMBER',
       userId: 'u2',
       permissions: EMPTY_PERMISSIONS,
@@ -113,6 +117,8 @@ describe('DashboardPage — MEMBER permissions partielles', () => {
     useAuthStore.setState({
       accessToken: 'tok',
       username: 'user',
+      firstName: 'Marie',
+      lastName: '',
       role: 'MEMBER',
       userId: 'u2',
       permissions: makePermissions({ chantiers: ['read'] }),
@@ -128,6 +134,8 @@ describe('DashboardPage — MEMBER permissions partielles', () => {
     useAuthStore.setState({
       accessToken: 'tok',
       username: 'user',
+      firstName: 'Marie',
+      lastName: '',
       role: 'MEMBER',
       userId: 'u2',
       permissions: makePermissions({ chantiers: ['read'], clients: ['read'] }),
@@ -142,6 +150,8 @@ describe('DashboardPage — MEMBER permissions partielles', () => {
     useAuthStore.setState({
       accessToken: 'tok',
       username: 'user',
+      firstName: 'Marie',
+      lastName: '',
       role: 'MEMBER',
       userId: 'u2',
       permissions: FULL_PERMISSIONS,

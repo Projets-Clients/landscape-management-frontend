@@ -31,6 +31,8 @@ beforeEach(() => {
   useAuthStore.setState({
     accessToken: null,
     username: '',
+    firstName: '',
+    lastName: '',
     role: null,
     userId: null,
     permissions: null,
@@ -77,6 +79,33 @@ describe('setAuth', () => {
     expect(state.role).toBe('MEMBER')
     expect(state.userId).toBe('user-id-003')
     expect(state.username).toBe('jean.dupont')
+  })
+})
+
+// ── setName ────────────────────────────────────────────────────────────────
+
+describe('setName', () => {
+  it('stocke firstName et lastName dans le store', () => {
+    useAuthStore.getState().setName('Jean', 'Dupont')
+    const state = useAuthStore.getState()
+    expect(state.firstName).toBe('Jean')
+    expect(state.lastName).toBe('Dupont')
+  })
+
+  it('persiste firstName dans sessionStorage', () => {
+    useAuthStore.getState().setName('Jean', 'Dupont')
+    expect(sessionStorage.getItem('firstName')).toBe('Jean')
+  })
+
+  it('persiste lastName dans sessionStorage', () => {
+    useAuthStore.getState().setName('Jean', 'Dupont')
+    expect(sessionStorage.getItem('lastName')).toBe('Dupont')
+  })
+
+  it('accepte des chaînes vides', () => {
+    useAuthStore.getState().setName('', '')
+    expect(useAuthStore.getState().firstName).toBe('')
+    expect(useAuthStore.getState().lastName).toBe('')
   })
 })
 
@@ -195,6 +224,7 @@ describe('setPermissions', () => {
 describe('clearAuth', () => {
   beforeEach(() => {
     useAuthStore.getState().setAuth(VALID_JWT_ADMIN, 'admin')
+    useAuthStore.getState().setName('Jean', 'Dupont')
     useAuthStore.getState().setPermissions(FULL_PERMISSIONS)
   })
 
@@ -227,6 +257,28 @@ describe('clearAuth', () => {
     expect(sessionStorage.getItem('username')).toBe('admin')
     useAuthStore.getState().clearAuth()
     expect(sessionStorage.getItem('username')).toBeNull()
+  })
+
+  it('remet firstName à une chaîne vide', () => {
+    useAuthStore.getState().clearAuth()
+    expect(useAuthStore.getState().firstName).toBe('')
+  })
+
+  it('remet lastName à une chaîne vide', () => {
+    useAuthStore.getState().clearAuth()
+    expect(useAuthStore.getState().lastName).toBe('')
+  })
+
+  it('supprime firstName du sessionStorage', () => {
+    expect(sessionStorage.getItem('firstName')).toBe('Jean')
+    useAuthStore.getState().clearAuth()
+    expect(sessionStorage.getItem('firstName')).toBeNull()
+  })
+
+  it('supprime lastName du sessionStorage', () => {
+    expect(sessionStorage.getItem('lastName')).toBe('Dupont')
+    useAuthStore.getState().clearAuth()
+    expect(sessionStorage.getItem('lastName')).toBeNull()
   })
 })
 

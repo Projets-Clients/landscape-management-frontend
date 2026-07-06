@@ -257,12 +257,27 @@ describe('ServicesPage — états vide et chargement', () => {
     expect(skeletons.length).toBe(3)
   })
 
-  it('affiche le bouton d\'import quand la liste est vide', () => {
+  it('affiche le bouton d\'import pour un ADMIN quand la liste est vide', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(useServices).mockReturnValue({ data: [], isLoading: false } as any)
     renderServices()
-    // services.seed_btn = "Importer les prestations par défaut"
     expect(screen.getByText('Importer les prestations par défaut')).toBeInTheDocument()
+  })
+
+  it('masque le bouton d\'import pour un MEMBER quand la liste est vide', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    vi.mocked(useServices).mockReturnValue({ data: [], isLoading: false } as any)
+    useAuthStore.setState({
+      accessToken: 'tok',
+      username: 'user',
+      firstName: 'Marie',
+      lastName: '',
+      role: 'MEMBER',
+      userId: 'u2',
+      permissions: null,
+    })
+    renderServices()
+    expect(screen.queryByText('Importer les prestations par défaut')).not.toBeInTheDocument()
   })
 })
 
