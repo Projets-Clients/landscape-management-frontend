@@ -312,7 +312,7 @@ export function SignPage() {
               <p className="text-xs font-medium text-muted-foreground">{t('sign.photos_before')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {beforePhotos.map((p) => (
-                  <img key={p.id} src={p.signedUrl ?? ''} alt="Avant" className="aspect-square rounded-lg object-cover" />
+                  <img key={p.id} src={p.signedUrl ?? ''} alt={t('sign.photos_before')} className="aspect-square rounded-lg object-cover" />
                 ))}
               </div>
             </div>
@@ -322,7 +322,7 @@ export function SignPage() {
               <p className="text-xs font-medium text-muted-foreground">{t('sign.photos_after')}</p>
               <div className="grid grid-cols-3 gap-2">
                 {afterPhotos.map((p) => (
-                  <img key={p.id} src={p.signedUrl ?? ''} alt="Après" className="aspect-square rounded-lg object-cover" />
+                  <img key={p.id} src={p.signedUrl ?? ''} alt={t('sign.photos_after')} className="aspect-square rounded-lg object-cover" />
                 ))}
               </div>
             </div>
