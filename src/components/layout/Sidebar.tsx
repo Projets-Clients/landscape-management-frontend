@@ -49,6 +49,8 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const role = useAuthStore((s) => s.role);
+  const firstName = useAuthStore((s) => s.firstName);
+  const lastName = useAuthStore((s) => s.lastName);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const { t } = useTranslation();
   const { can } = usePermissions();
@@ -107,7 +109,20 @@ export function Sidebar({ className }: SidebarProps) {
           </NavLink>
         ))}
       </nav>
-      <div className="border-t p-2">
+      <div className="border-t p-3">
+        <div className="mb-2 flex items-center gap-3 px-1">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+            {firstName?.[0]?.toUpperCase() ?? '?'}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium leading-tight text-foreground">
+              {firstName} {lastName}
+            </p>
+            <p className="text-xs text-muted-foreground leading-tight">
+              {role === 'ADMIN' ? t('users.role_admin') : t('users.role_member')}
+            </p>
+          </div>
+        </div>
         <button
           onClick={() => void handleLogout()}
           className="flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"

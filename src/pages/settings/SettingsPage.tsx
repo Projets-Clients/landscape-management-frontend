@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import {
   Download,
   LayoutDashboard,
-  LogOut,
   Minus,
   Monitor,
   Moon,
   Plus,
   RotateCcw,
   Sun,
-  User,
   Loader2,
   Smartphone,
 } from "lucide-react";
@@ -42,17 +39,8 @@ import { usePwaInstall } from "@/hooks/use-pwa-install";
 import { InstallModal } from "@/components/common/InstallModal";
 
 export function SettingsPage() {
-  const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
-  const {
-    username,
-    firstName,
-    lastName,
-    role,
-    userId,
-    clearAuth,
-    customRoleName,
-  } = useAuthStore();
+const { t, i18n } = useTranslation();
+  const { username, role } = useAuthStore();
   const setNavSlots = useAuthStore((s) => s.setNavSlots);
   const storeNavSlots = useAuthStore((s) => s.navSlots);
   const { isAdmin, can } = usePermissions();
@@ -60,12 +48,7 @@ export function SettingsPage() {
   const { isInstalled, isMobile } = usePwaInstall();
   const [installOpen, setInstallOpen] = useState(false);
 
-  const ROLE_LABELS: Record<string, string> = {
-    ADMIN: t("settings.role_admin"),
-    MEMBER: t("users.role_member"),
-  };
-
-  const updateMe = useUpdateMe();
+const updateMe = useUpdateMe();
 
   // Org name + nav slots (admin only)
   const { data: org, isLoading: orgLoading } = useOrganization();
@@ -194,48 +177,11 @@ export function SettingsPage() {
     });
   }
 
-  async function handleLogout() {
-    try {
-      await apiRequest("/auth/logout", { method: "POST" });
-    } catch {
-      // ignore — clear locally regardless
-    }
-    clearAuth();
-    void navigate("/login", { replace: true });
-    toast.success(t("settings.logged_out"));
-  }
-
-  return (
+return (
     <div className="space-y-6 pb-4">
       <h1 className="text-xl font-bold">{t("settings.title")}</h1>
 
-      {/* Avatar */}
-      <div className="flex flex-col items-center gap-3 py-2">
-        <div
-          className={[
-            "flex h-14 w-14 items-center justify-center rounded-full text-xl font-bold",
-            userId ? "bg-primary/10 text-primary" : "bg-muted",
-          ].join(" ")}
-        >
-          {userId ? (
-            (firstName || username).charAt(0).toUpperCase()
-          ) : (
-            <User className="h-7 w-7 text-muted-foreground" />
-          )}
-        </div>
-        <div className="text-center">
-          <p className="font-bold text-lg">
-            {firstName ? `${firstName} ${lastName}`.trim() : username}
-          </p>
-          {role && (
-            <p className="text-sm text-muted-foreground">
-              {customRoleName ?? ROLE_LABELS[role] ?? role}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Grille : Mon compte + Organisation côte à côte sur desktop */}
+{/* Grille : Mon compte + Organisation côte à côte sur desktop */}
       <div className="space-y-4">
         {/* Mon compte */}
         <div className="space-y-2">
@@ -806,16 +752,6 @@ export function SettingsPage() {
         </div>
       )}
 
-      <Separator />
-
-      <Button
-        variant="destructive"
-        className="w-full min-h-[48px] gap-2"
-        onClick={() => void handleLogout()}
-      >
-        <LogOut className="h-4 w-4" />
-        {t("settings.logout")}
-      </Button>
     </div>
   );
 }
