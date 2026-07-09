@@ -160,6 +160,7 @@
     "not_found": "Projekt nicht gefunden",
     "back": "Zurück",
     "edit_aria": "Projekt bearbeiten",
+    "edit_client_aria": "Kunde bearbeiten",
     "transition_plan": "Planen",
     "transition_start": "Projekt starten",
     "transition_close": "Projekt abschließen",

@@ -160,6 +160,7 @@
     "not_found": "Project not found",
     "back": "Back",
     "edit_aria": "Edit project",
+    "edit_client_aria": "Edit client",
     "transition_plan": "Schedule",
     "transition_start": "Start project",
     "transition_close": "Close project",

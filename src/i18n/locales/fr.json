@@ -160,6 +160,7 @@
     "not_found": "Chantier introuvable",
     "back": "Retour",
     "edit_aria": "Modifier le chantier",
+    "edit_client_aria": "Modifier le client",
     "transition_plan": "Planifier",
     "transition_start": "Démarrer le chantier",
     "transition_close": "Clôturer le chantier",

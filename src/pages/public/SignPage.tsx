@@ -113,7 +113,7 @@ function SignatureCanvas({
           className="flex min-h-[44px] items-center gap-1 text-xs text-muted-foreground"
         >
           <RotateCcw className="h-3.5 w-3.5" />
-          Effacer et recommencer
+          {clearLabel}
         </button>
       )}
     </div>
@@ -152,6 +152,10 @@ export function SignPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const canvas = canvasRef.current
+    if (!validationCompleted || !validationConform) {
+      toast.error(t('sign.error_validation_required'))
+      return
+    }
     if (!canvas || !hasSignature) {
       toast.error(t('sign.error_sign_required'))
       return
@@ -379,7 +383,7 @@ export function SignPage() {
 
         <div className="space-y-2">
           <Label>{t('sign.signature_label')}</Label>
-          <SignatureCanvas canvasRef={canvasRef} onHasStrokes={setHasSignature} />
+          <SignatureCanvas canvasRef={canvasRef} onHasStrokes={setHasSignature} placeholder={t('sign.canvas_placeholder')} clearLabel={t('sign.canvas_clear')} />
         </div>
 
         <Button type="submit" className="w-full min-h-[52px] text-base" disabled={sign.isPending || refuse.isPending}>

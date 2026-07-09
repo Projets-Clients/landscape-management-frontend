@@ -346,7 +346,7 @@ export function ProjectDetailPage() {
         </div>
         <div className="flex items-start gap-3 p-4">
           <Users className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-          <div>
+          <div className="flex-1">
             <p className="text-xs text-muted-foreground">{t('project.info_client')}</p>
             <p className="text-sm font-medium">{fullName(project.client)}</p>
             {project.client.email && (
@@ -355,6 +355,15 @@ export function ProjectDetailPage() {
               </p>
             )}
           </div>
+          {can('clients', 'update') && (
+            <button
+              aria-label={t('project.edit_client_aria')}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border bg-card active:bg-muted"
+              onClick={() => navigate(`/clients/${project.client.id}?edit=true`)}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
         {(project.startDate || project.expectedEndDate) && (
           <div className="flex items-start gap-3 p-4">

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Mail, Phone, MapPin, FileText, Loader2, MessageSquare } from 'lucide-react'
@@ -19,6 +19,7 @@ import { fullName, formatDate, buildAddress, parseAddress } from '@/lib/utils'
 export function ClientDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
 
@@ -38,6 +39,10 @@ export function ClientDetailPage() {
     city: string
     notes: string
   } | null>(null)
+
+  useEffect(() => {
+    if (client && searchParams.get('edit') === 'true') startEdit()
+  }, [client]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function startEdit() {
     if (!client) return
@@ -106,7 +111,7 @@ export function ClientDetailPage() {
         <div className="flex items-center gap-3">
           <button
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-card active:bg-muted"
-            onClick={() => void navigate('/clients')}
+            onClick={() => navigate(-1)}
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
