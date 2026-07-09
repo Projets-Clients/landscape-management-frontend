@@ -7,9 +7,10 @@ const API_URL = import.meta.env.VITE_API_URL as string
 
 export function useCreateSignatureRequest(projectId: string) {
   return useMutation({
-    mutationFn: () =>
+    mutationFn: (mode: 'onsite' | 'remote' = 'remote') =>
       apiRequest<SignatureRequest>(`/projects/${projectId}/signature-requests`, {
         method: 'POST',
+        body: JSON.stringify({ mode }),
       }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['projects', projectId] }),

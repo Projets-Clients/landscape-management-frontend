@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Loader2,
   Pencil,
+  Smartphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -126,8 +127,17 @@ export function ProjectDetailPage() {
 
   async function handleSendSignature() {
     try {
-      await createSigRequest.mutateAsync();
+      await createSigRequest.mutateAsync('remote');
       toast.success(t('project.sig_sent'));
+    } catch {
+      toast.error(t('project.sig_error'));
+    }
+  }
+
+  async function handleSignOnsite() {
+    try {
+      const req = await createSigRequest.mutateAsync('onsite');
+      window.location.href = `/sign/${req.token}`;
     } catch {
       toast.error(t('project.sig_error'));
     }
@@ -249,21 +259,38 @@ export function ProjectDetailPage() {
         </Button>
       )}
 
-      {/* Send signature link */}
-      {project.status === "AWAITING_SIGNATURE" &&
-        can('chantiers', 'update') && (
+      {/* Signature options */}
+      {project.status === "AWAITING_SIGNATURE" && can('chantiers', 'update') && (
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-1">{t('project.sig_choose')}</p>
           <Button
             variant="outline"
-            className="w-full min-h-[48px] gap-2"
+            className="w-full min-h-[48px] gap-3 justify-start"
+            onClick={() => void handleSignOnsite()}
+            disabled={createSigRequest.isPending}
+          >
+            <Smartphone className="h-4 w-4 shrink-0" />
+            <div className="text-left">
+              <p className="text-sm font-medium leading-tight">{t('project.sig_onsite')}</p>
+              <p className="text-xs text-muted-foreground leading-tight">{t('project.sig_onsite_sub')}</p>
+            </div>
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full min-h-[48px] gap-3 justify-start"
             onClick={() => void handleSendSignature()}
             disabled={createSigRequest.isPending}
           >
-            <Send className="h-4 w-4" />
-            {createSigRequest.isPending
-              ? t('project.sending')
-              : t('project.send_sig_link')}
+            <Send className="h-4 w-4 shrink-0" />
+            <div className="text-left">
+              <p className="text-sm font-medium leading-tight">
+                {createSigRequest.isPending ? t('project.sending') : t('project.send_sig_link')}
+              </p>
+              <p className="text-xs text-muted-foreground leading-tight">{t('project.sig_remote_sub')}</p>
+            </div>
           </Button>
-        )}
+        </div>
+      )}
 
       {/* Generate report — COMPLETED but no PDF yet */}
       {project.status === "COMPLETED" && pdfData && !pdfData.pdfUrl && can('chantiers', 'update') && (
