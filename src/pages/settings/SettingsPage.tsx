@@ -21,7 +21,19 @@ import { useAuthStore } from "@/store/auth.store";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useTheme, COLORS } from "@/providers/ThemeProvider";
 import type { ColorKey } from "@/providers/ThemeProvider";
-import { apiRequest } from "@/lib/api-client";
+const API_URL = import.meta.env.VITE_API_URL
+
+// Fire-and-forget preference update — never triggers logout on token expiry
+function patchMe(body: object) {
+  const token = useAuthStore.getState().accessToken
+  if (!token) return
+  void fetch(`${API_URL}/users/me`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  }).catch(() => {})
+}
 import {
   useOrganization,
   useUpdateOrganization,
@@ -151,29 +163,20 @@ const updateMe = useUpdateMe();
 
   function handleThemeChange(newTheme: "system" | "light" | "dark") {
     setTheme(newTheme);
-    void apiRequest("/users/me", {
-      method: "PATCH",
-      body: JSON.stringify({ theme: newTheme }),
-    });
+    patchMe({ theme: newTheme });
   }
 
   function handleColorChange(newColor: ColorKey) {
     setColor(newColor);
-    void apiRequest("/users/me", {
-      method: "PATCH",
-      body: JSON.stringify({ accentColor: newColor }),
-    });
+    patchMe({ accentColor: newColor });
   }
 
   function handleLanguageChange(lang: string) {
     localStorage.setItem("landscape-lang", lang);
     void i18n.changeLanguage(lang).then(() => {
-      toast.success(t("settings.language_updated"));
+      toast.success(i18n.getFixedT(lang)("settings.language_updated"));
     });
-    void apiRequest("/users/me", {
-      method: "PATCH",
-      body: JSON.stringify({ language: lang }),
-    });
+    patchMe({ language: lang });
   }
 
 return (
