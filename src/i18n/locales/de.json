@@ -408,7 +408,9 @@
   "sign": {
     "error_sign_required": "Bitte unterschreiben Sie das Dokument",
     "error_name_required": "Bitte geben Sie Ihren Namen an",
-    "error_validation_required": "Bitte kreuzen Sie beide Bestätigungsfelder an, bevor Sie unterschreiben",
+    "error_validation_required": "Bitte kreuzen Sie das Bestätigungsfeld an, bevor Sie unterschreiben",
+    "signature_locked": "Kreuzen Sie das obige Feld an, um die Unterschrift freizuschalten",
+    "checkbox_agreement": "Ich bestätige, den vorliegenden Interventionsbericht zur Kenntnis genommen zu haben und bestätige, dass er die tatsächlich durchgeführten Arbeiten widerspiegelt.",
     "canvas_placeholder": "Hier unterschreiben",
     "canvas_clear": "Löschen und neu beginnen",
     "error_sign_failed": "Fehler bei der Unterschrift",

@@ -408,7 +408,9 @@
   "sign": {
     "error_sign_required": "Please sign the document",
     "error_name_required": "Please enter your name",
-    "error_validation_required": "Please check both validation boxes before signing",
+    "error_validation_required": "Please check the validation box before signing",
+    "signature_locked": "Check the box above to unlock the signature",
+    "checkbox_agreement": "I acknowledge having read this intervention report and confirm that it reflects the work actually carried out.",
     "canvas_placeholder": "Sign here",
     "canvas_clear": "Clear and start over",
     "error_sign_failed": "Error during signature",
