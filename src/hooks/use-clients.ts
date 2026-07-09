@@ -76,6 +76,7 @@ export function useUpdateClient(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients', id] })
       queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })
 }
