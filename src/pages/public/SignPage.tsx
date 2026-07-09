@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { Leaf, CheckCircle, XCircle, Loader2, RotateCcw } from 'lucide-react'
+import { Leaf, CheckCircle, XCircle, Loader2, RotateCcw, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -129,6 +129,8 @@ export function SignPage() {
   const t = i18n.getFixedT(lang)
 
   const { token } = useParams<{ token: string }>()
+  const [searchParams] = useSearchParams()
+  const isOnsite = searchParams.get('back') === '1'
   const { data, isLoading, error } = usePublicReport(token ?? '')
   const sign = useSign(token ?? '')
 
@@ -185,7 +187,15 @@ export function SignPage() {
           <h1 className="text-xl font-bold">{t('sign.success_title')}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t('sign.success_desc')}</p>
         </div>
-        {data?.pdfUrl ? (
+        {isOnsite ? (
+          <button
+            onClick={() => window.history.back()}
+            className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {t('sign.back_to_project')}
+          </button>
+        ) : data?.pdfUrl ? (
           <a
             href={data.pdfUrl}
             target="_blank"
@@ -284,6 +294,15 @@ export function SignPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6 p-4 pb-12">
       <div className="flex items-center gap-2 pt-2">
+        {isOnsite && (
+          <button
+            onClick={() => window.history.back()}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border bg-card"
+            aria-label={t('sign.back_to_project')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+        )}
         <Leaf className="h-5 w-5 text-primary" />
         <span className="font-bold">Landscape</span>
       </div>

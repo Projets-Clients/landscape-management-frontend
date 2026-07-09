@@ -137,7 +137,7 @@ export function ProjectDetailPage() {
   async function handleSignOnsite() {
     try {
       const req = await createSigRequest.mutateAsync('onsite');
-      window.location.href = `/sign/${req.token}`;
+      window.location.href = `/sign/${req.token}?back=1`;
     } catch {
       toast.error(t('project.sig_error'));
     }
