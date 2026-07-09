@@ -167,12 +167,12 @@ const updateMe = useUpdateMe();
 
   function handleLanguageChange(lang: string) {
     localStorage.setItem("landscape-lang", lang);
-    void i18n.changeLanguage(lang);
+    void i18n.changeLanguage(lang).then(() => {
+      toast.success(t("settings.language_updated"));
+    });
     void apiRequest("/users/me", {
       method: "PATCH",
       body: JSON.stringify({ language: lang }),
-    }).then(() => {
-      toast.success(t("settings.language_updated"));
     });
   }
 

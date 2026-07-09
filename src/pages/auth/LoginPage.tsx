@@ -18,6 +18,7 @@ export function LoginPage() {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const setAuth = useAuthStore((s) => s.setAuth)
+  const clearAuth = useAuthStore((s) => s.clearAuth)
   const setName = useAuthStore((s) => s.setName)
   const setPreferences = useAuthStore((s) => s.setPreferences)
   const setPermissions = useAuthStore((s) => s.setPermissions)
@@ -33,6 +34,7 @@ export function LoginPage() {
     e.preventDefault()
     if (!username.trim() || !password) return
     setLoading(true)
+    clearAuth()
     try {
       const data = await apiRequest<LoginResponse>('/auth/login', {
         method: 'POST',
