@@ -189,7 +189,7 @@ export function SignPage() {
         </div>
         {isOnsite ? (
           <button
-            onClick={() => window.history.back()}
+            onClick={() => { window.location.href = `/chantiers/${data?.project.id}` }}
             className="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
