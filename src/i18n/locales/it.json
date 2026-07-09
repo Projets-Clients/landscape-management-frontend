@@ -426,6 +426,7 @@
     "already_refused_desc": "Ha rifiutato di firmare questo rapporto. L'azienda la contatterà.",
     "success_title": "Firma registrata",
     "success_desc": "Grazie. Il rapporto firmato le sarà inviato per email.",
+    "back_to_project": "Torna al cantiere",
     "pdf_ready": "Scarica il rapporto PDF",
     "pdf_generating": "Il rapporto PDF è in fase di generazione, lo riceverà per email.",
     "refused_title": "Rifiuto registrato",

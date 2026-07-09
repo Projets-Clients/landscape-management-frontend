@@ -427,6 +427,7 @@
     "already_refused_desc": "You have refused to sign this report. The company will contact you.",
     "success_title": "Signature recorded",
     "success_desc": "Thank you. The signed report will be sent to you by email.",
+    "back_to_project": "Back to project",
     "pdf_ready": "Download the PDF report",
     "pdf_generating": "The PDF report is being generated, you will receive it by email.",
     "refused_title": "Refusal recorded",

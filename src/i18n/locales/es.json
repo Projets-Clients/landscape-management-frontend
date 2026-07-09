@@ -427,6 +427,7 @@
     "already_refused_desc": "Ha rechazado firmar este informe. La empresa se pondrá en contacto con usted.",
     "success_title": "Firma registrada",
     "success_desc": "Gracias. El informe firmado le será enviado por correo electrónico.",
+    "back_to_project": "Volver al proyecto",
     "pdf_ready": "Descargar el informe PDF",
     "pdf_generating": "El informe PDF se está generando, lo recibirá por correo electrónico.",
     "refused_title": "Rechazo registrado",

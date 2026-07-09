@@ -427,6 +427,7 @@
     "already_refused_desc": "Vous avez refusé de signer ce rapport. L'entreprise va prendre contact avec vous.",
     "success_title": "Signature enregistrée",
     "success_desc": "Merci. Le rapport signé vous sera envoyé par email.",
+    "back_to_project": "Retour au chantier",
     "pdf_ready": "Télécharger le rapport PDF",
     "pdf_generating": "Le rapport PDF est en cours de génération, vous le recevrez par email.",
     "refused_title": "Refus enregistré",

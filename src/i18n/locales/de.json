@@ -427,6 +427,7 @@
     "already_refused_desc": "Sie haben die Unterzeichnung dieses Berichts verweigert. Das Unternehmen wird sich mit Ihnen in Verbindung setzen.",
     "success_title": "Unterschrift gespeichert",
     "success_desc": "Danke. Der unterzeichnete Bericht wird Ihnen per E-Mail zugesandt.",
+    "back_to_project": "Zurück zum Projekt",
     "pdf_ready": "PDF-Bericht herunterladen",
     "pdf_generating": "Der PDF-Bericht wird erstellt, Sie erhalten ihn per E-Mail.",
     "refused_title": "Ablehnung gespeichert",
