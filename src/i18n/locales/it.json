@@ -407,6 +407,9 @@
   "sign": {
     "error_sign_required": "Si prega di firmare il documento",
     "error_name_required": "Si prega di indicare il nome",
+    "error_validation_required": "Si prega di spuntare entrambe le caselle di validazione prima di firmare",
+    "canvas_placeholder": "Firmi qui",
+    "canvas_clear": "Cancella e ricomincia",
     "error_sign_failed": "Errore durante la firma",
     "error_refuse_failed": "Errore durante il rifiuto",
     "invalid_title": "Link non valido o scaduto",

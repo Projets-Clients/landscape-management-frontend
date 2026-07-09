@@ -407,6 +407,9 @@
   "sign": {
     "error_sign_required": "Bitte unterschreiben Sie das Dokument",
     "error_name_required": "Bitte geben Sie Ihren Namen an",
+    "error_validation_required": "Bitte kreuzen Sie beide Bestätigungsfelder an, bevor Sie unterschreiben",
+    "canvas_placeholder": "Hier unterschreiben",
+    "canvas_clear": "Löschen und neu beginnen",
     "error_sign_failed": "Fehler bei der Unterschrift",
     "error_refuse_failed": "Fehler bei der Ablehnung",
     "invalid_title": "Ungültiger oder abgelaufener Link",

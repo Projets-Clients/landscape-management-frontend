@@ -13,9 +13,13 @@ import { formatDate } from '@/lib/utils'
 function SignatureCanvas({
   onHasStrokes,
   canvasRef,
+  placeholder,
+  clearLabel,
 }: {
   onHasStrokes: (v: boolean) => void
   canvasRef: React.RefObject<HTMLCanvasElement>
+  placeholder: string
+  clearLabel: string
 }) {
   const [drawing, setDrawing] = useState(false)
   const [hasStrokes, setHasStrokes] = useState(false)
@@ -98,7 +102,7 @@ function SignatureCanvas({
         />
         {!hasStrokes && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-            Signez ici
+            {placeholder}
           </div>
         )}
       </div>

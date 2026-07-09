@@ -407,6 +407,9 @@
   "sign": {
     "error_sign_required": "Veuillez signer le document",
     "error_name_required": "Veuillez indiquer votre nom",
+    "error_validation_required": "Veuillez cocher les deux cases de validation avant de signer",
+    "canvas_placeholder": "Signez ici",
+    "canvas_clear": "Effacer et recommencer",
     "error_sign_failed": "Erreur lors de la signature",
     "error_refuse_failed": "Erreur lors du refus",
     "invalid_title": "Lien invalide ou expiré",
