@@ -134,8 +134,7 @@ export function SignPage() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [signerName, setSignerName] = useState('')
-  const [validationCompleted, setValidationCompleted] = useState(false)
-  const [validationConform, setValidationConform] = useState(false)
+  const [validated, setValidated] = useState(false)
   const [hasSignature, setHasSignature] = useState(false)
   const [signed, setSigned] = useState(false)
   const [showRefuseForm, setShowRefuseForm] = useState(false)
@@ -152,7 +151,7 @@ export function SignPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const canvas = canvasRef.current
-    if (!validationCompleted || !validationConform) {
+    if (!validated) {
       toast.error(t('sign.error_validation_required'))
       return
     }
@@ -169,7 +168,7 @@ export function SignPage() {
     if (!signatureImage) return
 
     try {
-      await sign.mutateAsync({ signerName: signerName.trim(), validationCompleted, validationConform, signatureImage })
+      await sign.mutateAsync({ signerName: signerName.trim(), validationCompleted: validated, validationConform: validated, signatureImage })
       setSigned(true)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('sign.error_sign_failed'))
@@ -350,24 +349,14 @@ export function SignPage() {
       <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-5 rounded-xl border bg-card p-4">
         <h2 className="font-semibold">{t('sign.form_title')}</h2>
 
-        <label className="flex min-h-[44px] cursor-pointer items-start gap-3">
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border p-3">
           <input
             type="checkbox"
-            className="mt-1 h-5 w-5 shrink-0 rounded accent-primary"
-            checked={validationCompleted}
-            onChange={(e) => setValidationCompleted(e.target.checked)}
+            className="mt-0.5 h-5 w-5 shrink-0 rounded accent-primary"
+            checked={validated}
+            onChange={(e) => setValidated(e.target.checked)}
           />
-          <span className="text-sm">{t('sign.checkbox_completed')}</span>
-        </label>
-
-        <label className="flex min-h-[44px] cursor-pointer items-start gap-3">
-          <input
-            type="checkbox"
-            className="mt-1 h-5 w-5 shrink-0 rounded accent-primary"
-            checked={validationConform}
-            onChange={(e) => setValidationConform(e.target.checked)}
-          />
-          <span className="text-sm">{t('sign.checkbox_conform')}</span>
+          <span className="text-sm leading-snug">{t('sign.checkbox_agreement')}</span>
         </label>
 
         <div className="space-y-2">
@@ -383,7 +372,12 @@ export function SignPage() {
 
         <div className="space-y-2">
           <Label>{t('sign.signature_label')}</Label>
-          <SignatureCanvas canvasRef={canvasRef} onHasStrokes={setHasSignature} placeholder={t('sign.canvas_placeholder')} clearLabel={t('sign.canvas_clear')} />
+          <div className={!validated ? 'pointer-events-none opacity-40' : ''}>
+            <SignatureCanvas canvasRef={canvasRef} onHasStrokes={setHasSignature} placeholder={t('sign.canvas_placeholder')} clearLabel={t('sign.canvas_clear')} />
+          </div>
+          {!validated && (
+            <p className="text-xs text-muted-foreground">{t('sign.signature_locked')}</p>
+          )}
         </div>
 
         <Button type="submit" className="w-full min-h-[52px] text-base" disabled={sign.isPending || refuse.isPending}>

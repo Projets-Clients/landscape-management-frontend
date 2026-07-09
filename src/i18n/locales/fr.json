@@ -408,7 +408,9 @@
   "sign": {
     "error_sign_required": "Veuillez signer le document",
     "error_name_required": "Veuillez indiquer votre nom",
-    "error_validation_required": "Veuillez cocher les deux cases de validation avant de signer",
+    "error_validation_required": "Veuillez cocher la case de validation avant de signer",
+    "signature_locked": "Cochez la case ci-dessus pour débloquer la signature",
+    "checkbox_agreement": "Je reconnais avoir pris connaissance du présent rapport d'intervention et confirme qu'il reflète les travaux effectivement réalisés.",
     "canvas_placeholder": "Signez ici",
     "canvas_clear": "Effacer et recommencer",
     "error_sign_failed": "Erreur lors de la signature",
