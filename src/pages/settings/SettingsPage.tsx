@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/store/auth.store";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useTheme, COLORS } from "@/providers/ThemeProvider";
