@@ -75,7 +75,15 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside className={cn("flex w-60 flex-col border-r bg-card", className)}>
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <Leaf className="h-5 w-5 text-primary shrink-0" />
+        {org?.logoUrl ? (
+          <img
+            src={org.logoUrl}
+            alt={org.name}
+            className="h-8 w-8 shrink-0 rounded-md object-contain"
+          />
+        ) : (
+          <Leaf className="h-5 w-5 text-primary shrink-0" />
+        )}
         <div className="min-w-0">
           <p className="font-bold tracking-tight text-foreground leading-tight">
             Landscape

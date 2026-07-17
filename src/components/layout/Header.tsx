@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Leaf, Menu } from 'lucide-react'
+import { Leaf, Menu } from 'lucide-react' // Leaf = fallback quand pas de logo
 import { cn } from '@/lib/utils'
 import { useOrganization } from '@/hooks/use-organization'
 import { AppDrawer } from './AppDrawer'
@@ -21,9 +21,17 @@ export function Header({ className }: HeaderProps) {
         )}
       >
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-            <Leaf className="h-4 w-4 text-primary-foreground" />
-          </div>
+          {org?.logoUrl ? (
+            <img
+              src={org.logoUrl}
+              alt={org.name}
+              className="h-8 w-8 rounded-md object-contain"
+            />
+          ) : (
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+              <Leaf className="h-4 w-4 text-primary-foreground" />
+            </div>
+          )}
           <span className="font-semibold text-primary">{org?.name ?? 'Landscape'}</span>
         </div>
         <button

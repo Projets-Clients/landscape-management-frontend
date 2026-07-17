@@ -26,3 +26,20 @@ export function useUpdateOrganization() {
     onError: () => toast.error('Erreur lors de la mise à jour'),
   })
 }
+
+export function useUploadLogo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => {
+      const form = new FormData()
+      form.append('file', file)
+      return apiRequest<{ logoUrl: string }>('/organizations/me/logo', {
+        method: 'POST',
+        body: form,
+      })
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['organization'] })
+    },
+  })
+}

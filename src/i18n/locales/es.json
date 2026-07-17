@@ -117,7 +117,14 @@
     "handedness_section": "Mano dominante",
     "handedness_right": "Diestro",
     "handedness_left": "Zurdo",
-    "org_language_label": "Idioma de los documentos (PDF, emails cliente)"
+    "org_language_label": "Idioma de los documentos (PDF, emails cliente)",
+    "logo_section": "Logo de la empresa",
+    "logo_upload_btn": "Importar un logo",
+    "logo_change_btn": "Cambiar el logo",
+    "logo_hint": "JPEG, PNG o WebP · máx. 2 MB",
+    "logo_uploaded": "Logo actualizado",
+    "logo_error": "Error al importar el logo",
+    "logo_type_error": "Solo se aceptan formatos JPEG, PNG y WebP"
   },
   "common": {
     "back": "Volver",

@@ -38,6 +38,7 @@ function patchMe(body: object) {
 import {
   useOrganization,
   useUpdateOrganization,
+  useUploadLogo,
 } from "@/hooks/use-organization";
 import {
   NAV_SLOT_REGISTRY,
@@ -65,6 +66,7 @@ const updateMe = useUpdateMe();
   // Org name + nav slots (admin only)
   const { data: org, isLoading: orgLoading } = useOrganization();
   const updateOrg = useUpdateOrganization();
+  const uploadLogo = useUploadLogo();
   const [orgName, setOrgName] = useState("");
   const [orgLanguage, setOrgLanguage] = useState("fr");
   const [navSlotsLocal, setNavSlotsLocal] =
@@ -86,6 +88,21 @@ const updateMe = useUpdateMe();
       language: orgLanguage,
       navSlots: navSlotsLocal,
     });
+  }
+
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      toast.error(t('settings.logo_type_error'));
+      return;
+    }
+    void uploadLogo.mutateAsync(file, {
+      onSuccess: () => toast.success(t('settings.logo_uploaded')),
+      onError: () => toast.error(t('settings.logo_error')),
+    });
+    e.target.value = '';
   }
 
   function handleNavSlotChange(index: number, value: NavSlotKey) {
@@ -228,6 +245,52 @@ return (
         {isAdmin && (
           <div className="space-y-2">
             <p className="text-sm font-semibold">{t("settings.org_section")}</p>
+
+            {/* Logo */}
+            <Card className="p-4">
+              <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                {t("settings.logo_section")}
+              </p>
+              <div className="flex items-center gap-4">
+                {org?.logoUrl ? (
+                  <img
+                    src={org.logoUrl}
+                    alt="Logo"
+                    className="h-16 w-16 rounded-lg object-contain border bg-muted"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border bg-muted text-muted-foreground text-2xl font-bold">
+                    {org?.name?.[0]?.toUpperCase() ?? '?'}
+                  </div>
+                )}
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    htmlFor="logo-upload"
+                    className={[
+                      "inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                      "hover:bg-muted",
+                      uploadLogo.isPending ? "opacity-50 pointer-events-none" : "",
+                    ].join(" ")}
+                  >
+                    {uploadLogo.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4" />
+                    )}
+                    {org?.logoUrl ? t("settings.logo_change_btn") : t("settings.logo_upload_btn")}
+                  </label>
+                  <input
+                    id="logo-upload"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    onChange={handleLogoChange}
+                  />
+                  <p className="text-xs text-muted-foreground">{t("settings.logo_hint")}</p>
+                </div>
+              </div>
+            </Card>
+
             <Card className="p-4">
               {orgLoading ? (
                 <div className="flex justify-center py-8">

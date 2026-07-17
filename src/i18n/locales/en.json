@@ -117,7 +117,14 @@
     "handedness_section": "Dominant hand",
     "handedness_right": "Right-handed",
     "handedness_left": "Left-handed",
-    "org_language_label": "Document language (PDF, client emails)"
+    "org_language_label": "Document language (PDF, client emails)",
+    "logo_section": "Company logo",
+    "logo_upload_btn": "Upload a logo",
+    "logo_change_btn": "Change logo",
+    "logo_hint": "JPEG, PNG or WebP · max 2 MB",
+    "logo_uploaded": "Logo updated",
+    "logo_error": "Error uploading logo",
+    "logo_type_error": "Only JPEG, PNG and WebP formats are accepted"
   },
   "common": {
     "back": "Back",

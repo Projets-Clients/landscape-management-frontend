@@ -117,7 +117,14 @@
     "handedness_section": "Mano dominante",
     "handedness_right": "Destrorso",
     "handedness_left": "Mancino",
-    "org_language_label": "Lingua dei documenti (PDF, email cliente)"
+    "org_language_label": "Lingua dei documenti (PDF, email cliente)",
+    "logo_section": "Logo aziendale",
+    "logo_upload_btn": "Importa un logo",
+    "logo_change_btn": "Cambia il logo",
+    "logo_hint": "JPEG, PNG o WebP · max 2 MB",
+    "logo_uploaded": "Logo aggiornato",
+    "logo_error": "Errore durante l'importazione del logo",
+    "logo_type_error": "Sono accettati solo i formati JPEG, PNG e WebP"
   },
   "common": {
     "back": "Indietro",

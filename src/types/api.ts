@@ -21,6 +21,7 @@ export interface Organization {
   slug: string
   navSlots: string[]
   language: string
+  logoUrl?: string
   active: boolean
   createdAt: string
   updatedAt: string
