@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 
 type Theme = 'system' | 'light' | 'dark'
 export type ColorKey = 'green' | 'blue' | 'violet' | 'teal' | 'orange' | 'rose' | 'amber' | 'slate'
+export type Handedness = 'right' | 'left'
 
 export const COLORS: Record<ColorKey, { hsl: string; hex: string }> = {
   green:  { hsl: '142 72% 29%', hex: '#277a3f' },
@@ -19,6 +20,8 @@ interface ThemeContextValue {
   setTheme: (theme: Theme) => void
   color: ColorKey
   setColor: (color: ColorKey) => void
+  handedness: Handedness
+  setHandedness: (h: Handedness) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
@@ -26,10 +29,13 @@ const ThemeContext = createContext<ThemeContextValue>({
   setTheme: () => {},
   color: 'green',
   setColor: () => {},
+  handedness: 'right',
+  setHandedness: () => {},
 })
 
 const THEME_KEY = 'landscape-theme'
 const COLOR_KEY = 'landscape-color'
+const HANDEDNESS_KEY = 'landscape-handedness'
 
 function applyColor(key: ColorKey) {
   const { hsl } = COLORS[key]
@@ -43,6 +49,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   )
   const [color, setColorState] = useState<ColorKey>(
     () => (localStorage.getItem(COLOR_KEY) as ColorKey | null) ?? 'green',
+  )
+  const [handedness, setHandednessState] = useState<Handedness>(
+    () => (localStorage.getItem(HANDEDNESS_KEY) as Handedness | null) ?? 'right',
   )
 
   useEffect(() => {
@@ -73,6 +82,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyColor(color)
   }, [color])
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-handedness', handedness)
+  }, [handedness])
+
   const setTheme = useCallback((t: Theme) => {
     localStorage.setItem(THEME_KEY, t)
     setThemeState(t)
@@ -84,8 +97,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyColor(c)
   }, [])
 
+  const setHandedness = useCallback((h: Handedness) => {
+    localStorage.setItem(HANDEDNESS_KEY, h)
+    setHandednessState(h)
+  }, [])
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, color, setColor }}>
+    <ThemeContext.Provider value={{ theme, setTheme, color, setColor, handedness, setHandedness }}>
       {children}
     </ThemeContext.Provider>
   )

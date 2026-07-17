@@ -114,6 +114,9 @@
     "color_rose": "Rosa",
     "color_amber": "Ámbar",
     "color_slate": "Pizarra",
+    "handedness_section": "Mano dominante",
+    "handedness_right": "Diestro",
+    "handedness_left": "Zurdo",
     "org_language_label": "Idioma de los documentos (PDF, emails cliente)"
   },
   "common": {

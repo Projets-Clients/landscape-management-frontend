@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import {
   Download,
+  Hand,
   LayoutDashboard,
   Minus,
   Monitor,
@@ -20,7 +21,7 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/auth.store";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useTheme, COLORS } from "@/providers/ThemeProvider";
-import type { ColorKey } from "@/providers/ThemeProvider";
+import type { ColorKey, Handedness } from "@/providers/ThemeProvider";
 const API_URL = import.meta.env.VITE_API_URL
 
 // Fire-and-forget preference update — never triggers logout on token expiry
@@ -55,7 +56,7 @@ const { t, i18n } = useTranslation();
   const setNavSlots = useAuthStore((s) => s.setNavSlots);
   const storeNavSlots = useAuthStore((s) => s.navSlots);
   const { isAdmin, can } = usePermissions();
-  const { theme, setTheme, color, setColor } = useTheme();
+  const { theme, setTheme, color, setColor, handedness, setHandedness } = useTheme();
   const { isInstalled, isMobile } = usePwaInstall();
   const [installOpen, setInstallOpen] = useState(false);
 
@@ -169,6 +170,10 @@ const updateMe = useUpdateMe();
   function handleColorChange(newColor: ColorKey) {
     setColor(newColor);
     patchMe({ accentColor: newColor });
+  }
+
+  function handleHandednessChange(h: Handedness) {
+    setHandedness(h);
   }
 
   function handleLanguageChange(lang: string) {
@@ -676,6 +681,34 @@ return (
                   ].join(" ")}
                 >
                   <Icon className="h-4 w-4" />
+                  {t(labelKey)}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Main dominante */}
+          <div className="p-3">
+            <p className="mb-2 text-xs font-medium text-muted-foreground">
+              {t("settings.handedness_section")}
+            </p>
+            <div className="grid grid-cols-2 gap-1">
+              {(
+                [
+                  { value: "right", labelKey: "settings.handedness_right", flip: false },
+                  { value: "left",  labelKey: "settings.handedness_left",  flip: true  },
+                ] as { value: Handedness; labelKey: string; flip: boolean }[]
+              ).map(({ value, labelKey, flip }) => (
+                <button
+                  key={value}
+                  onClick={() => handleHandednessChange(value)}
+                  className={[
+                    "flex flex-col items-center gap-1.5 rounded-md px-2 py-3 text-xs font-medium transition-colors",
+                    handedness === value
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted",
+                  ].join(" ")}
+                >
+                  <Hand className={["h-4 w-4", flip ? "scale-x-[-1]" : ""].join(" ")} />
                   {t(labelKey)}
                 </button>
               ))}

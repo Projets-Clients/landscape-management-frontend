@@ -114,6 +114,9 @@
     "color_rose": "Rosa",
     "color_amber": "Bernstein",
     "color_slate": "Schiefer",
+    "handedness_section": "Dominante Hand",
+    "handedness_right": "Rechtshänder",
+    "handedness_left": "Linkshänder",
     "org_language_label": "Dokumentensprache (PDF, Kunden-E-Mails)"
   },
   "common": {

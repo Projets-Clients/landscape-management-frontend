@@ -16,7 +16,8 @@ export function AppDrawer({ open, onClose }: AppDrawerProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { firstName, lastName, username, role, customRoleName, clearAuth } = useAuthStore()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, handedness } = useTheme()
+  const isLeft = handedness === 'left'
 
   const ROLE_LABELS: Record<string, string> = {
     ADMIN: t('settings.role_admin'),
@@ -81,8 +82,9 @@ export function AppDrawer({ open, onClose }: AppDrawerProps) {
       {/* Panel */}
       <div
         className={cn(
-          'fixed right-0 top-0 z-[70] flex h-dvh w-72 flex-col bg-card shadow-xl transition-transform duration-300',
-          open ? 'translate-x-0' : 'translate-x-full',
+          'fixed top-0 z-[70] flex h-dvh w-72 flex-col bg-card shadow-xl transition-transform duration-300',
+          isLeft ? 'left-0' : 'right-0',
+          open ? 'translate-x-0' : (isLeft ? '-translate-x-full' : 'translate-x-full'),
         )}
       >
         {/* Header du drawer */}

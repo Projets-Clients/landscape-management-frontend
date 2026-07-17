@@ -114,6 +114,9 @@
     "color_rose": "Rose",
     "color_amber": "Ambre",
     "color_slate": "Ardoise",
+    "handedness_section": "Main dominante",
+    "handedness_right": "Droitier",
+    "handedness_left": "Gaucher",
     "org_language_label": "Langue des documents (PDF, emails client)"
   },
   "common": {

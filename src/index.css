@@ -24,6 +24,15 @@
   .bottom-fab {
     bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5rem);
   }
+
+  /* Mode gaucher */
+  [data-handedness="left"] .bottom-fab {
+    right: auto;
+    left: 1rem;
+  }
+  [data-handedness="left"] .app-header {
+    flex-direction: row-reverse;
+  }
 }
 
 @layer base {

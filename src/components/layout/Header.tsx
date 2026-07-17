@@ -16,7 +16,7 @@ export function Header({ className }: HeaderProps) {
     <>
       <header
         className={cn(
-          'flex h-14 items-center justify-between border-b bg-card px-4',
+          'app-header flex h-14 items-center justify-between border-b bg-card px-4',
           className,
         )}
       >
