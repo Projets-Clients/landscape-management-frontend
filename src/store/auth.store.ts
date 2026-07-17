@@ -18,6 +18,7 @@ interface AuthState {
   permissions: Permissions | null
   customRoleName: string | null
   setAuth: (accessToken: string, username: string, refreshToken?: string) => void
+  setUsername: (username: string) => void
   setName: (firstName: string, lastName: string) => void
   setPreferences: (language: string, theme: string, accentColor: string) => void
   setPermissions: (permissions: Permissions | null) => void
@@ -66,6 +67,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       userId: decoded?.sub ?? null,
       organizationId: decoded?.orgId ?? null,
     })
+  },
+
+  setUsername: (username) => {
+    sessionStorage.setItem('username', username)
+    set({ username })
   },
 
   setName: (firstName, lastName) => {

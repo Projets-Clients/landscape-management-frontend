@@ -28,6 +28,7 @@ const sessionRefresh: Promise<{ accessToken: string; refreshToken: string } | nu
 export function SessionProvider() {
   const [ready, setReady] = useState(false)
   const setAuth = useAuthStore((s) => s.setAuth)
+  const setUsername = useAuthStore((s) => s.setUsername)
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const setName = useAuthStore((s) => s.setName)
   const setPreferences = useAuthStore((s) => s.setPreferences)
@@ -47,10 +48,11 @@ export function SessionProvider() {
           })
           if (res.ok) {
             const me = (await res.json()) as {
-              firstName: string; lastName: string
+              username: string; firstName: string; lastName: string
               language: string; theme: string; accentColor: string; handedness: string; navSlots: string[]
               customRole?: { name: string; permissions: Record<string, string[]> } | null
             }
+            setUsername(me.username ?? '')
             setName(me.firstName ?? '', me.lastName ?? '')
             setPreferences(me.language, me.theme, me.accentColor)
             setTheme(me.theme as 'system' | 'light' | 'dark')
@@ -70,7 +72,7 @@ export function SessionProvider() {
       }
       setReady(true)
     })
-  }, [setAuth, clearAuth, setName, setTheme, setColor, setHandedness, i18n, setPreferences, setNavSlots, setCustomRoleName])
+  }, [setAuth, setUsername, clearAuth, setName, setTheme, setColor, setHandedness, i18n, setPreferences, setNavSlots, setCustomRoleName])
 
   if (!ready) {
     return (
