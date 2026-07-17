@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
+import { Fab } from '@/components/common/Fab'
 import { Avatar } from '@/components/common/Avatar'
 import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
 import { useRoles } from '@/hooks/use-roles'
@@ -332,7 +333,7 @@ export function UsersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t('users.title')}</h1>
         {canCreate && (
-          <Button size="sm" className="min-h-[44px]" onClick={() => setShowCreate((v) => !v)}>
+          <Button size="sm" className="min-h-[44px] hidden md:flex" onClick={() => setShowCreate((v) => !v)}>
             <Plus className="mr-1 h-4 w-4" />
             {t('common.new')}
           </Button>
@@ -389,6 +390,8 @@ export function UsersPage() {
       )}
 
       {tab === 'roles' && <RolesTab showCreate={showCreate && isAdmin} onCloseCreate={() => setShowCreate(false)} isAdmin={isAdmin} />}
+
+      {canCreate && <Fab onClick={() => setShowCreate(true)} />}
     </div>
   )
 }

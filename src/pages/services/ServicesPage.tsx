@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/common/Pagination";
+import { Fab } from "@/components/common/Fab";
 import {
   useServices,
   useCreateService,
@@ -326,7 +327,7 @@ export function ServicesPage() {
           {view === "active" && can('prestations', 'create') ? (
             <Button
               size="sm"
-              className="min-h-[44px] gap-1.5"
+              className="min-h-[44px] gap-1.5 hidden md:flex"
               onClick={() => setModalState({ mode: "create" })}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -466,6 +467,10 @@ export function ServicesPage() {
             />
           </div>
         </div>
+      )}
+
+      {view === "active" && can('prestations', 'create') && (
+        <Fab onClick={() => setModalState({ mode: "create" })} />
       )}
     </div>
   );

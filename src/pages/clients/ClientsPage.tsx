@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
+import { Fab } from '@/components/common/Fab'
 import { Pagination } from '@/components/common/Pagination'
 import { useClients } from '@/hooks/use-clients'
 import type { ClientSort } from '@/hooks/use-clients'
@@ -31,7 +32,7 @@ export function ClientsPage() {
           {can('clients', 'create') && (
             <Button
               size="sm"
-              className="min-h-[44px]"
+              className="min-h-[44px] hidden md:flex"
               onClick={() => void navigate('/clients/nouveau')}
             >
               <Plus className="mr-1 h-4 w-4" />
@@ -106,6 +107,10 @@ export function ClientsPage() {
           </div>
         )}
       </div>
+
+      {can('clients', 'create') && (
+        <Fab onClick={() => void navigate('/clients/nouveau')} />
+      )}
 
       {/* Sticky bottom: pagination */}
       <div className="shrink-0 px-4 pb-nav lg:pb-2 pt-1 bg-background">

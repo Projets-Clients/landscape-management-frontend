@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { EmptyState } from '@/components/common/EmptyState'
+import { Fab } from '@/components/common/Fab'
 import { Pagination } from '@/components/common/Pagination'
 import { useProjects } from '@/hooks/use-projects'
 import { usePermissions } from '@/hooks/use-permissions'
@@ -87,7 +88,7 @@ export function ProjectsPage() {
           {can('chantiers', 'create') && (
             <Button
               size="sm"
-              className="min-h-[44px]"
+              className="min-h-[44px] hidden md:flex"
               onClick={() => void navigate('/chantiers/nouveau')}
             >
               <Plus className="h-4 w-4 mr-1" />
@@ -194,6 +195,10 @@ export function ProjectsPage() {
           ))}
         </div>
       </div>
+
+      {can('chantiers', 'create') && (
+        <Fab onClick={() => void navigate('/chantiers/nouveau')} />
+      )}
 
       {/* Sticky bottom: pagination */}
       <div className="shrink-0 px-4 pb-nav lg:pb-2 pt-1 bg-background">
