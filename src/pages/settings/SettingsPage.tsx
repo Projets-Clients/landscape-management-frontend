@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { ChevronRight, User, Palette, LayoutGrid, Building2, Smartphone } from 'lucide-react'
+import { ChevronRight, User, Palette, Building2, LayoutGrid, Smartphone } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { useAuthStore } from '@/store/auth.store'
 import { usePermissions } from '@/hooks/use-permissions'
 import { usePwaInstall } from '@/hooks/use-pwa-install'
 import { InstallModal } from '@/components/common/InstallModal'
@@ -40,7 +39,6 @@ function HubRow({ icon: Icon, iconClass, label, sub, onClick }: HubRowProps) {
 export function SettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const role = useAuthStore((s) => s.role)
   const { isAdmin } = usePermissions()
   const { isInstalled, isMobile } = usePwaInstall()
   const [installOpen, setInstallOpen] = useState(false)
@@ -67,15 +65,6 @@ export function SettingsPage() {
             sub={t('settings.hub_appearance_sub')}
             onClick={() => navigate('/parametres/apparence')}
           />
-          {role === 'MEMBER' && (
-            <HubRow
-              icon={LayoutGrid}
-              iconClass="bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400"
-              label={t('settings.hub_navigation')}
-              sub={t('settings.hub_navigation_sub')}
-              onClick={() => navigate('/parametres/navigation')}
-            />
-          )}
         </Card>
       </div>
 
