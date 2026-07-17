@@ -18,6 +18,10 @@ import { UsersPage } from '@/pages/users/UsersPage'
 import { CreateUserPage } from '@/pages/users/CreateUserPage'
 import { CreateRolePage } from '@/pages/users/CreateRolePage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { SettingsProfilPage } from '@/pages/settings/SettingsProfilPage'
+import { SettingsAppearancePage } from '@/pages/settings/SettingsAppearancePage'
+import { SettingsNavigationPage } from '@/pages/settings/SettingsNavigationPage'
+import { SettingsEnterprisePage } from '@/pages/settings/SettingsEnterprisePage'
 import { ServicesPage } from '@/pages/services/ServicesPage'
 import { CreateServicePage } from '@/pages/services/CreateServicePage'
 import { SignPage } from '@/pages/public/SignPage'
@@ -60,6 +64,10 @@ export const router = createBrowserRouter([
               { path: 'chantiers/:id/photos', element: <PhotosPage /> },
               { path: 'chantiers/:id/rapport', element: <ReportPage /> },
               { path: 'parametres', element: <SettingsPage /> },
+              { path: 'parametres/profil', element: <SettingsProfilPage /> },
+              { path: 'parametres/apparence', element: <SettingsAppearancePage /> },
+              { path: 'parametres/navigation', element: <SettingsNavigationPage /> },
+              { path: 'parametres/entreprise', element: <SettingsEnterprisePage /> },
               {
                 element: <CanRoute module="chantiers" action="create" />,
                 children: [
