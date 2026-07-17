@@ -1,19 +1,17 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { ApiError } from '@/lib/api-client'
 import { Trash2, ChevronDown, ChevronUp, Loader2, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
-import { useRoles, useCreateRole, useUpdateRole, useDeleteRole } from '@/hooks/use-roles'
+import { useRoles, useUpdateRole, useDeleteRole } from '@/hooks/use-roles'
 import { MODULES, ACTIONS, EMPTY_PERMISSIONS } from '@/lib/permissions'
 import type { Role, Permissions, PermModule, PermAction } from '@/types/api'
 
-function PermissionMatrix({
+export function PermissionMatrix({
   permissions,
   onChange,
   disabled,
@@ -190,77 +188,19 @@ function RoleRow({ role, isAdmin }: { role: Role; isAdmin: boolean }) {
   )
 }
 
-function CreateRoleForm({ onClose }: { onClose: () => void }) {
-  const { t } = useTranslation()
-  const createRole = useCreateRole()
-  const [name, setName] = useState('')
-  const [permissions, setPermissions] = useState<Permissions>(EMPTY_PERMISSIONS)
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    try {
-      await createRole.mutateAsync({ name: name.trim(), permissions })
-      toast.success(t('users.role_created'))
-      onClose()
-    } catch (err) {
-      const msg = err instanceof ApiError ? err.message : t('users.role_create_error')
-      toast.error(msg)
-    }
-  }
-
-  return (
-    <Card className="p-4">
-      <h2 className="mb-4 font-semibold">{t('users.new_role')}</h2>
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-        <div className="space-y-1.5">
-          <Label>{t('users.role_name')}</Label>
-          <Input
-            className="min-h-[44px]"
-            placeholder={t('users.role_name_placeholder')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            minLength={2}
-            maxLength={30}
-            required
-            disabled={createRole.isPending}
-          />
-        </div>
-        <div>
-          <p className="mb-2 text-sm font-medium">{t('users.role_permissions')}</p>
-          <PermissionMatrix
-            permissions={permissions}
-            onChange={setPermissions}
-            disabled={createRole.isPending}
-          />
-        </div>
-        <div className="flex gap-3">
-          <Button type="button" variant="outline" className="min-h-[44px] flex-1" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" className="min-h-[44px] flex-1" disabled={createRole.isPending || !name.trim()}>
-            {createRole.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.save')}
-          </Button>
-        </div>
-      </form>
-    </Card>
-  )
-}
-
-export function RolesTab({ showCreate, onCloseCreate, isAdmin }: { showCreate: boolean; onCloseCreate: () => void; isAdmin: boolean }) {
+export function RolesTab({ isAdmin }: { isAdmin: boolean }) {
   const { t } = useTranslation()
   const { data: roles, isLoading } = useRoles()
 
   return (
     <div className="space-y-4">
-      {showCreate && isAdmin && <CreateRoleForm onClose={onCloseCreate} />}
-
       {isLoading && (
         <div className="space-y-2">
           {[1, 2].map((i) => <Skeleton key={i} className="h-[56px] rounded-xl" />)}
         </div>
       )}
 
-      {!isLoading && roles?.length === 0 && !showCreate && (
+      {!isLoading && roles?.length === 0 && (
         <EmptyState icon={ShieldCheck} title={t('users.roles_empty')} />
       )}
 

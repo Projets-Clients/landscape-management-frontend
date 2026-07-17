@@ -233,7 +233,6 @@ export function UsersPage() {
   const { t } = useTranslation()
   const { can, isAdmin } = usePermissions()
   const { data: users, isLoading } = useUsers()
-  const [showCreateRole, setShowCreateRole] = useState(false)
   const [tab, setTab] = useState<Tab>('membres')
 
   const canCreate = isAdmin || can('equipe', 'create')
@@ -247,7 +246,11 @@ export function UsersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t('users.title')}</h1>
         {canCreate && (
-          <Button size="sm" className="min-h-[44px] hidden md:flex" onClick={() => void navigate('/utilisateurs/nouveau')}>
+          <Button
+            size="sm"
+            className="min-h-[44px] hidden md:flex"
+            onClick={() => void navigate(tab === 'roles' ? '/utilisateurs/roles/nouveau' : '/utilisateurs/nouveau')}
+          >
             <Plus className="mr-1 h-4 w-4" />
             {t('common.new')}
           </Button>
@@ -260,7 +263,7 @@ export function UsersPage() {
           {(['membres', 'roles'] as Tab[]).map((t_) => (
             <button
               key={t_}
-              onClick={() => { setTab(t_); setShowCreateRole(false) }}
+              onClick={() => setTab(t_)}
               className={[
                 'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
                 tab === t_
@@ -302,9 +305,11 @@ export function UsersPage() {
         </>
       )}
 
-      {tab === 'roles' && <RolesTab showCreate={showCreateRole && isAdmin} onCloseCreate={() => setShowCreateRole(false)} isAdmin={isAdmin} />}
+      {tab === 'roles' && <RolesTab isAdmin={isAdmin} />}
 
-      {canCreate && tab === 'membres' && <Fab onClick={() => void navigate('/utilisateurs/nouveau')} />}
+      {canCreate && (
+        <Fab onClick={() => void navigate(tab === 'roles' ? '/utilisateurs/roles/nouveau' : '/utilisateurs/nouveau')} />
+      )}
     </div>
   )
 }

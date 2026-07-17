@@ -16,6 +16,7 @@ import { ClientDetailPage } from '@/pages/clients/ClientDetailPage'
 import { CreateClientPage } from '@/pages/clients/CreateClientPage'
 import { UsersPage } from '@/pages/users/UsersPage'
 import { CreateUserPage } from '@/pages/users/CreateUserPage'
+import { CreateRolePage } from '@/pages/users/CreateRolePage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { ServicesPage } from '@/pages/services/ServicesPage'
 import { CreateServicePage } from '@/pages/services/CreateServicePage'
@@ -93,6 +94,7 @@ export const router = createBrowserRouter([
                 element: <CanRoute module="equipe" action="create" />,
                 children: [
                   { path: 'utilisateurs/nouveau', element: <CreateUserPage /> },
+                  { path: 'utilisateurs/roles/nouveau', element: <CreateRolePage /> },
                 ],
               },
               {
