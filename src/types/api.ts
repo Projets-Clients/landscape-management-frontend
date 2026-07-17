@@ -207,7 +207,10 @@ export interface PublicClient {
 export interface PublicReport {
   project: PublicProject
   client: PublicClient
-  report: { comment: string | null } | null
+  report: {
+    comment: string | null
+    lines: { snapshotTitle: string; snapshotUnit: string | null; complement: string | null }[]
+  } | null
   photos: Photo[]
   pdfUrl: string | null
   alreadySigned: boolean

@@ -177,6 +177,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
+    "delete": "Delete",
     "new": "New",
     "first_name": "First name",
     "last_name": "Last name",
@@ -386,6 +387,8 @@
     "line_deleted": "Service removed",
     "line_add_error": "Error adding service",
     "line_delete_error": "Error removing service",
+    "line_updated": "Service updated",
+    "line_update_error": "Error updating service",
     "no_lines": "No services"
   },
   "photos": {

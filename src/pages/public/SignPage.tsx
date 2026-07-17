@@ -356,12 +356,33 @@ export function SignPage() {
         </div>
       )}
 
-      {report?.comment && (
-        <div className="space-y-2">
+      {report && (report.lines.length > 0 || report.comment) && (
+        <div className="space-y-3">
           <h2 className="font-semibold">{t('sign.report_section')}</h2>
-          <div className="rounded-xl bg-muted/50 p-4">
-            <p className="whitespace-pre-wrap text-sm">{report.comment}</p>
-          </div>
+          {report.lines.length > 0 && (
+            <div className="space-y-1.5">
+              {report.lines.map((line, i) => (
+                <div key={i} className="rounded-xl bg-muted/50 px-4 py-2.5">
+                  <p className="text-sm font-medium leading-snug">
+                    {line.snapshotTitle}
+                    {line.snapshotUnit && (
+                      <span className="ml-1 text-xs font-normal text-muted-foreground">
+                        ({line.snapshotUnit})
+                      </span>
+                    )}
+                  </p>
+                  {line.complement && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{line.complement}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {report.comment && (
+            <div className="rounded-xl bg-muted/50 p-4">
+              <p className="whitespace-pre-wrap text-sm">{report.comment}</p>
+            </div>
+          )}
         </div>
       )}
 

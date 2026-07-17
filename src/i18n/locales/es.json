@@ -177,6 +177,7 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "edit": "Modificar",
+    "delete": "Eliminar",
     "new": "Nuevo",
     "first_name": "Nombre",
     "last_name": "Apellido",
@@ -386,6 +387,8 @@
     "line_deleted": "Servicio eliminado",
     "line_add_error": "Error al añadir servicio",
     "line_delete_error": "Error al eliminar servicio",
+    "line_updated": "Servicio actualizado",
+    "line_update_error": "Error al actualizar servicio",
     "no_lines": "Sin servicios"
   },
   "photos": {

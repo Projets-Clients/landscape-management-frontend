@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Save, Loader2, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Plus, Trash2, Pencil, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useReport, useUpdateReport, useReportLines, useAddReportLine, useDeleteReportLine } from '@/hooks/use-report'
+import { useReport, useUpdateReport, useReportLines, useAddReportLine, useUpdateReportLine, useDeleteReportLine } from '@/hooks/use-report'
 import { useServices } from '@/hooks/use-services'
 import { useProject } from '@/hooks/use-projects'
 import { usePermissions } from '@/hooks/use-permissions'
@@ -16,13 +16,73 @@ import type { ReportLine } from '@/types/api'
 
 function ReportLineCard({
   line,
+  onUpdate,
   onDelete,
   isLocked,
 }: {
   line: ReportLine
+  onUpdate: (id: string, data: { snapshotTitle: string; complement: string }) => Promise<void>
   onDelete: (id: string) => void
   isLocked: boolean
 }) {
+  const { t } = useTranslation()
+  const [editing, setEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState(line.snapshotTitle)
+  const [editComplement, setEditComplement] = useState(line.complement ?? '')
+  const [saving, setSaving] = useState(false)
+
+  function handleCancel() {
+    setEditTitle(line.snapshotTitle)
+    setEditComplement(line.complement ?? '')
+    setEditing(false)
+  }
+
+  async function handleSave() {
+    if (!editTitle.trim()) return
+    setSaving(true)
+    try {
+      await onUpdate(line.id, { snapshotTitle: editTitle.trim(), complement: editComplement.trim() })
+      setEditing(false)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (editing) {
+    return (
+      <div className="rounded-xl border bg-card p-3 space-y-2">
+        <Input
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+          className="min-h-[40px] text-sm"
+          autoFocus
+        />
+        <Input
+          value={editComplement}
+          onChange={(e) => setEditComplement(e.target.value)}
+          placeholder={t('report.line_complement_placeholder')}
+          className="min-h-[40px] text-sm"
+        />
+        <div className="flex gap-2">
+          <button
+            onClick={handleCancel}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border text-muted-foreground transition-colors hover:bg-muted"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={() => void handleSave()}
+            disabled={saving || !editTitle.trim()}
+            className="flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary text-xs font-medium text-primary-foreground transition-opacity disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+            {t('common.save')}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-start gap-2 rounded-xl border bg-card p-3">
       <div className="min-w-0 flex-1">
@@ -35,13 +95,22 @@ function ReportLineCard({
         )}
       </div>
       {!isLocked && (
-        <button
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:bg-destructive/10"
-          onClick={() => onDelete(line.id)}
-          aria-label="Supprimer"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex shrink-0 gap-1">
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted"
+            onClick={() => setEditing(true)}
+            aria-label={t('common.edit')}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => onDelete(line.id)}
+            aria-label={t('common.delete')}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
       )}
     </div>
   )
@@ -59,6 +128,7 @@ export function ReportPage() {
   const { data: services = [] } = useServices(true)
   const updateReport = useUpdateReport(id ?? '')
   const addLine = useAddReportLine(id ?? '')
+  const updateLine = useUpdateReportLine(id ?? '')
   const deleteLine = useDeleteReportLine(id ?? '')
 
   const [comment, setComment] = useState('')
@@ -106,6 +176,18 @@ export function ReportPage() {
       setComplement('')
     } catch {
       toast.error(t('report.line_add_error'))
+    }
+  }
+
+  async function handleUpdateLine(lineId: string, data: { snapshotTitle: string; complement: string }) {
+    try {
+      await updateLine.mutateAsync({
+        lineId,
+        data: { snapshotTitle: data.snapshotTitle, complement: data.complement || undefined },
+      })
+      toast.success(t('report.line_updated'))
+    } catch {
+      toast.error(t('report.line_update_error'))
     }
   }
 
@@ -183,6 +265,7 @@ export function ReportPage() {
             <ReportLineCard
               key={line.id}
               line={line}
+              onUpdate={(lid, data) => handleUpdateLine(lid, data)}
               onDelete={(lid) => void handleDeleteLine(lid)}
               isLocked={isLocked}
             />

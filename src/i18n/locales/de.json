@@ -177,6 +177,7 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "edit": "Bearbeiten",
+    "delete": "Löschen",
     "new": "Neu",
     "first_name": "Vorname",
     "last_name": "Nachname",
@@ -386,6 +387,8 @@
     "line_deleted": "Leistung entfernt",
     "line_add_error": "Fehler beim Hinzufügen",
     "line_delete_error": "Fehler beim Entfernen",
+    "line_updated": "Leistung aktualisiert",
+    "line_update_error": "Fehler beim Aktualisieren",
     "no_lines": "Keine Leistungen"
   },
   "photos": {

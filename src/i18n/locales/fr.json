@@ -177,6 +177,7 @@
     "save": "Enregistrer",
     "cancel": "Annuler",
     "edit": "Modifier",
+    "delete": "Supprimer",
     "new": "Nouveau",
     "first_name": "Prénom",
     "last_name": "Nom",
@@ -386,6 +387,8 @@
     "line_deleted": "Prestation supprimée",
     "line_add_error": "Erreur lors de l'ajout",
     "line_delete_error": "Erreur lors de la suppression",
+    "line_updated": "Prestation mise à jour",
+    "line_update_error": "Erreur lors de la mise à jour",
     "no_lines": "Aucune prestation"
   },
   "photos": {

@@ -76,6 +76,18 @@ export function useAddReportLine(projectId: string) {
   })
 }
 
+export function useUpdateReportLine(projectId: string) {
+  return useMutation({
+    mutationFn: ({ lineId, data }: { lineId: string; data: { snapshotTitle?: string; complement?: string } }) =>
+      apiRequest<ReportLine>(`/projects/${projectId}/report/lines/${lineId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['report-lines', projectId] }),
+  })
+}
+
 export function useDeleteReportLine(projectId: string) {
   return useMutation({
     mutationFn: (lineId: string) =>
