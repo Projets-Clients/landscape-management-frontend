@@ -13,6 +13,7 @@ import {
   Sun,
   Loader2,
   Smartphone,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -60,6 +61,7 @@ const { t, i18n } = useTranslation();
   const { theme, setTheme, color, setColor, handedness, setHandedness } = useTheme();
   const { isInstalled, isMobile } = usePwaInstall();
   const [installOpen, setInstallOpen] = useState(false);
+  const [logoPreviewOpen, setLogoPreviewOpen] = useState(false);
 
 const updateMe = useUpdateMe();
 
@@ -203,6 +205,7 @@ const updateMe = useUpdateMe();
   }
 
 return (
+    <>
     <div className="space-y-6 pb-4">
       <h1 className="text-xl font-bold">{t("settings.title")}</h1>
 
@@ -253,11 +256,17 @@ return (
               </p>
               <div className="flex items-center gap-4">
                 {org?.logoUrl ? (
-                  <img
-                    src={org.logoUrl}
-                    alt="Logo"
-                    className="h-16 w-16 rounded-lg object-contain border bg-muted"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setLogoPreviewOpen(true)}
+                    className="shrink-0 rounded-lg border bg-muted overflow-hidden transition-opacity hover:opacity-80"
+                  >
+                    <img
+                      src={org.logoUrl}
+                      alt="Logo"
+                      className="h-16 w-16 object-contain"
+                    />
+                  </button>
                 ) : (
                   <div className="flex h-16 w-16 items-center justify-center rounded-lg border bg-muted text-muted-foreground text-2xl font-bold">
                     {org?.name?.[0]?.toUpperCase() ?? '?'}
@@ -852,5 +861,32 @@ return (
       )}
 
     </div>
+
+    {/* Lightbox logo */}
+    {logoPreviewOpen && org?.logoUrl && (
+      <div
+        role="dialog"
+        aria-modal="true"
+        onClick={() => setLogoPreviewOpen(false)}
+        onKeyDown={(e) => e.key === 'Escape' && setLogoPreviewOpen(false)}
+        tabIndex={-1}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm outline-none"
+      >
+        <button
+          onClick={() => setLogoPreviewOpen(false)}
+          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+          aria-label="Fermer"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <img
+          src={org.logoUrl}
+          alt="Logo"
+          className="max-h-full max-w-full rounded-xl object-contain shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+    )}
+    </>
   );
 }
