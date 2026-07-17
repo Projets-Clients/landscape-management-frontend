@@ -49,7 +49,6 @@ type OrgFormState = {
   defaultVatRate: string
   defaultPaymentTerms: string
   latePaymentPenalties: string
-  documentFooter: string
 }
 
 const EMPTY: OrgFormState = {
@@ -60,7 +59,7 @@ const EMPTY: OrgFormState = {
   bankHolder: '', iban: '', bic: '',
   insurerName: '', insurerPolicy: '', insurerExpiry: '',
   quotePrefix: 'DEV', invoicePrefix: 'FAC', reportPrefix: 'RAP',
-  defaultVatRate: '10', defaultPaymentTerms: '', latePaymentPenalties: '', documentFooter: '',
+  defaultVatRate: '10', defaultPaymentTerms: '', latePaymentPenalties: '',
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -122,7 +121,6 @@ export function SettingsEnterprisePage() {
       defaultVatRate:      String(org.defaultVatRate ?? 10),
       defaultPaymentTerms: org.defaultPaymentTerms ?? '',
       latePaymentPenalties:org.latePaymentPenalties ?? '',
-      documentFooter:      org.documentFooter ?? '',
     })
   }, [org])
 
@@ -176,7 +174,6 @@ export function SettingsEnterprisePage() {
       defaultVatRate:      form.defaultVatRate ? parseFloat(form.defaultVatRate) : undefined,
       defaultPaymentTerms: form.defaultPaymentTerms || undefined,
       latePaymentPenalties:form.latePaymentPenalties || undefined,
-      documentFooter:      form.documentFooter || undefined,
     }, {
       onSuccess: () => toast.success(t('settings.org_saved')),
     })
@@ -414,17 +411,6 @@ export function SettingsEnterprisePage() {
               </Field>
               <Field label={t('settings.org_late_penalties')}>
                 <Input className={inputCls} value={form.latePaymentPenalties} onChange={f('latePaymentPenalties')} maxLength={200} placeholder="3× le taux légal en vigueur" />
-              </Field>
-              <Field label={t('settings.org_document_footer')}>
-                <textarea
-                  value={form.documentFooter}
-                  onChange={f('documentFooter')}
-                  maxLength={500}
-                  rows={3}
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
-                  placeholder="Devis valable 30 jours. TVA non applicable, article 293 B du CGI…"
-                />
-                <p className="text-right text-xs text-muted-foreground tabular-nums">{form.documentFooter.length}/500</p>
               </Field>
             </Card>
 
