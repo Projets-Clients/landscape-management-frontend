@@ -146,10 +146,11 @@ export function AppDrawer({ open, onClose }: AppDrawerProps) {
             ))}
           </nav>
 
-          <div className="my-2 border-t" />
+        </div>
 
-          {/* Thème */}
-          <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        {/* Thème + Paramètres + Déconnexion — fixés en bas */}
+        <div className="border-t p-3 space-y-1">
+          <p className="px-2 py-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
             {t('settings.appearance_section')}
           </p>
           <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1">
@@ -175,21 +176,13 @@ export function AppDrawer({ open, onClose }: AppDrawerProps) {
               </button>
             ))}
           </div>
-
-          <div className="my-2 border-t" />
-
-          {/* Paramètres */}
           <button
             onClick={handleSettings}
-            className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors hover:bg-muted"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors hover:bg-muted"
           >
             <Settings className="h-4 w-4 text-muted-foreground" />
             {t('nav.settings')}
           </button>
-        </div>
-
-        {/* Déconnexion — fixé en bas */}
-        <div className="border-t p-3">
           <button
             onClick={() => void handleLogout()}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
