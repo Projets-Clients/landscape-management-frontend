@@ -310,7 +310,7 @@ return (
                     onChange={handleLogoChange}
                   />
                   {showDeleteConfirm && (
-                    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 space-y-2">
+                    <div className="inline-flex flex-col gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3">
                       <p className="text-sm font-medium text-destructive">
                         {t("settings.logo_delete_warning")}
                       </p>
