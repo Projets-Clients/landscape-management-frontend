@@ -1,11 +1,21 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { X, Settings, LogOut, Monitor, Sun, Moon } from 'lucide-react'
+import { X, Settings, LogOut, Monitor, Sun, Moon, LayoutDashboard, HardHat, Users, UserCog, BookOpen } from 'lucide-react'
 import { useAuthStore } from '@/store/auth.store'
 import { useTheme } from '@/providers/ThemeProvider'
+import { usePermissions } from '@/hooks/use-permissions'
 import { apiRequest } from '@/lib/api-client'
 import { cn } from '@/lib/utils'
+import type { PermModule } from '@/types/api'
+
+const NAV_ITEMS: { to: string; icon: React.ElementType; labelKey: string; permModule?: PermModule; end?: boolean }[] = [
+  { to: '/',             icon: LayoutDashboard, labelKey: 'nav.dashboard', end: true },
+  { to: '/chantiers',   icon: HardHat,         labelKey: 'nav.projects',  permModule: 'chantiers' },
+  { to: '/clients',     icon: Users,           labelKey: 'nav.clients',   permModule: 'clients' },
+  { to: '/utilisateurs',icon: UserCog,         labelKey: 'nav.team',      permModule: 'equipe' },
+  { to: '/prestations', icon: BookOpen,        labelKey: 'nav.services',  permModule: 'prestations' },
+]
 
 interface AppDrawerProps {
   open: boolean
@@ -17,7 +27,12 @@ export function AppDrawer({ open, onClose }: AppDrawerProps) {
   const navigate = useNavigate()
   const { firstName, lastName, username, role, customRoleName, clearAuth } = useAuthStore()
   const { theme, setTheme, handedness } = useTheme()
+  const { can } = usePermissions()
   const isLeft = handedness === 'left'
+
+  const visibleNavItems = NAV_ITEMS.filter(
+    item => !item.permModule || can(item.permModule, 'read'),
+  )
 
   const ROLE_LABELS: Record<string, string> = {
     ADMIN: t('settings.role_admin'),
@@ -108,6 +123,31 @@ export function AppDrawer({ open, onClose }: AppDrawerProps) {
 
         {/* Contenu */}
         <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+          {/* Navigation */}
+          <nav className="flex flex-col gap-0.5">
+            {visibleNavItems.map(({ to, icon: Icon, labelKey, end }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-muted',
+                  )
+                }
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {t(labelKey)}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="my-2 border-t" />
+
           {/* Thème */}
           <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
             {t('settings.appearance_section')}
