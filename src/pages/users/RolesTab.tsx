@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
 import { useRoles, useUpdateRole, useDeleteRole } from '@/hooks/use-roles'
-import { MODULES, ACTIONS, EMPTY_PERMISSIONS } from '@/lib/permissions'
+import { MODULES, ACTIONS } from '@/lib/permissions'
 import type { Role, Permissions, PermModule, PermAction } from '@/types/api'
 
 export function PermissionMatrix({
