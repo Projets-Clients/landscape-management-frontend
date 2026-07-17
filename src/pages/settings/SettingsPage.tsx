@@ -13,6 +13,7 @@ import {
   Sun,
   Loader2,
   Smartphone,
+  Trash2,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,7 @@ const { t, i18n } = useTranslation();
   const { isInstalled, isMobile } = usePwaInstall();
   const [installOpen, setInstallOpen] = useState(false);
   const [logoPreviewOpen, setLogoPreviewOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 const updateMe = useUpdateMe();
 
@@ -270,26 +272,38 @@ return (
                     />
                   </button>
                 ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border bg-muted text-muted-foreground text-2xl font-bold">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg border bg-muted text-muted-foreground text-2xl font-bold shrink-0">
                     {org?.name?.[0]?.toUpperCase() ?? '?'}
                   </div>
                 )}
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="logo-upload"
-                    className={[
-                      "inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                      "hover:bg-muted",
-                      uploadLogo.isPending ? "opacity-50 pointer-events-none" : "",
-                    ].join(" ")}
-                  >
-                    {uploadLogo.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Download className="h-4 w-4" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor="logo-upload"
+                      className={[
+                        "inline-flex flex-1 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                        "hover:bg-muted",
+                        uploadLogo.isPending ? "opacity-50 pointer-events-none" : "",
+                      ].join(" ")}
+                    >
+                      {uploadLogo.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4" />
+                      )}
+                      {org?.logoUrl ? t("settings.logo_change_btn") : t("settings.logo_upload_btn")}
+                    </label>
+                    {org?.logoUrl && !showDeleteConfirm && (
+                      <button
+                        type="button"
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-destructive/30 text-destructive transition-colors hover:bg-destructive/10"
+                        aria-label={t("settings.logo_delete_btn")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     )}
-                    {org?.logoUrl ? t("settings.logo_change_btn") : t("settings.logo_upload_btn")}
-                  </label>
+                  </div>
                   <input
                     id="logo-upload"
                     type="file"
@@ -297,23 +311,44 @@ return (
                     className="sr-only"
                     onChange={handleLogoChange}
                   />
-                  {org?.logoUrl && (
-                    <button
-                      type="button"
-                      disabled={deleteLogo.isPending}
-                      onClick={() => void deleteLogo.mutateAsync(undefined, {
-                        onSuccess: () => toast.success(t('settings.logo_uploaded')),
-                        onError: () => toast.error(t('settings.logo_error')),
-                      })}
-                      className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
-                    >
-                      {deleteLogo.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <X className="h-4 w-4" />
-                      )}
-                      {t("settings.logo_delete_btn")}
-                    </button>
+                  {showDeleteConfirm && (
+                    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 space-y-2">
+                      <p className="text-sm font-medium text-destructive">
+                        {t("settings.logo_delete_warning")}
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => setShowDeleteConfirm(false)}
+                          disabled={deleteLogo.isPending}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="flex-1"
+                          disabled={deleteLogo.isPending}
+                          onClick={() => void deleteLogo.mutateAsync(undefined, {
+                            onSuccess: () => {
+                              setShowDeleteConfirm(false);
+                              toast.success(t('settings.logo_deleted'));
+                            },
+                            onError: () => toast.error(t('settings.logo_error')),
+                          })}
+                        >
+                          {deleteLogo.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            t("settings.logo_delete_btn")
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                   )}
                   <p className="text-xs text-muted-foreground">{t("settings.logo_hint")}</p>
                 </div>
