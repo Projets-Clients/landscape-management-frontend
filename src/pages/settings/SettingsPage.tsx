@@ -319,7 +319,6 @@ return (
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="flex-1"
                           onClick={() => setShowDeleteConfirm(false)}
                           disabled={deleteLogo.isPending}
                         >
@@ -329,7 +328,6 @@ return (
                           type="button"
                           variant="destructive"
                           size="sm"
-                          className="flex-1"
                           disabled={deleteLogo.isPending}
                           onClick={() => void deleteLogo.mutateAsync(undefined, {
                             onSuccess: () => {
