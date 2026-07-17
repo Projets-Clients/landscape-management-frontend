@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { Plus, Pencil, Trash2, EyeOff, Eye, Loader2, Search } from "lucide-react";
@@ -10,7 +11,6 @@ import { Pagination } from "@/components/common/Pagination";
 import { Fab } from "@/components/common/Fab";
 import {
   useServices,
-  useCreateService,
   useUpdateService,
   useDeleteService,
   useDeactivateService,
@@ -188,11 +188,11 @@ function ServiceCard({
 }
 
 export function ServicesPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { can } = usePermissions();
   const isAdmin = useAuthStore((s) => s.role === 'ADMIN');
   const { data: services, isLoading } = useServices();
-  const createService = useCreateService();
   const updateService = useUpdateService();
   const deleteService = useDeleteService();
   const deactivateService = useDeactivateService();
@@ -200,7 +200,7 @@ export function ServicesPage() {
   const seedServices = useSeedServices();
 
   const [modalState, setModalState] = useState<
-    { mode: "create" } | { mode: "edit"; service: Service } | null
+    { mode: "edit"; service: Service } | null
   >(null);
   const [view, setView] = useState<"active" | "inactive">("active");
   const [page, setPage] = useState(1);
@@ -249,30 +249,18 @@ export function ServicesPage() {
   }
 
   async function handleSubmit(data: ServiceFormData) {
+    if (!modalState) return
     try {
-      if (modalState?.mode === "edit") {
-        await updateService.mutateAsync({
-          id: modalState.service.id,
-          title: data.title,
-          description: data.description || undefined,
-          unit: data.unit || undefined,
-        });
-        toast.success(t("services.updated"));
-      } else {
-        await createService.mutateAsync({
-          title: data.title,
-          description: data.description || undefined,
-          unit: data.unit || undefined,
-        });
-        toast.success(t("services.created"));
-      }
+      await updateService.mutateAsync({
+        id: modalState.service.id,
+        title: data.title,
+        description: data.description || undefined,
+        unit: data.unit || undefined,
+      });
+      toast.success(t("services.updated"));
       closeModal();
     } catch {
-      toast.error(
-        modalState?.mode === "edit"
-          ? t("services.update_error")
-          : t("services.create_error"),
-      );
+      toast.error(t("services.update_error"));
     }
   }
 
@@ -313,7 +301,7 @@ export function ServicesPage() {
     }
   }
 
-  const isPending = createService.isPending || updateService.isPending;
+  const isPending = updateService.isPending;
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden min-h-0">
@@ -328,7 +316,7 @@ export function ServicesPage() {
             <Button
               size="sm"
               className="min-h-[44px] gap-1.5 hidden md:flex"
-              onClick={() => setModalState({ mode: "create" })}
+              onClick={() => void navigate('/prestations/nouveau')}
             >
               <Plus className="h-3.5 w-3.5" />
               {t("services.add")}
@@ -446,21 +434,13 @@ export function ServicesPage() {
             onClick={closeModal}
           />
           <div className="relative w-full max-w-md rounded-2xl bg-card p-5 shadow-xl space-y-4">
-            <h2 className="font-semibold">
-              {modalState.mode === "create"
-                ? t("services.form_add_title")
-                : t("services.form_edit_title")}
-            </h2>
+            <h2 className="font-semibold">{t("services.form_edit_title")}</h2>
             <ServiceForm
-              initial={
-                modalState.mode === "edit"
-                  ? {
-                      title: modalState.service.title,
-                      description: modalState.service.description ?? "",
-                      unit: modalState.service.unit ?? "",
-                    }
-                  : undefined
-              }
+              initial={{
+                title: modalState.service.title,
+                description: modalState.service.description ?? "",
+                unit: modalState.service.unit ?? "",
+              }}
               onSubmit={(data) => void handleSubmit(data)}
               onCancel={closeModal}
               isPending={isPending}
@@ -470,7 +450,7 @@ export function ServicesPage() {
       )}
 
       {view === "active" && can('prestations', 'create') && (
-        <Fab onClick={() => setModalState({ mode: "create" })} />
+        <Fab onClick={() => void navigate('/prestations/nouveau')} />
       )}
     </div>
   );

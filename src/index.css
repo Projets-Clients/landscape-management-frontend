@@ -19,6 +19,11 @@
   .pb-nav {
     padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   }
+
+  /* Position bas du FAB = nav (3.5rem) + home indicator + gap (1rem) */
+  .bottom-fab {
+    bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem);
+  }
 }
 
 @layer base {

@@ -1,16 +1,16 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { Plus, ChevronDown, ChevronUp, Loader2, UserCog } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/EmptyState'
 import { Fab } from '@/components/common/Fab'
 import { Avatar } from '@/components/common/Avatar'
-import { useUsers, useCreateUser, useUpdateUser } from '@/hooks/use-users'
+import { useUsers, useUpdateUser } from '@/hooks/use-users'
 import { useRoles } from '@/hooks/use-roles'
 import { usePermissions } from '@/hooks/use-permissions'
 import { fullName } from '@/lib/utils'
@@ -226,100 +226,14 @@ function UserRow({ user, canUpdate }: { user: User; canUpdate: boolean }) {
   )
 }
 
-function CreateUserForm({ onClose }: { onClose: () => void }) {
-  const { t } = useTranslation()
-  const createUser = useCreateUser()
-  const [form, setForm] = useState({
-    username: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    role: 'MEMBER',
-    customRoleId: null as string | null,
-  })
-
-  function setField(key: string, value: unknown) {
-    setForm((f) => ({ ...f, [key]: value }))
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (form.password.length < 8) {
-      toast.error(t('users.password_min_error'))
-      return
-    }
-    try {
-      await createUser.mutateAsync({
-        username: form.username.trim(),
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        password: form.password,
-        role: form.role as never,
-        customRoleId: form.customRoleId,
-        email: form.email.trim() || undefined,
-      })
-      toast.success(t('users.created'))
-      onClose()
-    } catch {
-      toast.error(t('users.create_error'))
-    }
-  }
-
-  return (
-    <Card className="p-4">
-      <h2 className="mb-4 font-semibold">{t('users.new_user')}</h2>
-      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="cu-fn">{t('common.first_name')}</Label>
-            <Input id="cu-fn" className="min-h-[44px]" value={form.firstName} onChange={(e) => setField('firstName', e.target.value)} required />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="cu-ln">{t('common.last_name')}</Label>
-            <Input id="cu-ln" className="min-h-[44px]" value={form.lastName} onChange={(e) => setField('lastName', e.target.value)} required />
-          </div>
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="cu-uname">{t('common.identifier')}</Label>
-          <Input id="cu-uname" autoCapitalize="none" autoComplete="off" className="min-h-[44px]" value={form.username} onChange={(e) => setField('username', e.target.value)} required />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="cu-email">{t('common.email')}</Label>
-          <Input id="cu-email" type="email" className="min-h-[44px]" value={form.email} onChange={(e) => setField('email', e.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="cu-pw">{t('common.password')}</Label>
-          <Input id="cu-pw" type="password" autoComplete="new-password" className="min-h-[44px]" minLength={8} value={form.password} onChange={(e) => setField('password', e.target.value)} required />
-        </div>
-        <div className="space-y-1.5">
-          <Label>{t('common.role')}</Label>
-          <RoleSelect
-            value={form.role}
-            customRoleId={form.customRoleId}
-            onChange={(role, customRoleId) => setForm((f) => ({ ...f, role, customRoleId }))}
-          />
-        </div>
-        <div className="flex gap-3 pt-1">
-          <Button type="button" variant="outline" className="min-h-[44px] flex-1" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" className="min-h-[44px] flex-1" disabled={createUser.isPending}>
-            {createUser.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : t('common.new')}
-          </Button>
-        </div>
-      </form>
-    </Card>
-  )
-}
-
 type Tab = 'membres' | 'roles'
 
 export function UsersPage() {
+  const navigate = useNavigate()
   const { t } = useTranslation()
   const { can, isAdmin } = usePermissions()
   const { data: users, isLoading } = useUsers()
-  const [showCreate, setShowCreate] = useState(false)
+  const [showCreateRole, setShowCreateRole] = useState(false)
   const [tab, setTab] = useState<Tab>('membres')
 
   const canCreate = isAdmin || can('equipe', 'create')
@@ -333,7 +247,7 @@ export function UsersPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t('users.title')}</h1>
         {canCreate && (
-          <Button size="sm" className="min-h-[44px] hidden md:flex" onClick={() => setShowCreate((v) => !v)}>
+          <Button size="sm" className="min-h-[44px] hidden md:flex" onClick={() => void navigate('/utilisateurs/nouveau')}>
             <Plus className="mr-1 h-4 w-4" />
             {t('common.new')}
           </Button>
@@ -346,7 +260,7 @@ export function UsersPage() {
           {(['membres', 'roles'] as Tab[]).map((t_) => (
             <button
               key={t_}
-              onClick={() => { setTab(t_); setShowCreate(false) }}
+              onClick={() => { setTab(t_); setShowCreateRole(false) }}
               className={[
                 'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
                 tab === t_
@@ -362,7 +276,6 @@ export function UsersPage() {
 
       {tab === 'membres' && (
         <>
-          {showCreate && <CreateUserForm onClose={() => setShowCreate(false)} />}
           {isLoading && (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => <Skeleton key={i} className="h-[64px] rounded-xl" />)}
@@ -389,9 +302,9 @@ export function UsersPage() {
         </>
       )}
 
-      {tab === 'roles' && <RolesTab showCreate={showCreate && isAdmin} onCloseCreate={() => setShowCreate(false)} isAdmin={isAdmin} />}
+      {tab === 'roles' && <RolesTab showCreate={showCreateRole && isAdmin} onCloseCreate={() => setShowCreateRole(false)} isAdmin={isAdmin} />}
 
-      {canCreate && <Fab onClick={() => setShowCreate(true)} />}
+      {canCreate && tab === 'membres' && <Fab onClick={() => void navigate('/utilisateurs/nouveau')} />}
     </div>
   )
 }

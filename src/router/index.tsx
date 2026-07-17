@@ -15,8 +15,10 @@ import { ClientsPage } from '@/pages/clients/ClientsPage'
 import { ClientDetailPage } from '@/pages/clients/ClientDetailPage'
 import { CreateClientPage } from '@/pages/clients/CreateClientPage'
 import { UsersPage } from '@/pages/users/UsersPage'
+import { CreateUserPage } from '@/pages/users/CreateUserPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
 import { ServicesPage } from '@/pages/services/ServicesPage'
+import { CreateServicePage } from '@/pages/services/CreateServicePage'
 import { SignPage } from '@/pages/public/SignPage'
 
 export const router = createBrowserRouter([
@@ -85,6 +87,18 @@ export const router = createBrowserRouter([
                 element: <CanRoute module="equipe" action="read" />,
                 children: [
                   { path: 'utilisateurs', element: <UsersPage /> },
+                ],
+              },
+              {
+                element: <CanRoute module="equipe" action="create" />,
+                children: [
+                  { path: 'utilisateurs/nouveau', element: <CreateUserPage /> },
+                ],
+              },
+              {
+                element: <CanRoute module="prestations" action="create" />,
+                children: [
+                  { path: 'prestations/nouveau', element: <CreateServicePage /> },
                 ],
               },
             ],
