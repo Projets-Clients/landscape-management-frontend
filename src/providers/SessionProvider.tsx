@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { router } from '@/router'
 import { useAuthStore, getStoredRefreshToken } from '@/store/auth.store'
 import { useTheme } from '@/providers/ThemeProvider'
-import type { ColorKey } from '@/providers/ThemeProvider'
+import type { ColorKey, Handedness } from '@/providers/ThemeProvider'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -34,7 +34,7 @@ export function SessionProvider() {
   const setPermissions = useAuthStore((s) => s.setPermissions)
   const setNavSlots = useAuthStore((s) => s.setNavSlots)
   const setCustomRoleName = useAuthStore((s) => s.setCustomRoleName)
-  const { setTheme, setColor } = useTheme()
+  const { setTheme, setColor, setHandedness } = useTheme()
   const { i18n } = useTranslation()
 
   useEffect(() => {
@@ -48,13 +48,14 @@ export function SessionProvider() {
           if (res.ok) {
             const me = (await res.json()) as {
               firstName: string; lastName: string
-              language: string; theme: string; accentColor: string; navSlots: string[]
+              language: string; theme: string; accentColor: string; handedness: string; navSlots: string[]
               customRole?: { name: string; permissions: Record<string, string[]> } | null
             }
             setName(me.firstName ?? '', me.lastName ?? '')
             setPreferences(me.language, me.theme, me.accentColor)
             setTheme(me.theme as 'system' | 'light' | 'dark')
             setColor(me.accentColor as ColorKey)
+            setHandedness(me.handedness as Handedness)
             localStorage.setItem('landscape-lang', me.language)
             void i18n.changeLanguage(me.language)
             setPermissions(me.customRole?.permissions as never ?? null)
@@ -69,7 +70,7 @@ export function SessionProvider() {
       }
       setReady(true)
     })
-  }, [setAuth, clearAuth, setName, setTheme, setColor, i18n, setPreferences, setNavSlots, setCustomRoleName])
+  }, [setAuth, clearAuth, setName, setTheme, setColor, setHandedness, i18n, setPreferences, setNavSlots, setCustomRoleName])
 
   if (!ready) {
     return (

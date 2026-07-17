@@ -5,6 +5,7 @@ interface UpdateMePayload {
   language?: string
   theme?: string
   accentColor?: string
+  handedness?: string
   navSlots?: string[]
 }
 

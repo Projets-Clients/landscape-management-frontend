@@ -174,6 +174,7 @@ const updateMe = useUpdateMe();
 
   function handleHandednessChange(h: Handedness) {
     setHandedness(h);
+    patchMe({ handedness: h });
   }
 
   function handleLanguageChange(lang: string) {
