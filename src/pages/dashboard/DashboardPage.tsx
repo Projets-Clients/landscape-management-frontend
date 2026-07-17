@@ -5,73 +5,13 @@ import {
   FileSignature,
   CheckCircle,
   AlertTriangle,
-  Users,
-  UserCog,
-  BookOpen,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/components/common/StatusBadge'
 import { useProjects } from '@/hooks/use-projects'
 import { useAuthStore } from '@/store/auth.store'
-import { usePermissions } from '@/hooks/use-permissions'
 import { formatDate } from '@/lib/utils'
-import type { Project, PermModule } from '@/types/api'
-
-interface ModuleDef {
-  to: string
-  icon: React.ElementType
-  labelKey: string
-  color: string
-  permModule: PermModule
-}
-
-const MODULES: ModuleDef[] = [
-  {
-    to: '/chantiers',
-    icon: HardHat,
-    labelKey: 'nav.projects',
-    color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    permModule: 'chantiers',
-  },
-  {
-    to: '/clients',
-    icon: Users,
-    labelKey: 'nav.clients',
-    color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    permModule: 'clients',
-  },
-  {
-    to: '/utilisateurs',
-    icon: UserCog,
-    labelKey: 'nav.team',
-    color: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-    permModule: 'equipe',
-  },
-  {
-    to: '/prestations',
-    icon: BookOpen,
-    labelKey: 'nav.services',
-    color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-    permModule: 'prestations',
-  },
-]
-
-function ModuleTile({ to, icon: Icon, labelKey, color }: Omit<ModuleDef, 'permModule'>) {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-
-  return (
-    <button
-      onClick={() => void navigate(to)}
-      className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted"
-    >
-      <div className={`shrink-0 rounded-xl p-2.5 ${color}`}>
-        <Icon className="h-5 w-5" />
-      </div>
-      <p className="font-medium text-sm leading-snug">{t(labelKey)}</p>
-    </button>
-  )
-}
+import type { Project } from '@/types/api'
 
 function StatCard({
   icon: Icon,
@@ -140,15 +80,12 @@ export function DashboardPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const firstName = useAuthStore((s) => s.firstName)
-  const { can } = usePermissions()
 
   const inProgress = useProjects({ status: 'IN_PROGRESS', limit: 1 })
   const awaitingSig = useProjects({ status: 'AWAITING_SIGNATURE', limit: 1 })
   const completed = useProjects({ status: 'COMPLETED', limit: 1 })
   const disputed = useProjects({ status: 'DISPUTED', limit: 1 })
   const recent = useProjects({ limit: 20 })
-
-  const visibleModules = MODULES.filter((m) => can(m.permModule, 'read'))
 
   return (
     <div className="flex flex-col gap-6">
@@ -157,20 +94,6 @@ export function DashboardPage() {
         <h1 className="text-xl font-bold">{t('dashboard.greeting', { firstName })}</h1>
         <p className="hidden text-sm text-muted-foreground sm:block">{t('dashboard.subtitle')}</p>
       </div>
-
-      {/* Module tiles — masqués sur desktop (sidebar disponible) */}
-      {visibleModules.length > 0 && (
-        <section className="flex flex-col gap-3 md:hidden">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            {t('dashboard.modules')}
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {visibleModules.map((m) => (
-              <ModuleTile key={m.to} to={m.to} icon={m.icon} labelKey={m.labelKey} color={m.color} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-2 sm:gap-3">
