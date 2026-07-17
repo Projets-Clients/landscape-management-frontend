@@ -253,11 +253,9 @@ return (
           <div className="space-y-2">
             <p className="text-sm font-semibold">{t("settings.org_section")}</p>
 
+            <Card className="p-4 space-y-6">
             {/* Logo */}
-            <Card className="p-4">
-              <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                {t("settings.logo_section")}
-              </p>
+            <div>
               <div className="flex items-center gap-4">
                 {org?.logoUrl ? (
                   <button
@@ -281,7 +279,7 @@ return (
                     <label
                       htmlFor="logo-upload"
                       className={[
-                        "inline-flex flex-1 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                        "inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
                         "hover:bg-muted",
                         uploadLogo.isPending ? "opacity-50 pointer-events-none" : "",
                       ].join(" ")}
@@ -353,9 +351,10 @@ return (
                   <p className="text-xs text-muted-foreground">{t("settings.logo_hint")}</p>
                 </div>
               </div>
-            </Card>
+            </div>
 
-            <Card className="p-4">
+            {/* Formulaire org */}
+            <div>
               {orgLoading ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -572,7 +571,8 @@ return (
                   </Button>
                 </form>
               )}
-            </Card>
+            </div>
+</Card>
           </div>
         )}
 
