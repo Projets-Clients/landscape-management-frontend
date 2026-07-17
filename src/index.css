@@ -22,7 +22,7 @@
 
   /* Position bas du FAB = nav (3.5rem) + home indicator + gap (1rem) */
   .bottom-fab {
-    bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem);
+    bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5rem);
   }
 }
 
