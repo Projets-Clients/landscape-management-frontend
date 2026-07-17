@@ -14,14 +14,13 @@ export function useOrganization() {
 export function useUpdateOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { name?: string; navSlots?: string[]; language?: string }) =>
+    mutationFn: (data: Partial<Omit<Organization, 'id' | 'logoUrl'>>) =>
       apiRequest<Organization>('/organizations/me', {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['organization'] })
-      toast.success('Organisation mise à jour')
     },
     onError: () => toast.error('Erreur lors de la mise à jour'),
   })

@@ -25,6 +25,45 @@ export interface Organization {
   active: boolean
   createdAt: string
   updatedAt: string
+
+  // Identité légale
+  tradeName?: string
+  siret?: string
+  vatNumber?: string
+  legalForm?: string
+  shareCapital?: string
+
+  // Coordonnées
+  phone?: string
+  mobile?: string
+  email?: string
+  website?: string
+
+  // Adresse
+  address?: string
+  addressLine2?: string
+  postalCode?: string
+  city?: string
+  country?: string
+
+  // Banque
+  bankHolder?: string
+  iban?: string
+  bic?: string
+
+  // Assurance
+  insurerName?: string
+  insurerPolicy?: string
+  insurerExpiry?: string
+
+  // Documents
+  quotePrefix?: string
+  invoicePrefix?: string
+  reportPrefix?: string
+  defaultVatRate?: number
+  defaultPaymentTerms?: string
+  latePaymentPenalties?: string
+  documentFooter?: string
 }
 
 export type ProjectStatus =
