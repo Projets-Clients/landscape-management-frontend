@@ -43,3 +43,13 @@ export function useUploadLogo() {
     },
   })
 }
+
+export function useDeleteLogo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => apiRequest('/organizations/me/logo', { method: 'DELETE' }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['organization'] })
+    },
+  })
+}

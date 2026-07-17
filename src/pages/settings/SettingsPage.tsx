@@ -40,6 +40,7 @@ import {
   useOrganization,
   useUpdateOrganization,
   useUploadLogo,
+  useDeleteLogo,
 } from "@/hooks/use-organization";
 import {
   NAV_SLOT_REGISTRY,
@@ -69,6 +70,7 @@ const updateMe = useUpdateMe();
   const { data: org, isLoading: orgLoading } = useOrganization();
   const updateOrg = useUpdateOrganization();
   const uploadLogo = useUploadLogo();
+  const deleteLogo = useDeleteLogo();
   const [orgName, setOrgName] = useState("");
   const [orgLanguage, setOrgLanguage] = useState("fr");
   const [navSlotsLocal, setNavSlotsLocal] =
@@ -295,6 +297,24 @@ return (
                     className="sr-only"
                     onChange={handleLogoChange}
                   />
+                  {org?.logoUrl && (
+                    <button
+                      type="button"
+                      disabled={deleteLogo.isPending}
+                      onClick={() => void deleteLogo.mutateAsync(undefined, {
+                        onSuccess: () => toast.success(t('settings.logo_uploaded')),
+                        onError: () => toast.error(t('settings.logo_error')),
+                      })}
+                      className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
+                    >
+                      {deleteLogo.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <X className="h-4 w-4" />
+                      )}
+                      {t("settings.logo_delete_btn")}
+                    </button>
+                  )}
                   <p className="text-xs text-muted-foreground">{t("settings.logo_hint")}</p>
                 </div>
               </div>

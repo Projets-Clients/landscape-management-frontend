@@ -122,6 +122,7 @@
     "logo_upload_btn": "Importer un logo",
     "logo_change_btn": "Changer le logo",
     "logo_hint": "JPEG, PNG ou WebP · max 2 Mo",
+    "logo_delete_btn": "Supprimer le logo",
     "logo_uploaded": "Logo mis à jour",
     "logo_error": "Erreur lors de l'import du logo",
     "logo_type_error": "Seuls les formats JPEG, PNG et WebP sont acceptés"
