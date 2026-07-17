@@ -31,7 +31,6 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/clients", icon: Users, labelKey: "nav.clients" },
   { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team" },
   { to: "/prestations", icon: BookOpen, labelKey: "nav.services" },
-  { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
 ];
 
 const MEMBER_NAV: NavItem[] = [
@@ -40,7 +39,6 @@ const MEMBER_NAV: NavItem[] = [
   { to: "/clients", icon: Users, labelKey: "nav.clients", permModule: "clients", permAction: "read" },
   { to: "/utilisateurs", icon: UserCog, labelKey: "nav.team", permModule: "equipe", permAction: "read" },
   { to: "/prestations", icon: BookOpen, labelKey: "nav.services", permModule: "prestations", permAction: "read" },
-  { to: "/parametres", icon: Settings, labelKey: "nav.settings" },
 ];
 
 interface SidebarProps {
@@ -123,6 +121,20 @@ export function Sidebar({ className }: SidebarProps) {
             </p>
           </div>
         </div>
+        <NavLink
+          to="/parametres"
+          className={({ isActive }) =>
+            cn(
+              "flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              isActive
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )
+          }
+        >
+          <Settings className="h-4 w-4 shrink-0" />
+          {t('nav.settings')}
+        </NavLink>
         <button
           onClick={() => void handleLogout()}
           className="flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
