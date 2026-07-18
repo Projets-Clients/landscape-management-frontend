@@ -167,7 +167,7 @@
     "logo_section": "Logo de la empresa",
     "logo_upload_btn": "Importar un logo",
     "logo_change_btn": "Cambiar el logo",
-    "logo_hint": "JPEG, PNG o WebP · máx. 2 MB",
+    "logo_hint": "JPEG, PNG o WebP · máx. 3 MB",
     "logo_delete_btn": "Eliminar",
     "logo_delete_warning": "¿Eliminar el logo permanentemente?",
     "logo_deleted": "Logo eliminado",
