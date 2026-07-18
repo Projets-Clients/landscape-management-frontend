@@ -79,7 +79,6 @@ function PhotoSection({
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => void handleFile(e)}
       />
