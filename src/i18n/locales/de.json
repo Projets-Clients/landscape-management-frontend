@@ -165,6 +165,7 @@
     "logo_upload_btn": "Logo hochladen",
     "logo_change_btn": "Logo ändern",
     "logo_hint": "JPEG, PNG oder WebP · max. 3 MB",
+    "primary_color_label": "Hauptfarbe (Berichte)",
     "logo_delete_btn": "Löschen",
     "logo_delete_warning": "Logo endgültig löschen?",
     "logo_deleted": "Logo gelöscht",

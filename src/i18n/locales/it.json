@@ -165,6 +165,7 @@
     "logo_upload_btn": "Importa un logo",
     "logo_change_btn": "Cambia il logo",
     "logo_hint": "JPEG, PNG o WebP · max 3 MB",
+    "primary_color_label": "Colore principale (rapporti)",
     "logo_delete_btn": "Elimina",
     "logo_delete_warning": "Eliminare definitivamente il logo?",
     "logo_deleted": "Logo eliminato",

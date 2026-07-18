@@ -42,6 +42,8 @@ type OrgFormState = {
   insurerName: string
   insurerPolicy: string
   insurerExpiry: string
+  // Apparence
+  primaryColor: string
   // Documents
   quotePrefix: string
   invoicePrefix: string
@@ -58,6 +60,7 @@ const EMPTY: OrgFormState = {
   address: '', addressLine2: '', postalCode: '', city: '', country: 'France',
   bankHolder: '', iban: '', bic: '',
   insurerName: '', insurerPolicy: '', insurerExpiry: '',
+  primaryColor: '#1a7a33',
   quotePrefix: 'DEV', invoicePrefix: 'FAC', reportPrefix: 'RAP',
   defaultVatRate: '10', defaultPaymentTerms: '', latePaymentPenalties: '',
 }
@@ -115,6 +118,7 @@ export function SettingsEnterprisePage() {
       insurerName:         org.insurerName ?? '',
       insurerPolicy:       org.insurerPolicy ?? '',
       insurerExpiry:       org.insurerExpiry ?? '',
+      primaryColor:        org.primaryColor ?? '#1a7a33',
       quotePrefix:         org.quotePrefix ?? 'DEV',
       invoicePrefix:       org.invoicePrefix ?? 'FAC',
       reportPrefix:        org.reportPrefix ?? 'RAP',
@@ -174,6 +178,7 @@ export function SettingsEnterprisePage() {
       defaultVatRate:      form.defaultVatRate ? parseFloat(form.defaultVatRate) : undefined,
       defaultPaymentTerms: form.defaultPaymentTerms || undefined,
       latePaymentPenalties:form.latePaymentPenalties || undefined,
+      primaryColor:        form.primaryColor || undefined,
     }, {
       onSuccess: () => toast.success(t('settings.org_saved')),
     })
@@ -247,6 +252,17 @@ export function SettingsEnterprisePage() {
               )}
               <p className="text-xs text-muted-foreground">{t('settings.logo_hint')}</p>
             </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-2">
+            <label className="text-sm font-medium">{t('settings.primary_color_label')}</label>
+            <input
+              type="color"
+              value={form.primaryColor}
+              onChange={f('primaryColor')}
+              className="h-9 w-14 cursor-pointer rounded border bg-transparent p-0.5"
+            />
+            <span className="text-xs text-muted-foreground font-mono">{form.primaryColor}</span>
           </div>
         </Card>
 

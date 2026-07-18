@@ -56,6 +56,9 @@ export interface Organization {
   insurerPolicy?: string
   insurerExpiry?: string
 
+  // Apparence
+  primaryColor?: string
+
   // Documents
   quotePrefix?: string
   invoicePrefix?: string
