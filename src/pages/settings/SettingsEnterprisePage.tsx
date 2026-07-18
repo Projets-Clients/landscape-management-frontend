@@ -46,6 +46,7 @@ type OrgFormState = {
   quotePrefix: string
   invoicePrefix: string
   reportPrefix: string
+  reportTemplate: string
   defaultVatRate: string
   defaultPaymentTerms: string
   latePaymentPenalties: string
@@ -59,6 +60,7 @@ const EMPTY: OrgFormState = {
   bankHolder: '', iban: '', bic: '',
   insurerName: '', insurerPolicy: '', insurerExpiry: '',
   quotePrefix: 'DEV', invoicePrefix: 'FAC', reportPrefix: 'RAP',
+  reportTemplate: 'SIMPLE',
   defaultVatRate: '10', defaultPaymentTerms: '', latePaymentPenalties: '',
 }
 
@@ -118,6 +120,7 @@ export function SettingsEnterprisePage() {
       quotePrefix:         org.quotePrefix ?? 'DEV',
       invoicePrefix:       org.invoicePrefix ?? 'FAC',
       reportPrefix:        org.reportPrefix ?? 'RAP',
+      reportTemplate:      org.reportTemplate ?? 'SIMPLE',
       defaultVatRate:      String(org.defaultVatRate ?? 10),
       defaultPaymentTerms: org.defaultPaymentTerms ?? '',
       latePaymentPenalties:org.latePaymentPenalties ?? '',
@@ -171,6 +174,7 @@ export function SettingsEnterprisePage() {
       quotePrefix:         form.quotePrefix || undefined,
       invoicePrefix:       form.invoicePrefix || undefined,
       reportPrefix:        form.reportPrefix || undefined,
+      reportTemplate:      form.reportTemplate || undefined,
       defaultVatRate:      form.defaultVatRate ? parseFloat(form.defaultVatRate) : undefined,
       defaultPaymentTerms: form.defaultPaymentTerms || undefined,
       latePaymentPenalties:form.latePaymentPenalties || undefined,
@@ -391,6 +395,12 @@ export function SettingsEnterprisePage() {
                   <Input className={inputCls} value={form.reportPrefix} onChange={f('reportPrefix')} maxLength={10} />
                 </Field>
               </div>
+              <Field label={t('settings.org_report_template')}>
+                <select value={form.reportTemplate} onChange={f('reportTemplate')} className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <option value="SIMPLE">{t('settings.report_template_simple')}</option>
+                  <option value="FULL">{t('settings.report_template_full')}</option>
+                </select>
+              </Field>
               <Field label={t('settings.org_default_vat')}>
                 <select value={form.defaultVatRate} onChange={f('defaultVatRate')} className="flex min-h-[44px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <option value="0">0 %</option>

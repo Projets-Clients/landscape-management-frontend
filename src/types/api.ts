@@ -60,6 +60,7 @@ export interface Organization {
   quotePrefix?: string
   invoicePrefix?: string
   reportPrefix?: string
+  reportTemplate?: string
   defaultVatRate?: number
   defaultPaymentTerms?: string
   latePaymentPenalties?: string
