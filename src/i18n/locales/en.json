@@ -397,6 +397,7 @@
     "after": "After",
     "no_photo": "No photos",
     "take_photo": "Take a photo {{label}}",
+    "import_photo": "Import a {{label}} photo",
     "upload_error": "Upload error",
     "photo_added": "Photo added",
     "delete_error": "Delete error",

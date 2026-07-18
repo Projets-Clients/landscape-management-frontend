@@ -92,7 +92,8 @@ function PhotoSection({
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-muted py-4 text-muted-foreground transition-colors active:bg-muted"
           >
             <Camera className="h-5 w-5" />
-            <span className="text-sm">{t('photos.take_photo', { label: label.toLowerCase() })}</span>
+            <span className="text-sm md:hidden">{t('photos.take_photo', { label: label.toLowerCase() })}</span>
+            <span className="hidden text-sm md:inline">{t('photos.import_photo', { label: label.toLowerCase() })}</span>
           </button>
         )
       ) : (

@@ -397,6 +397,7 @@
     "after": "Después",
     "no_photo": "Sin fotos",
     "take_photo": "Tomar una foto {{label}}",
+    "import_photo": "Importar una foto {{label}}",
     "upload_error": "Error al subir",
     "photo_added": "Foto añadida",
     "delete_error": "Error al eliminar",

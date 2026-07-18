@@ -396,6 +396,7 @@
     "after": "Dopo",
     "no_photo": "Nessuna foto",
     "take_photo": "Scatta una foto {{label}}",
+    "import_photo": "Importa una foto {{label}}",
     "upload_error": "Errore durante l'upload",
     "photo_added": "Foto aggiunta",
     "delete_error": "Errore durante l'eliminazione",
