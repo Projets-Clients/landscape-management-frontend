@@ -83,9 +83,8 @@ export function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="flex flex-col items-center gap-2">
-          <img src="/drakko/logo_light.png" alt="Drakko" className="h-28 w-auto dark:hidden" />
-          <img src="/drakko/logo_dark.png" alt="Drakko" className="h-28 w-auto hidden dark:block" />
-          <p className="text-sm text-muted-foreground">{t('login.subtitle')}</p>
+          <img src="/drakko/logo_light.png" alt="Drakko" className="h-44 w-auto dark:hidden" />
+          <img src="/drakko/logo_dark.png" alt="Drakko" className="h-44 w-auto hidden dark:block" />
         </div>
 
         <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
