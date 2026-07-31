@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Leaf, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -57,7 +57,7 @@ export function LoginPage() {
           setPreferences(me.language, me.theme, me.accentColor)
           setTheme(me.theme as 'system' | 'light' | 'dark')
           setColor(me.accentColor as ColorKey)
-          localStorage.setItem('landscape-lang', me.language)
+          localStorage.setItem('drakko-lang', me.language)
           void i18n.changeLanguage(me.language)
           setPermissions(me.customRole?.permissions as never ?? null)
           setCustomRoleName(me.customRole?.name ?? null)
@@ -83,10 +83,8 @@ export function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="flex flex-col items-center gap-2">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary">
-            <Leaf className="h-7 w-7 text-primary-foreground" />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight">Landscape</h1>
+          <img src="/drakko/logo_light.png" alt="Drakko" className="h-28 w-auto dark:hidden" />
+          <img src="/drakko/logo_dark.png" alt="Drakko" className="h-28 w-auto hidden dark:block" />
           <p className="text-sm text-muted-foreground">{t('login.subtitle')}</p>
         </div>
 

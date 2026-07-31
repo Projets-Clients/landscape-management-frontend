@@ -408,10 +408,10 @@
   },
   "install": {
     "banner_title": "App installieren",
-    "banner_desc": "Landscape zum Startbildschirm hinzufügen",
+    "banner_desc": "Drakko zum Startbildschirm hinzufügen",
     "install_btn": "Installieren",
     "dismiss": "Später",
-    "modal_title": "Landscape installieren",
+    "modal_title": "Drakko installieren",
     "already_installed": "Die App ist bereits auf diesem Gerät installiert.",
     "android_native_title": "Tippe auf die Schaltfläche unten, um die App zu installieren.",
     "android_native_btn": "Installieren",
@@ -425,7 +425,7 @@
     "android_manual_step1b": "oben rechts",
     "android_manual_step2": "Wähle",
     "android_manual_step2_label": "Zum Startbildschirm hinzufügen",
-    "desktop_instructions": "Klicke auf das Installationssymbol in der Adressleiste oder öffne das Browsermenü und wähle «Landscape installieren».",
+    "desktop_instructions": "Klicke auf das Installationssymbol in der Adressleiste oder öffne das Browsermenü und wähle «Drakko installieren».",
     "settings_section": "Anwendung",
     "settings_btn": "Auf diesem Gerät installieren",
     "installed_label": "App auf diesem Gerät installiert"

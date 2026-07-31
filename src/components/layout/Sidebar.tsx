@@ -4,7 +4,6 @@ import {
   HardHat,
   Users,
   UserCog,
-  Leaf,
   Settings,
   BookOpen,
   LogOut,
@@ -75,12 +74,11 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <aside className={cn("flex w-60 flex-col border-r bg-card", className)}>
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <Leaf className="h-4 w-4 text-primary-foreground" />
-        </div>
+        <img src="/drakko/logo_app_light.png" alt="Drakko" className="h-7 w-7 shrink-0 rounded-lg object-cover dark:hidden" />
+        <img src="/drakko/logo_app_dark.png" alt="Drakko" className="h-7 w-7 shrink-0 rounded-lg object-cover hidden dark:block" />
         <div className="min-w-0">
           <p className="font-bold tracking-tight text-foreground leading-tight">
-            Landscape
+            Drakko
           </p>
           {org && (
             <p className="text-xs text-muted-foreground leading-tight truncate">

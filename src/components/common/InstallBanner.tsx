@@ -4,7 +4,7 @@ import { X } from 'lucide-react'
 import { usePwaInstall } from '@/hooks/use-pwa-install'
 import { InstallModal } from './InstallModal'
 
-const DISMISSED_KEY = 'landscape-install-dismissed'
+const DISMISSED_KEY = 'drakko-install-dismissed'
 
 export function InstallBanner() {
   const { t } = useTranslation()

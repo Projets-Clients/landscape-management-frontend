@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import type { UserRole, Permissions } from '@/types/api'
 
-const REFRESH_TOKEN_KEY = 'landscape-rt'
+const REFRESH_TOKEN_KEY = 'drakko-rt'
 
 interface AuthState {
   accessToken: string | null

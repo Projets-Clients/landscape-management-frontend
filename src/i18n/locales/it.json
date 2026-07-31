@@ -407,10 +407,10 @@
   },
   "install": {
     "banner_title": "Installa l'app",
-    "banner_desc": "Aggiungi Landscape alla schermata home",
+    "banner_desc": "Aggiungi Drakko alla schermata home",
     "install_btn": "Installa",
     "dismiss": "Più tardi",
-    "modal_title": "Installa Landscape",
+    "modal_title": "Installa Drakko",
     "already_installed": "L'app è già installata su questo dispositivo.",
     "android_native_title": "Premi il pulsante qui sotto per installare l'app.",
     "android_native_btn": "Installa",
@@ -424,7 +424,7 @@
     "android_manual_step1b": "in alto a destra",
     "android_manual_step2": "Seleziona",
     "android_manual_step2_label": "Aggiungi alla schermata Home",
-    "desktop_instructions": "Clicca sull'icona di installazione nella barra degli indirizzi, o apri il menu del browser e seleziona «Installa Landscape».",
+    "desktop_instructions": "Clicca sull'icona di installazione nella barra degli indirizzi, o apri il menu del browser e seleziona «Installa Drakko».",
     "settings_section": "Applicazione",
     "settings_btn": "Installa su questo dispositivo",
     "installed_label": "App installata su questo dispositivo"

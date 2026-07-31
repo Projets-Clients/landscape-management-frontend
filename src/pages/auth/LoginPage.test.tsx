@@ -70,9 +70,9 @@ describe('LoginPage — rendu', () => {
     expect(screen.getByRole('button', { name: /se connecter/i })).toBeInTheDocument()
   })
 
-  it('affiche le titre Landscape', () => {
+  it('affiche le logo Drakko', () => {
     renderLogin()
-    expect(screen.getByRole('heading', { name: 'Landscape' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Drakko' })).toBeInTheDocument()
   })
 
   it('masque le mot de passe par défaut (type=password)', () => {

@@ -58,7 +58,7 @@ export function SessionProvider() {
             setTheme(me.theme as 'system' | 'light' | 'dark')
             setColor(me.accentColor as ColorKey)
             setHandedness(me.handedness as Handedness)
-            localStorage.setItem('landscape-lang', me.language)
+            localStorage.setItem('drakko-lang', me.language)
             void i18n.changeLanguage(me.language)
             setPermissions(me.customRole?.permissions as never ?? null)
             setCustomRoleName(me.customRole?.name ?? null)

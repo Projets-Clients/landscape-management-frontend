@@ -11,7 +11,7 @@ export function SettingsProfilPage() {
   const { username } = useAuthStore()
 
   function handleLanguageChange(lang: string) {
-    localStorage.setItem('landscape-lang', lang)
+    localStorage.setItem('drakko-lang', lang)
     void i18n.changeLanguage(lang).then(() => {
       toast.success(i18n.getFixedT(lang)('settings.language_updated'))
     })

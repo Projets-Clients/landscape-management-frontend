@@ -31,7 +31,7 @@ test('affiche le formulaire de connexion', async ({ page }) => {
   await expect(page.getByLabel('Identifiant')).toBeVisible()
   await expect(page.getByLabel('Mot de passe')).toBeVisible()
   await expect(page.getByRole('button', { name: /se connecter/i })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Landscape' })).toBeVisible()
+  await expect(page.getByRole('img', { name: 'Drakko' })).toBeVisible()
 })
 
 // ── Connexion réussie ──────────────────────────────────────────────────────

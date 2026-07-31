@@ -6,10 +6,11 @@ export type Handedness = 'right' | 'left'
 
 export const COLORS: Record<ColorKey, { hsl: string; hex: string }> = {
   green:  { hsl: '142 72% 29%', hex: '#277a3f' },
+
   blue:   { hsl: '217 91% 40%', hex: '#0d5cc7' },
   violet: { hsl: '265 70% 45%', hex: '#7c3aed' },
   teal:   { hsl: '174 72% 30%', hex: '#0d9488' },
-  orange: { hsl: '25 90% 45%',  hex: '#c2610d' },
+  orange: { hsl: '24 63% 47%',  hex: '#C46A2D' },
   rose:   { hsl: '330 70% 45%', hex: '#be185d' },
   amber:  { hsl: '38 92% 40%',  hex: '#b45309' },
   slate:  { hsl: '220 15% 35%', hex: '#475569' },
@@ -33,9 +34,9 @@ const ThemeContext = createContext<ThemeContextValue>({
   setHandedness: () => {},
 })
 
-const THEME_KEY = 'landscape-theme'
-const COLOR_KEY = 'landscape-color'
-const HANDEDNESS_KEY = 'landscape-handedness'
+const THEME_KEY = 'drakko-theme'
+const COLOR_KEY = 'drakko-color'
+const HANDEDNESS_KEY = 'drakko-handedness'
 
 function applyColor(key: ColorKey) {
   const { hsl } = COLORS[key]
@@ -48,7 +49,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     () => (localStorage.getItem(THEME_KEY) as Theme | null) ?? 'system',
   )
   const [color, setColorState] = useState<ColorKey>(
-    () => (localStorage.getItem(COLOR_KEY) as ColorKey | null) ?? 'green',
+    () => (localStorage.getItem(COLOR_KEY) as ColorKey | null) ?? 'orange',
   )
   const [handedness, setHandednessState] = useState<Handedness>(
     () => (localStorage.getItem(HANDEDNESS_KEY) as Handedness | null) ?? 'right',

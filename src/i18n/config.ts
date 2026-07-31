@@ -14,7 +14,7 @@ void i18n.use(initReactI18next).init({
     it: { translation: it },
     de: { translation: de },
   },
-  lng: localStorage.getItem('landscape-lang') ?? 'fr',
+  lng: localStorage.getItem('drakko-lang') ?? 'fr',
   fallbackLng: 'fr',
   interpolation: { escapeValue: false },
 })

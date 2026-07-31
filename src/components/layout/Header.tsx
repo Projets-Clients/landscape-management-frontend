@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Leaf, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOrganization } from '@/hooks/use-organization'
 import { AppDrawer } from './AppDrawer'
@@ -21,10 +21,9 @@ export function Header({ className }: HeaderProps) {
         )}
       >
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-            <Leaf className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <span className="font-semibold text-primary">{org?.name ?? 'Landscape'}</span>
+          <img src="/drakko/logo_app_light.png" alt="Drakko" className="h-7 w-7 rounded-lg object-cover dark:hidden" />
+          <img src="/drakko/logo_app_dark.png" alt="Drakko" className="h-7 w-7 rounded-lg object-cover hidden dark:block" />
+          <span className="font-semibold text-foreground">{org?.name ?? 'Drakko'}</span>
         </div>
         <button
           onClick={() => setDrawerOpen(true)}
