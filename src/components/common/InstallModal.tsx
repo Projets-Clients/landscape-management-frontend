@@ -115,7 +115,7 @@ export function InstallModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center px-4 pt-4 pb-24 sm:p-4 sm:items-center"
       onClick={onClose}
     >
       <div className="absolute inset-0 bg-black/40" />
